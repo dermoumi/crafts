@@ -1,0 +1,5 @@
+{
+  "namedInputs": {
+    "baseBuildConfig": ["{projectRoot}/tsconfig.*.json"]
+  }
+}

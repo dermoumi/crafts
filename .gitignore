@@ -1,0 +1,18 @@
+# Node and pnpm
+node_modules/
+.pnpm-debug.log
+
+# Local env files and other local files
+.env
+*.local
+.sdkmanrc
+
+# Build artifacts
+dist/
+www/
+target/
+
+# Testing artifacts
+.lighthouseci/
+coverage/
+.eslintcache

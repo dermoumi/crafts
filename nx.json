@@ -1,0 +1,66 @@
+{
+  "extends": "nx/presets/npm.json",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "npmScope": "crafts",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "test:cov"]
+      }
+    }
+  },
+  "namedInputs": {
+    "sourceFiles": [
+      "{projectRoot}/src/**/*",
+      "!{projectRoot}/src/**/*.test.ts"
+    ],
+    "testFiles": ["{projectRoot}/src/**/*"],
+    "buildConfig": [
+      "{projectRoot}/package.json",
+      "{projectRoot}/tsconfig.json",
+      "{projectRoot}/vite.config.ts"
+    ],
+    "baseBuildConfig": [],
+    "lintConfig": [
+      "{projectRoot}/.eslintrc.cjs",
+      "{projectRoot}/.eslintignore",
+      "{projectRoot}/.prettierignore"
+    ],
+    "baseLintConfig": []
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "sourceFiles",
+        "^sourceFiles",
+        "buildConfig",
+        "^baseBuildConfig"
+      ],
+      "outputs": ["dist/**"]
+    },
+    "lint": {
+      "inputs": [
+        "sourceFiles",
+        "testFiles",
+        "buildConfig",
+        "lintConfig",
+        "^baseLintConfig"
+      ],
+      "outputs": [".eslintcache"]
+    },
+    "test": {
+      "inputs": ["testFiles", "^sourceFiles", "buildConfig", "^baseBuildConfig"]
+    },
+    "test:cov": {
+      "inputs": [
+        "testFiles",
+        "^sourceFiles",
+        "buildConfig",
+        "^baseBuildConfig"
+      ],
+      "outputs": ["coverage/**"]
+    }
+  }
+}

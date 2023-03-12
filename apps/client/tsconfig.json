@@ -1,0 +1,7 @@
+{
+  "extends": "@crafts/tsconfig/tsconfig.browser.json",
+  "compilerOptions": {
+    "types": ["vite/client"]
+  },
+  "include": ["src"]
+}

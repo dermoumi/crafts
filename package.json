@@ -1,0 +1,8 @@
+{
+  "name": "@crafts/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "nx": "^15.8.6"
+  }
+}

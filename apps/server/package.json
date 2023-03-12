@@ -1,0 +1,12 @@
+{
+  "name": "@crafts/server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite-node -w src/main.ts"
+  },
+  "devDependencies": {
+    "vite": "^4.1.0",
+    "vite-node": "^0.29.2"
+  }
+}
