@@ -1,0 +1,5 @@
+{
+  "namedInputs": {
+    "baseLintConfig": ["{projectRoot}/index.cjs"]
+  }
+}
