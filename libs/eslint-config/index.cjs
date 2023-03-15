@@ -12,6 +12,8 @@ module.exports = {
     "xo",
     "plugin:unicorn/all",
     "prettier",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
   ],
   plugins: ["@typescript-eslint", "eslint-plugin-tsdoc"],
   settings: {
