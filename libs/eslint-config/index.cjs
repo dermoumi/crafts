@@ -34,6 +34,7 @@ module.exports = {
     "object-shorthand": "off", // Conflicts with method-signature-style
     "no-warning-comments": "off",
     "max-params": ["error", 5],
+    "require-await": "error",
     camelcase: "off",
 
     "@typescript-eslint/array-type": ["error", { default: "array-simple" }],
@@ -46,7 +47,7 @@ module.exports = {
         "ts-nocheck": false,
       },
     ],
-    "@typescript-eslint/explicit-member-accessibility": "off",
+    "@typescript-eslint/explicit-member-accessibility": "error",
     "@typescript-eslint/consistent-type-assertions": [
       "error",
       {
