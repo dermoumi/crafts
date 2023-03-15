@@ -7,9 +7,11 @@
     "dev": "pnpm -r --parallel run dev",
     "lint": "nx run-many --target=lint",
     "test": "nx run-many --target=test",
-    "test:cov": "nx run-many --target=test:cov"
+    "test:cov": "nx run-many --target=test:cov",
+    "prepare": "husky install"
   },
   "devDependencies": {
+    "husky": "^8.0.3",
     "nx": "^15.8.6"
   }
 }

@@ -2,6 +2,7 @@
   "name": "@crafts/client-worker",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "main": "src/main.ts",
   "scripts": {
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
