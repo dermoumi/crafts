@@ -1,3 +1,7 @@
-console.log("Hello from the client");
+import Game from "./game";
 
-export {};
+const bootstrap = new Game();
+bootstrap.run();
+
+const bootstrap2 = new Game();
+bootstrap2.run();

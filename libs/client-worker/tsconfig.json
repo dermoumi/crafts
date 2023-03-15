@@ -1,0 +1,12 @@
+{
+  "extends": "@crafts/tsconfig/tsconfig.common.json",
+  "compilerOptions": {
+    "lib": [
+      "ESNext",
+      "WebWorker",
+      "WebWorker.ImportScripts",
+      "Webworker.Iterable"
+    ]
+  },
+  "include": ["src"]
+}
