@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview --outDir www",
+    "preview": "vite preview --outDir=www/",
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
   },
   "devDependencies": {
@@ -15,9 +15,12 @@
     "@crafts/default-map": "workspace:^1.0.0",
     "@crafts/eslint-config": "workspace:^1.0.0",
     "@crafts/tsconfig": "workspace:^1.0.0",
+    "@types/git-rev": "^0.2.0",
     "eslint": "^8.36.0",
+    "git-rev": "^0.2.1",
     "prettier": "^2.8.4",
     "typescript": "^4.9.5",
-    "vite": "^4.1.0"
+    "vite": "^4.1.0",
+    "vite-plugin-html": "^3.2.0"
   }
 }
