@@ -1,0 +1,27 @@
+{
+  // Exclude node_modules from search results
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/coverage": true,
+    "**/dist": true
+  },
+  // Always add a newline at the end of the file
+  "files.insertFinalNewline": true,
+  // Always remove trailing whitespace
+  "files.trimTrailingWhitespace": true,
+  // Format settings for javascript/typescript
+  "[javascript][typescript][typescriptreact][json][jsonc][yaml][html][css][postcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+  // Format settings for markdown
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  // Show a vertical line at 80 characters
+  "editor.rulers": [80],
+  // Use local typescript version
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
