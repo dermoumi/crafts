@@ -16,7 +16,7 @@ permissions:
   checks: write
 
 jobs:
-  linting:
+  lint:
     name: Lint files
     runs-on: ubuntu-latest
     steps:
@@ -38,7 +38,7 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-  tests:
+  test:
     name: Run tests
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +60,7 @@ jobs:
       - name: Test code
         run: pnpm test:cov
 
-      - name: Check if CODECOV_TOKEN exists
+      - name: Check if can publish code coverage
         id: check_codecov
         run: |
           if [ "$CODECOV_TOKEN" == "" ]; then
@@ -72,14 +72,43 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Publish code coverage
-        if: (steps.check_codecov.outputs.publish_codecov == '1')
+        if: steps.check_codecov.outputs.publish_codecov == '1'
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  build:
-    name: Build packages
+  publish_check:
+    name: Check CF access
     runs-on: ubuntu-latest
+    outputs:
+      publish_cf_pages: ${{ steps.check_cf_pages.outputs.publish_cf_pages }}
+    steps:
+      - name: Check if can publish to cloudflare
+        id: check_cf_pages
+        run: |
+          if [ "$CLOUDFLARE_API_TOKEN" == "" ] \
+          || [ "$CLOUDFLARE_ACCOUNT_ID" == "" ] \
+          || [ "$CLOUDFLARE_PAGES_PROJECT" == "" ]; then
+            echo "publish_cf_pages=0" >> $GITHUB_OUTPUT
+          else
+            echo "publish_cf_pages=1" >> $GITHUB_OUTPUT
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+
+  publish:
+    name: Publish to CF pages
+    if: needs.publish_check.outputs.publish_cf_pages == '1'
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+      - publish_check
+    environment:
+      name: Staging
+      url: ${{ steps.publish-client.outputs.url }}
     steps:
       - name: Checkout git repository
         uses: actions/checkout@v3
@@ -94,7 +123,42 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --strict-peer-dependencies
+        run: |
+          pnpm install --frozen-lockfile --strict-peer-dependencies
+          pnpm install -g wrangler
 
       - name: Build
-        run: pnpm build
+        run: pnpm --filter ./apps/client build
+
+      - name: Publish client to cloudflare
+        id: publish-client
+        working-directory: apps/client/
+        run: |
+          if [[ "${{ github.ref }}" =~ refs/pull/.+ ]]; then
+            # Pull requests deploy to their own staging environments
+            : "${{ github.ref }}"
+            : ${_%%\/merge}  # Remove 'merge' at the end
+            : ${_//refs\/pull\/}  # Remove 'refs' at the beginning
+            TARGET="PR-${_}"
+          else
+            TARGET="${{ github.ref_name }}"
+          fi
+
+          # Use wrangler to manually deploy to cloudflare
+          wrangler pages publish www/ \
+            --project-name=$CLOUDFLARE_PAGES_PROJECT \
+            --branch="$TARGET" \
+            --commit-dirty=true | tee w.out
+
+          # Parse the output URL from the wrangler output
+          TARGET_URL=$(grep -oE "https?://.+\.pages\.dev" w.out | tail -n1)
+          if [[ "$TARGET_URL" ]]; then
+            echo "url=$TARGET_URL" >> $GITHUB_ENV
+          else
+            echo "Failed to find URL for deployment"
+            exit 1
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
