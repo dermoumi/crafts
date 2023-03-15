@@ -1,0 +1,42 @@
+name: Bug report
+description: Report an issue
+labels: [pending triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Describe the bug
+      description: >
+        A description, including screenshots, of the current behavior
+        and how to reproduce it if possible.
+      placeholder: Currently, when...
+    validations:
+      required: true
+  - type: textarea
+    id: desired-behavior
+    attributes:
+      label: Desired behavior
+      description: >
+        A description of what should have happened instead.
+      placeholder: It should have...
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Version of the game. You can find it on the title screen.
+      placeholder: ex. 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: browser-platform
+    attributes:
+      label: Browser or platform
+      description: >
+        The internet browser you're using, or the platform (android,
+        ios, desktop) if using a standalone app, including their versions.
+      placeholder: ex. Google Chrome v101.0.4951.64
+    validations:
+      required: true

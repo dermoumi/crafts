@@ -2,6 +2,7 @@
   "name": "@crafts/monorepo",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@7.0.0",
   "scripts": {
     "build": "nx run-many --target=build",
     "dev": "pnpm -r --parallel run dev",

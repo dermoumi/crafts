@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "labels": ["dependencies"],
+  "assignees": ["dermoumi"],
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "description": "Only widen peerDependencies and engines",
+      "matchDepTypes": ["peerDependencies", "engines"],
+      "rangeStrategy": "widen"
+    },
+    {
+      "description": "Allow automerge for minor and patch updates",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "Disable pnpm version updates",
+      "matchDepTypes": ["packageManager"],
+      "enabled": false
+    }
+  ]
+}
