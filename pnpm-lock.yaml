@@ -89,7 +89,7 @@ importers:
     specifiers:
       '@crafts/eslint-config': workspace:^
       '@crafts/tsconfig': workspace:^
-      '@types/node': ^18.15.0
+      '@types/node': ^18.15.3
       '@vitest/coverage-istanbul': ^0.29.3
       eslint: ^8.36.0
       prettier: ^2.8.4
@@ -99,12 +99,12 @@ importers:
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
-      '@types/node': 18.15.2
+      '@types/node': 18.15.3
       '@vitest/coverage-istanbul': 0.29.3_vitest@0.29.2
       eslint: 8.36.0
       prettier: 2.8.4
       typescript: 4.9.5
-      vite: 4.1.4_@types+node@18.15.2
+      vite: 4.1.4_@types+node@18.15.3
       vitest: 0.29.2
 
   libs/eslint-config:
@@ -811,8 +811,8 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
 
-  /@types/node/18.15.2:
-    resolution: {integrity: sha512-sDPHm2wfx2QhrMDK0pOt2J4KLJMAcerqWNvnED0itPRJWvI+bK+uNHzcH1dFsBlf7G3u8tqXmRF3wkvL9yUwMw==}
+  /@types/node/18.15.3:
+    resolution: {integrity: sha512-p6ua9zBxz5otCmbpb5D3U4B5Nanw6Pk3PPyX05xnxbB/fRv71N7CPmORg7uAD5P70T0xmx1pzAx/FUfa5X+3cw==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -3678,7 +3678,7 @@ packages:
       - terser
     dev: true
 
-  /vite-node/0.29.2_@types+node@18.15.2:
+  /vite-node/0.29.2_@types+node@18.15.3:
     resolution: {integrity: sha512-5oe1z6wzI3gkvc4yOBbDBbgpiWiApvuN4P55E8OI131JGrSuo4X3SOZrNmZYo4R8Zkze/dhi572blX0zc+6SdA==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
@@ -3688,7 +3688,7 @@ packages:
       mlly: 1.2.0
       pathe: 1.1.0
       picocolors: 1.0.0
-      vite: 4.1.4_@types+node@18.15.2
+      vite: 4.1.4_@types+node@18.15.3
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -3752,7 +3752,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vite/4.1.4_@types+node@18.15.2:
+  /vite/4.1.4_@types+node@18.15.3:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3777,7 +3777,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.15.2
+      '@types/node': 18.15.3
       esbuild: 0.16.17
       postcss: 8.4.21
       resolve: 1.22.1
@@ -3810,7 +3810,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.4
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.15.2
+      '@types/node': 18.15.3
       '@vitest/expect': 0.29.2
       '@vitest/runner': 0.29.2
       '@vitest/spy': 0.29.2
@@ -3829,8 +3829,8 @@ packages:
       tinybench: 2.4.0
       tinypool: 0.3.1
       tinyspy: 1.1.1
-      vite: 4.1.4_@types+node@18.15.2
-      vite-node: 0.29.2_@types+node@18.15.2
+      vite: 4.1.4_@types+node@18.15.3
+      vite-node: 0.29.2_@types+node@18.15.3
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less
