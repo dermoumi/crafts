@@ -197,6 +197,29 @@ describe("World systems", () => {
     expect(query.size).toBe(1);
     expect([...query.asComponents()]).toEqual([[{ x: 144, y: 42 }]]);
   });
+
+  it("creates in-place systems", () => {
+    const systemResult = vi.fn();
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const system = world.addSystem({ query: [Position] }, ({ query }) => {
+      systemResult([...query]);
+    });
+
+    systemResult.mockClear();
+    system();
+
+    expect(systemResult).toHaveBeenCalledWith([entity]);
+  });
+
+  it("fails if the callback is omitted when creating an in-place system", () => {
+    const world = new World();
+
+    expect(() => {
+      // @ts-expect-error - Calling the non-overloaded version of addSystem
+      world.addSystem({ query: [Position] });
+    }).toThrowError("Missing system callback");
+  });
 });
 
 describe("Default ID generator", () => {
