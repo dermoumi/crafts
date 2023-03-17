@@ -12,8 +12,6 @@ importers:
 
   apps/client:
     specifiers:
-      '@crafts/client-common': workspace:^1.0.0
-      '@crafts/client-worker': workspace:^1.0.0
       '@crafts/default-map': workspace:^1.0.0
       '@crafts/ecs': workspace:^0.1.0
       '@crafts/eslint-config': workspace:^1.0.0
@@ -28,8 +26,6 @@ importers:
       vite-plugin-html: ^3.2.0
       vitest: ^0.29.3
     devDependencies:
-      '@crafts/client-common': link:../../libs/client-common
-      '@crafts/client-worker': link:../../libs/client-worker
       '@crafts/default-map': link:../../libs/default-map
       '@crafts/ecs': link:../../libs/ecs
       '@crafts/eslint-config': link:../../libs/eslint-config
@@ -57,39 +53,6 @@ importers:
       prettier: 2.8.4
       vite: 4.2.0
       vite-node: 0.29.3
-
-  libs/client-common:
-    specifiers:
-      '@crafts/eslint-config': workspace:^1.0.0
-      '@crafts/tsconfig': workspace:^1.0.0
-      eslint: ^8.36.0
-      prettier: ^2.8.4
-      typescript: ^5.0.2
-    devDependencies:
-      '@crafts/eslint-config': link:../eslint-config
-      '@crafts/tsconfig': link:../tsconfig
-      eslint: 8.36.0
-      prettier: 2.8.4
-      typescript: 5.0.2
-
-  libs/client-worker:
-    specifiers:
-      '@crafts/client-common': workspace:^1.0.0
-      '@crafts/default-map': workspace:^1.0.0
-      '@crafts/eslint-config': workspace:^1.0.0
-      '@crafts/tsconfig': workspace:^1.0.0
-      eslint: ^8.36.0
-      prettier: ^2.8.4
-      typescript: ^5.0.2
-    dependencies:
-      '@crafts/default-map': link:../default-map
-    devDependencies:
-      '@crafts/client-common': link:../client-common
-      '@crafts/eslint-config': link:../eslint-config
-      '@crafts/tsconfig': link:../tsconfig
-      eslint: 8.36.0
-      prettier: 2.8.4
-      typescript: 5.0.2
 
   libs/default-map:
     specifiers:

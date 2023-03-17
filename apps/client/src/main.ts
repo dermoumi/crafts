@@ -1,7 +1,4 @@
-import Game from "./game";
+import LocalGame from "./local-game";
 
-const bootstrap = new Game();
-bootstrap.run();
-
-const bootstrap2 = new Game();
-bootstrap2.run();
+const game = new LocalGame();
+game.run();

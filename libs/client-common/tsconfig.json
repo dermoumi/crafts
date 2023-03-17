@@ -1,4 +1,0 @@
-{
-  "extends": "@crafts/tsconfig/tsconfig.common.json",
-  "include": ["src"]
-}

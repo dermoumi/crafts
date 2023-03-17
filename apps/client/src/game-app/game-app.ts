@@ -44,9 +44,12 @@ export default abstract class GameApp<T extends string> {
    * Add a plugin to the game app.
    *
    * @param plugin - The plugin to add
+   * @returns The game app itself
    */
-  protected addPlugin(plugin: Plugin<T>) {
+  protected addPlugin(plugin: Plugin<T>): this {
     plugin(this.getSystemGroup);
+
+    return this;
   }
 
   /**
