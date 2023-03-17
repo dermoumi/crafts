@@ -75,5 +75,12 @@ export default defineConfig(async ({ mode }) => {
       },
     },
     assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.bin"],
+    test: {
+      globals: true,
+      coverage: {
+        provider: "istanbul",
+        reporter: ["lcov", "text"],
+      },
+    },
   };
 });

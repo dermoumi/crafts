@@ -15,28 +15,34 @@ importers:
       '@crafts/client-common': workspace:^1.0.0
       '@crafts/client-worker': workspace:^1.0.0
       '@crafts/default-map': workspace:^1.0.0
+      '@crafts/ecs': workspace:^0.1.0
       '@crafts/eslint-config': workspace:^1.0.0
       '@crafts/tsconfig': workspace:^1.0.0
       '@types/git-rev': ^0.2.0
+      '@vitest/coverage-istanbul': ^0.29.3
       eslint: ^8.36.0
       git-rev: ^0.2.1
       prettier: ^2.8.4
       typescript: ^5.0.2
       vite: ^4.2.0
       vite-plugin-html: ^3.2.0
+      vitest: ^0.29.3
     devDependencies:
       '@crafts/client-common': link:../../libs/client-common
       '@crafts/client-worker': link:../../libs/client-worker
       '@crafts/default-map': link:../../libs/default-map
+      '@crafts/ecs': link:../../libs/ecs
       '@crafts/eslint-config': link:../../libs/eslint-config
       '@crafts/tsconfig': link:../../libs/tsconfig
       '@types/git-rev': 0.2.0
+      '@vitest/coverage-istanbul': 0.29.3_vitest@0.29.3
       eslint: 8.36.0
       git-rev: 0.2.1
       prettier: 2.8.4
       typescript: 5.0.2
       vite: 4.2.0
       vite-plugin-html: 3.2.0_vite@4.2.0
+      vitest: 0.29.3
 
   apps/server:
     specifiers:

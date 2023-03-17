@@ -1,7 +1,7 @@
 {
   "extends": "@crafts/tsconfig/tsconfig.browser.json",
   "compilerOptions": {
-    "types": ["vite/client"]
+    "types": ["vite/client", "vitest/globals"]
   },
   "include": ["src"],
   "references": [{ "path": "tsconfig.vite.json" }]
