@@ -21,7 +21,7 @@ module.exports = {
     node: { tryExtensions: [".ts", ".js", ".json"] },
   },
   rules: {
-    quotes: ["error", "double"],
+    quotes: ["error", "double", { avoidEscape: true }],
     "no-undef": "off", // Typescript handles this
     "no-dupe-class-members": "off", // Overridden by @typescript-eslint
     "no-loop-func": "off", // Overridden by @typescript-eslint

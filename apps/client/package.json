@@ -10,17 +10,22 @@
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
   },
   "devDependencies": {
-    "@crafts/client-common": "workspace:^1.0.0",
-    "@crafts/client-worker": "workspace:^1.0.0",
-    "@crafts/default-map": "workspace:^1.0.0",
-    "@crafts/eslint-config": "workspace:^1.0.0",
-    "@crafts/tsconfig": "workspace:^1.0.0",
+    "@crafts/client-plugins": "workspace:^",
+    "@crafts/common-plugins": "workspace:^",
+    "@crafts/default-map": "workspace:^",
+    "@crafts/eslint-config": "workspace:^",
+    "@crafts/game-app": "workspace:^",
+    "@crafts/server-plugins": "workspace:^",
+    "@crafts/tsconfig": "workspace:^",
     "@types/git-rev": "^0.2.0",
+    "@vitest/coverage-istanbul": "^0.29.3",
     "eslint": "^8.36.0",
     "git-rev": "^0.2.1",
+    "jsdom": "^21.1.1",
     "prettier": "^2.8.4",
     "typescript": "^5.0.2",
     "vite": "^4.2.0",
-    "vite-plugin-html": "^3.2.0"
+    "vite-plugin-html": "^3.2.0",
+    "vitest": "^0.29.3"
   }
 }

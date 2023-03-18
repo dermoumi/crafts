@@ -1,14 +1,14 @@
 {
   "name": "@crafts/monorepo",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@7.0.0",
   "scripts": {
-    "build": "nx run-many --target=build",
+    "build": "nx run-many --parallel 8 -t build",
     "dev": "pnpm -r --parallel run dev",
-    "lint": "nx run-many --target=lint",
-    "test": "nx run-many --target=test",
-    "test:cov": "nx run-many --target=test:cov",
+    "lint": "nx run-many --parallel 8 -t lint",
+    "test": "nx run-many --parallel 8 -t test",
+    "test:cov": "nx run-many --parallel 8 --output-style=static -t test:cov",
     "prepare": "husky install"
   },
   "devDependencies": {

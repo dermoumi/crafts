@@ -1,5 +1,5 @@
 {
-  "name": "@crafts/default-map",
+  "name": "@crafts/common-plugins",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,15 +9,18 @@
     "test:cov": "vitest run --coverage",
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
   },
+  "dependencies": {
+    "@crafts/ecs": "workspace:^",
+    "@crafts/game-app": "workspace:^"
+  },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
-    "@types/node": "^18.15.3",
     "@vitest/coverage-istanbul": "^0.29.3",
     "eslint": "^8.36.0",
     "prettier": "^2.8.4",
-    "typescript": "^5.0.2",
-    "vite": "^4.2.0",
-    "vitest": "^0.29.3"
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4",
+    "vitest": "^0.29.2"
   }
 }
