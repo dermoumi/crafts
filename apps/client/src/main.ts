@@ -1,4 +1,11 @@
-import LocalGame from "./local-game";
+import type { ClientSystemGroups } from "@crafts/client-plugins";
+import type { ServerSystemGroups } from "@crafts/server-plugins";
+import { pluginVariableUpdate } from "@crafts/client-plugins";
+import { pluginFixedUpdate } from "@crafts/common-plugins";
+import { GameApp } from "@crafts/game-app";
 
-const game = new LocalGame();
+const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
+  .addPlugin(pluginVariableUpdate)
+  .addPlugin(pluginFixedUpdate);
+
 game.run();

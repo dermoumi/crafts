@@ -77,6 +77,8 @@ export default defineConfig(async ({ mode }) => {
     assetsInclude: ["**/*.gltf", "**/*.glb", "**/*.bin"],
     test: {
       globals: true,
+      environment: "jsdom",
+      setupFiles: "setup-tests.ts",
       coverage: {
         provider: "istanbul",
         reporter: ["lcov", "text"],
