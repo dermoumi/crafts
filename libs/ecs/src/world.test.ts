@@ -18,6 +18,12 @@ class FrameInfo extends Resource {
   public fps = 60;
 }
 
+class Renderer extends Resource {
+  public constructor(public readonly value: number) {
+    super();
+  }
+}
+
 describe("World entities", () => {
   it("spawns new entities", () => {
     const world = new World();
@@ -255,6 +261,130 @@ describe("World systems", () => {
     system();
     system();
     expect(callback).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("System commands", () => {
+  it("spawns new entities", () => {
+    const world = new World();
+    const query = world.query(Position);
+    const system = world.addSystem({}, ({ command }) => {
+      command(({ spawn }) => {
+        spawn().add(Position);
+      });
+    });
+
+    expect(query.size).toBe(0);
+
+    system();
+    expect(query.size).toBe(1);
+  });
+
+  it("removes entities", () => {
+    const world = new World();
+    world.spawn().add(Position);
+    const query = world.query(Position);
+
+    const system = world.addSystem(
+      { entities: [Position] },
+      ({ entities, command }) => {
+        command(({ remove }) => {
+          for (const entity of entities) {
+            remove(entity);
+          }
+        });
+      }
+    );
+
+    expect(query.size).toBe(1);
+
+    system();
+    expect(query.size).toBe(0);
+  });
+
+  it("adds resources", () => {
+    const world = new World();
+
+    const system = world.addSystem({}, ({ command }) => {
+      command(({ addResource }) => {
+        addResource(FrameInfo);
+      });
+    });
+
+    expect(world.resources.has(FrameInfo)).toBe(false);
+
+    system();
+    expect(world.resources.has(FrameInfo)).toBe(true);
+  });
+
+  it("returns the resource when adding it", () => {
+    const world = new World();
+
+    const callback = vi.fn();
+    const system = world.addSystem({}, ({ command }) => {
+      command(({ addResource }) => {
+        const resource = addResource(FrameInfo);
+        callback(resource);
+      });
+    });
+
+    expect(callback).not.toHaveBeenCalled();
+
+    system();
+    const resource = world.resources.get(FrameInfo);
+    expect(callback).toHaveBeenCalledWith(resource);
+  });
+
+  it("instanciates resources", () => {
+    const world = new World();
+
+    const system = world.addSystem({}, ({ command }) => {
+      command(({ addNewResource }) => {
+        addNewResource(Renderer, 42);
+      });
+    });
+
+    expect(world.resources.has(Renderer)).toBe(false);
+
+    system();
+    const renderer = world.resources.tryGet(Renderer);
+    expect(renderer).not.toBeUndefined();
+    expect(renderer).toBeInstanceOf(Renderer);
+    expect(renderer?.value).toBe(42);
+  });
+
+  it("returns the resource when instanciating it", () => {
+    const world = new World();
+
+    const callback = vi.fn();
+    const system = world.addSystem({}, ({ command }) => {
+      command(({ addNewResource }) => {
+        const resource = addNewResource(Renderer, 42);
+        callback(resource);
+      });
+    });
+
+    expect(callback).not.toHaveBeenCalled();
+
+    system();
+    const renderer = world.resources.tryGet(Renderer);
+    expect(callback).toHaveBeenCalledWith(renderer);
+  });
+
+  it("removes resources", () => {
+    const world = new World();
+    world.resources.add(FrameInfo);
+
+    const system = world.addSystem({}, ({ command }) => {
+      command(({ removeResource }) => {
+        removeResource(FrameInfo);
+      });
+    });
+
+    expect(world.resources.has(FrameInfo)).toBe(true);
+
+    system();
+    expect(world.resources.has(FrameInfo)).toBe(false);
   });
 });
 

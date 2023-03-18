@@ -10,6 +10,7 @@ import type {
   SystemQuery,
   SystemResult,
 } from "./system";
+import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
 
 import Entity from "./entity";
 import Manager from "./manager";
@@ -51,9 +52,31 @@ export type WorldManager = {
   remove: (entity: Entity) => void;
 
   /**
-   * Access the resource manager
+   * Add a resource.
+   *
+   * @param constructor - The resource to add
+   * @param initialValue - The initial value of the resource
    */
-  resources: ResourceContainer;
+  addResource: <T extends Resource>(
+    constructor: TraitConcreteConstructor<T>,
+    initialValue?: Partial<T>
+  ) => T;
+
+  /**
+   * Add a resource using its constructor.
+   *
+   * @param constructor - The resource to add
+   * @param args - The arguments to pass to the constructor
+   */
+  addNewResource: <T extends Resource, TArgs extends unknown[]>(
+    constructor: TraitConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ) => T;
+
+  /**
+   * Remove a resource
+   */
+  removeResource: (resource: TraitConstructor<Resource>) => void;
 };
 
 /**
@@ -215,10 +238,16 @@ export default class World {
       commands.push(pending);
     };
 
-    const entityManager = {
+    const entityManager: WorldManager = {
       spawn: this.spawn.bind(this),
       remove: this.remove.bind(this),
-      resources: this.resources,
+      addResource: (constructor, ...args) =>
+        this.resources.add(constructor, ...args).get(constructor),
+      addNewResource: (constructor, ...args) =>
+        this.resources.addNew(constructor, ...args).get(constructor),
+      removeResource: (...args) => {
+        this.resources.remove(...args);
+      },
     };
 
     const handle: SystemHandle = () => {
