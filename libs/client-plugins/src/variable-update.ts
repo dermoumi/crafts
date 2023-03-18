@@ -1,9 +1,6 @@
 import type { ClientPlugin } from ".";
 import * as Ecs from "@crafts/ecs";
 
-// 20 updates per second
-export const UPDATE_RATE = 1000 / 20;
-
 /**
  * Resource to track the frame time.
  */
@@ -37,8 +34,8 @@ export const pluginVariableUpdate: ClientPlugin = ({
 
   startup
     .add({}, ({ command }) => {
-      command(({ resources }) => {
-        resources.add(FrameInfo);
+      command(({ addResource }) => {
+        addResource(FrameInfo);
       });
     })
     .add({ resources: [FrameInfo] }, ({ resources }) => {
