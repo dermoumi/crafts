@@ -237,6 +237,7 @@ export default class World {
       }
 
       // Reset all queries
+      resourceQueryBuilder?.reset();
       for (const query of queryBuilders) {
         query.reset();
       }

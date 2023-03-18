@@ -220,6 +220,42 @@ describe("World systems", () => {
       world.addSystem({ query: [Position] });
     }).toThrowError("Missing system callback");
   });
+
+  it("system component queries reset correctly after calls", () => {
+    const world = new World();
+    world.spawn().add(Position);
+
+    const callback = vi.fn();
+    const system = world.addSystem(
+      { entities: [Position.added()] },
+      ({ entities }) => {
+        for (const entity of entities) {
+          callback(entity);
+        }
+      }
+    );
+
+    expect(callback).not.toHaveBeenCalled();
+    system();
+    system();
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it("system resource queries reset correctly after calls", () => {
+    const world = new World();
+    world.resources.add(FrameInfo);
+
+    const callback = vi.fn();
+    const system = world.addSystem(
+      { resources: [FrameInfo, FrameInfo.added()] },
+      callback
+    );
+
+    expect(callback).not.toHaveBeenCalled();
+    system();
+    system();
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("Default ID generator", () => {
