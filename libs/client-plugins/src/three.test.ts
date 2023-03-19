@@ -126,14 +126,10 @@ describe("Threejs plugin", () => {
     const meshes = gameApp.world.query(Node, MeshNode.present());
     expect(meshes.size).toBe(0);
 
-    // TODO: Remove test mesh
-    gameApp.groupsProxy.update();
-    expect(meshes.size).toBe(1);
-
     // Add a new mesh
     gameApp.world.spawn().add(MeshNode);
     gameApp.groupsProxy.update();
-    expect(meshes.size).toBe(2);
+    expect(meshes.size).toBe(1);
   });
 
   it("adds nodes to the main scene when ChildNode is absent", () => {

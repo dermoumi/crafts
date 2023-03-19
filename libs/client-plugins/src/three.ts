@@ -207,8 +207,6 @@ export const pluginThree: ClientPlugin = ({ startup, update, cleanup }) => {
 
       const scene = spawn().add(SceneNode);
       addNewResource(MainScene, scene);
-
-      spawn().add(MeshNode);
     });
 
     // Add the main renderer
