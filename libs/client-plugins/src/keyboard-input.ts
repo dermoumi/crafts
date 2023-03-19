@@ -73,6 +73,14 @@ export class KeyboardInput extends Resource {
   }
 }
 
+function isInputElementActive() {
+  const { activeElement } = document;
+  return (
+    activeElement instanceof HTMLInputElement ||
+    activeElement instanceof HTMLTextAreaElement
+  );
+}
+
 /**
  * Plugin to track the state of the keyboard and expose it as a resource.
  */
@@ -90,19 +98,29 @@ export const pluginKeyboardInput: ClientPlugin = ({
       const keydownHandler = (event: KeyboardEvent) => {
         const { code } = event;
         keyboard.keys[code] = true;
+
+        if (!isInputElementActive()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
       };
 
       const keyupHandler = (event: KeyboardEvent) => {
         const { code } = event;
         keyboard.keys[code] = false;
+
+        if (!isInputElementActive()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
       };
 
       const blurHandler = () => {
         keyboard.keys = {};
       };
 
-      window.addEventListener("keydown", keydownHandler);
-      window.addEventListener("keyup", keyupHandler);
+      window.addEventListener("keydown", keydownHandler, { capture: true });
+      window.addEventListener("keyup", keyupHandler, { capture: true });
       window.addEventListener("blur", blurHandler);
 
       windowEventListeners.set(keydownHandler, "keydown");

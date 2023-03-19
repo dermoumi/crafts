@@ -139,4 +139,50 @@ describe("KeyboardInput plugin", () => {
     app.stop();
     expect(removeEventListenerSpy).toHaveBeenCalledTimes(3);
   });
+
+  it("prevents default keyboard events", () => {
+    const app = new GameApp<ClientSystemGroups>().addPlugin(
+      pluginKeyboardInput
+    );
+    app.run();
+
+    const callback = vi.fn();
+    window.addEventListener("keydown", callback);
+    window.addEventListener("keyup", callback);
+
+    app.groupsProxy.update();
+
+    const event = new KeyboardEvent("keydown", { code: "KeyA" });
+    window.dispatchEvent(event);
+
+    const event2 = new KeyboardEvent("keyup", { code: "KeyA" });
+    window.dispatchEvent(event2);
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it("does not prevent keyboard events if an input element is focused", () => {
+    const app = new GameApp<ClientSystemGroups>().addPlugin(
+      pluginKeyboardInput
+    );
+    app.run();
+
+    const callback = vi.fn();
+    window.addEventListener("keydown", callback);
+    window.addEventListener("keyup", callback);
+
+    app.groupsProxy.update();
+
+    const input = document.createElement("input");
+    document.body.append(input);
+    input.focus();
+
+    const event = new KeyboardEvent("keydown", { code: "KeyA" });
+    window.dispatchEvent(event);
+
+    const event2 = new KeyboardEvent("keyup", { code: "KeyA" });
+    window.dispatchEvent(event2);
+
+    expect(callback).toHaveBeenCalled();
+  });
 });
