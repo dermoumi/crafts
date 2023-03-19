@@ -71,20 +71,26 @@ importers:
   libs/client-plugins:
     specifiers:
       '@crafts/common-plugins': workspace:^
+      '@crafts/default-map': workspace:^
       '@crafts/ecs': workspace:^
       '@crafts/eslint-config': workspace:^
       '@crafts/game-app': workspace:^
       '@crafts/tsconfig': workspace:^
+      '@types/three': ^0.149.0
       '@vitest/coverage-istanbul': ^0.29.3
       eslint: ^8.36.0
       prettier: ^2.8.4
+      three: ^0.150.1
       typescript: ^4.9.5
       vite: ^4.1.4
       vitest: ^0.29.2
     dependencies:
       '@crafts/common-plugins': link:../common-plugins
+      '@crafts/default-map': link:../default-map
       '@crafts/ecs': link:../ecs
       '@crafts/game-app': link:../game-app
+      '@types/three': 0.149.0
+      three: 0.150.1
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
@@ -930,6 +936,16 @@ packages:
 
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
+    dev: false
+
+  /@types/three/0.149.0:
+    resolution: {integrity: sha512-fgNBm9LWc65ER/W0cvoXdC0iMy7Ke9e2CONmEr6Jt8sDSY3sw4DgOubZfmdZ747dkPhbQrgRQAWwDEr2S/7IEg==}
+    dependencies:
+      '@types/webxr': 0.5.1
+    dev: false
+
+  /@types/webxr/0.5.1:
+    resolution: {integrity: sha512-xlFXPfgJR5vIuDefhaHuUM9uUgvPaXB6GKdXy2gdEh8gBWQZ2ul24AJz3foUd8NNKlSTQuWYJpCb1/pL81m1KQ==}
     dev: false
 
   /@typescript-eslint/eslint-plugin/5.55.0_qsnvknysi52qtaxqdyqyohkcku:
@@ -3770,6 +3786,10 @@ packages:
 
   /text-table/0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
+
+  /three/0.150.1:
+    resolution: {integrity: sha512-5C1MqKUWaHYo13BX0Q64qcdwImgnnjSOFgBscOzAo8MYCzEtqfQqorEKMcajnA3FHy1yVlIe9AmaMQ0OQracNA==}
+    dev: false
 
   /through/2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
