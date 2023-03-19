@@ -7,6 +7,6 @@ import { GameApp } from "@crafts/game-app";
 const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginVariableUpdate)
   .addPlugin(pluginFixedUpdate)
-  .addPlugin(pluginThree);
+  .addPlugin(pluginThree); // <-- Try to keep this one last
 
 game.run();

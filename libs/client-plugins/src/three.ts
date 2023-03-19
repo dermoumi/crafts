@@ -20,9 +20,11 @@ export class Node extends Component {
    */
   public readonly node: Object3D;
 
+  /**
+   * @param node - The three.js node referenced by this component.
+   */
   public constructor(node: Object3D) {
     super();
-
     this.node = node;
   }
 }
@@ -59,8 +61,15 @@ export class RenderPosition extends Component {
  * TODO: Move this to a different plugin, eventually
  */
 export class ChildNode extends Component {
-  public constructor(public parent: Entity) {
+  /**
+   * The parent entity.
+   */
+  public readonly parent: Entity;
+
+  public constructor(parent: Entity) {
     super();
+
+    this.parent = parent;
   }
 }
 
@@ -97,14 +106,23 @@ export class MainCamera extends Resource {
  * The main scene
  */
 export class MainScene extends Resource {
+  /**
+   * The main scene's entity.
+   */
   public readonly scene: Entity;
 
+  /**
+   * @param scene - The scene to be marked as main scene
+   */
   public constructor(scene: Entity) {
     super();
     scene.get(SceneNode); // Raises an exception if the entity is not a scene
     this.scene = scene;
   }
 
+  /**
+   * Retrieve the scene's three.js node.
+   */
   public get node(): PerspectiveCamera {
     return this.scene.get(Node).node as PerspectiveCamera;
   }
@@ -114,10 +132,22 @@ export class MainScene extends Resource {
  * The main ThreeJS renderer
  */
 export class MainRenderer extends Resource {
+  /**
+   * The three.js renderer instance.
+   */
   public readonly renderer = new WebGLRenderer();
 
-  public constructor(public readonly element: HTMLElement) {
+  /**
+   * The element where the renderer is mounted.
+   */
+  public readonly element: HTMLElement;
+
+  /**
+   * @param element - The element where the renderer will be mounted
+   */
+  public constructor(element: HTMLElement) {
     super();
+    this.element = element;
   }
 }
 
@@ -305,13 +335,14 @@ export const pluginThree: ClientPlugin = ({ startup, update, cleanup }) => {
     );
 
   cleanup
+    // Remove the registered resize listeners
     .add({}, () => {
       for (const listener of resizeListeners) {
         window.removeEventListener("resize", listener);
       }
     })
+    // When the renderer is removed, remove the canvas from the DOM
     .add({ resources: [MainRenderer] }, ({ resources }) => {
-      // When the renderer is removed, remove the canvas from the DOM
       const [{ renderer }] = resources;
 
       renderer.domElement.remove();
