@@ -153,7 +153,7 @@ jobs:
           # Parse the output URL from the wrangler output
           TARGET_URL=$(grep -oE "https?://.+\.pages\.dev" w.out | tail -n1)
           if [[ "$TARGET_URL" ]]; then
-            echo "url=$TARGET_URL" >> $GITHUB_ENV
+            echo "url=$TARGET_URL" >> $GITHUB_OUTPUT
           else
             echo "Failed to find URL for deployment"
             exit 1
