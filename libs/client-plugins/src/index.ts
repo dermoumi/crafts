@@ -26,3 +26,4 @@ export {
   MainRenderer,
   WindowResized,
 } from "./three";
+export { KeyboardInput, pluginKeyboardInput } from "./keyboard-input";

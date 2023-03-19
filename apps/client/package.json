@@ -13,6 +13,7 @@
     "@crafts/client-plugins": "workspace:^",
     "@crafts/common-plugins": "workspace:^",
     "@crafts/default-map": "workspace:^",
+    "@crafts/ecs": "workspace:^",
     "@crafts/eslint-config": "workspace:^",
     "@crafts/game-app": "workspace:^",
     "@crafts/server-plugins": "workspace:^",

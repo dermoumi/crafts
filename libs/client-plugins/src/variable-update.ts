@@ -32,14 +32,9 @@ export const pluginVariableUpdate: ClientPlugin = ({
 }) => {
   let rafID: ReturnType<typeof requestAnimationFrame> | undefined;
 
-  startup
-    .add({}, ({ command }) => {
-      command(({ addResource }) => {
-        addResource(FrameInfo);
-      });
-    })
-    .add({ resources: [FrameInfo] }, ({ resources }) => {
-      const [frameInfo] = resources;
+  startup.add({}, ({ command }) => {
+    command(({ addResource }) => {
+      const frameInfo = addResource(FrameInfo);
 
       const renderFunc = (frametime?: number) => {
         rafID = requestAnimationFrame(renderFunc);
@@ -52,6 +47,7 @@ export const pluginVariableUpdate: ClientPlugin = ({
 
       renderFunc();
     });
+  });
 
   cleanup.add({}, () => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
