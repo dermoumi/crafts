@@ -15,6 +15,7 @@ importers:
       '@crafts/client-plugins': workspace:^
       '@crafts/common-plugins': workspace:^
       '@crafts/default-map': workspace:^
+      '@crafts/ecs': workspace:^
       '@crafts/eslint-config': workspace:^
       '@crafts/game-app': workspace:^
       '@crafts/server-plugins': workspace:^
@@ -33,6 +34,7 @@ importers:
       '@crafts/client-plugins': link:../../libs/client-plugins
       '@crafts/common-plugins': link:../../libs/common-plugins
       '@crafts/default-map': link:../../libs/default-map
+      '@crafts/ecs': link:../../libs/ecs
       '@crafts/eslint-config': link:../../libs/eslint-config
       '@crafts/game-app': link:../../libs/game-app
       '@crafts/server-plugins': link:../../libs/server-plugins
