@@ -13,3 +13,16 @@ export type ClientPlugin = Plugin<ClientSystemGroups>;
 
 // All the plugins go here
 export { pluginVariableUpdate, FrameInfo } from "./variable-update";
+export {
+  pluginThree,
+  SceneNode,
+  CameraNode,
+  MeshNode,
+  Node,
+  ChildNode,
+  RenderPosition,
+  MainScene,
+  MainCamera,
+  MainRenderer,
+  WindowResized,
+} from "./three";
