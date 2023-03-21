@@ -25,7 +25,7 @@ importers:
       eslint: ^8.36.0
       git-rev: ^0.2.1
       jsdom: ^21.1.1
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       typescript: ^5.0.2
       vite: ^4.2.1
       vite-plugin-html: ^3.2.0
@@ -44,7 +44,7 @@ importers:
       eslint: 8.36.0
       git-rev: 0.2.1
       jsdom: 21.1.1
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 5.0.2
       vite: 4.2.1
       vite-plugin-html: 3.2.0_vite@4.2.1
@@ -57,7 +57,7 @@ importers:
       '@crafts/game-app': workspace:^
       '@crafts/server-plugins': workspace:^
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       vite: ^4.2.1
       vite-node: ^0.29.7
     devDependencies:
@@ -66,7 +66,7 @@ importers:
       '@crafts/game-app': link:../../libs/game-app
       '@crafts/server-plugins': link:../../libs/server-plugins
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       vite: 4.2.1
       vite-node: 0.29.7
 
@@ -81,7 +81,7 @@ importers:
       '@types/three': ^0.149.0
       '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       three: ^0.150.1
       typescript: ^4.9.5
       vite: ^4.2.1
@@ -98,7 +98,7 @@ importers:
       '@crafts/tsconfig': link:../tsconfig
       '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.7
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 4.9.5
       vite: 4.2.1
       vitest: 0.29.7
@@ -111,7 +111,7 @@ importers:
       '@crafts/tsconfig': workspace:^
       '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       typescript: ^4.9.5
       vite: ^4.2.1
       vitest: ^0.29.7
@@ -123,7 +123,7 @@ importers:
       '@crafts/tsconfig': link:../tsconfig
       '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.7
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 4.9.5
       vite: 4.2.1
       vitest: 0.29.7
@@ -135,7 +135,7 @@ importers:
       '@types/node': ^18.15.5
       '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       typescript: ^5.0.2
       vite: ^4.2.1
       vitest: ^0.29.7
@@ -145,7 +145,7 @@ importers:
       '@types/node': 18.15.5
       '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.7
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 5.0.2
       vite: 4.2.1_@types+node@18.15.5
       vitest: 0.29.7
@@ -158,7 +158,7 @@ importers:
       '@types/node': ^18.15.5
       '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       typescript: ^4.9.5
       vite: ^4.2.1
       vitest: ^0.29.7
@@ -170,7 +170,7 @@ importers:
       '@types/node': 18.15.5
       '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.7
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 4.9.5
       vite: 4.2.1_@types+node@18.15.5
       vitest: 0.29.7
@@ -205,7 +205,7 @@ importers:
       '@crafts/tsconfig': workspace:^
       '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       typescript: ^4.9.5
       vite: ^4.2.1
       vitest: ^0.29.7
@@ -216,7 +216,7 @@ importers:
       '@crafts/tsconfig': link:../tsconfig
       '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.7
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 4.9.5
       vite: 4.2.1
       vitest: 0.29.7
@@ -230,7 +230,7 @@ importers:
       '@crafts/tsconfig': workspace:^
       '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
-      prettier: ^2.8.5
+      prettier: ^2.8.6
       typescript: ^4.9.5
       vite: ^4.2.1
       vitest: ^0.29.7
@@ -243,7 +243,7 @@ importers:
       '@crafts/tsconfig': link:../tsconfig
       '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.7
       eslint: 8.36.0
-      prettier: 2.8.5
+      prettier: 2.8.6
       typescript: 4.9.5
       vite: 4.2.1
       vitest: 0.29.7
@@ -3372,8 +3372,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier/2.8.5:
-    resolution: {integrity: sha512-3gzuxrHbKUePRBB4ZeU08VNkUcqEHaUaouNt0m7LGP4Hti/NuB07C7PPTM/LkWqXoJYJn2McEo5+kxPNrtQkLQ==}
+  /prettier/2.8.6:
+    resolution: {integrity: sha512-mtuzdiBbHwPEgl7NxWlqOkithPyp4VN93V7VeHVWBF+ad3I5avc0RVDT4oImXQy9H/AqxA2NSQH8pSxHW6FYbQ==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
