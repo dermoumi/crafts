@@ -21,7 +21,7 @@ importers:
       '@crafts/server-plugins': workspace:^
       '@crafts/tsconfig': workspace:^
       '@types/git-rev': ^0.2.0
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       git-rev: ^0.2.1
       jsdom: ^21.1.1
@@ -40,7 +40,7 @@ importers:
       '@crafts/server-plugins': link:../../libs/server-plugins
       '@crafts/tsconfig': link:../../libs/tsconfig
       '@types/git-rev': 0.2.0
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       git-rev: 0.2.1
       jsdom: 21.1.1
@@ -79,7 +79,7 @@ importers:
       '@crafts/game-app': workspace:^
       '@crafts/tsconfig': workspace:^
       '@types/three': ^0.149.0
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       prettier: ^2.8.5
       three: ^0.150.1
@@ -96,7 +96,7 @@ importers:
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       prettier: 2.8.5
       typescript: 4.9.5
@@ -109,7 +109,7 @@ importers:
       '@crafts/eslint-config': workspace:^
       '@crafts/game-app': workspace:^
       '@crafts/tsconfig': workspace:^
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       prettier: ^2.8.5
       typescript: ^4.9.5
@@ -121,7 +121,7 @@ importers:
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       prettier: 2.8.5
       typescript: 4.9.5
@@ -133,7 +133,7 @@ importers:
       '@crafts/eslint-config': workspace:^
       '@crafts/tsconfig': workspace:^
       '@types/node': ^18.15.5
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       prettier: ^2.8.5
       typescript: ^5.0.2
@@ -143,7 +143,7 @@ importers:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
       '@types/node': 18.15.5
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       prettier: 2.8.5
       typescript: 5.0.2
@@ -156,7 +156,7 @@ importers:
       '@crafts/eslint-config': workspace:^
       '@crafts/tsconfig': workspace:^
       '@types/node': ^18.15.5
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       prettier: ^2.8.5
       typescript: ^4.9.5
@@ -168,7 +168,7 @@ importers:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
       '@types/node': 18.15.5
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       prettier: 2.8.5
       typescript: 4.9.5
@@ -203,7 +203,7 @@ importers:
       '@crafts/ecs': workspace:^
       '@crafts/eslint-config': workspace:^
       '@crafts/tsconfig': workspace:^
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       prettier: ^2.8.5
       typescript: ^4.9.5
@@ -214,7 +214,7 @@ importers:
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       prettier: 2.8.5
       typescript: 4.9.5
@@ -228,7 +228,7 @@ importers:
       '@crafts/eslint-config': workspace:^
       '@crafts/game-app': workspace:^
       '@crafts/tsconfig': workspace:^
-      '@vitest/coverage-istanbul': ^0.29.5
+      '@vitest/coverage-istanbul': ^0.29.7
       eslint: ^8.36.0
       prettier: ^2.8.5
       typescript: ^4.9.5
@@ -241,7 +241,7 @@ importers:
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
       '@crafts/tsconfig': link:../tsconfig
-      '@vitest/coverage-istanbul': 0.29.5_vitest@0.29.5
+      '@vitest/coverage-istanbul': 0.29.7_vitest@0.29.5
       eslint: 8.36.0
       prettier: 2.8.5
       typescript: 4.9.5
@@ -1127,8 +1127,8 @@ packages:
       eslint-visitor-keys: 3.3.0
     dev: false
 
-  /@vitest/coverage-istanbul/0.29.5_vitest@0.29.5:
-    resolution: {integrity: sha512-VTubpTdkOuT3cbo8qAFqCTZ8NXeBOVVHz7lrqueXMJK4WyDIHxnhAdWLrr8HKz5s36acOm6vi6TiFSUm3WHtwQ==}
+  /@vitest/coverage-istanbul/0.29.7_vitest@0.29.5:
+    resolution: {integrity: sha512-PPnvqEkwSSgjJ1cOgkm5g49/3UiPGPLC5qmWvrx2ITF9AfN2NejnjaEKxoYrX7oQQyBFgf/ph/BraxsqOOo+Kg==}
     peerDependencies:
       vitest: '>=0.28.0 <1'
     dependencies:
