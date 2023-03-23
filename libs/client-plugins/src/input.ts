@@ -39,6 +39,7 @@ export class Input extends Resource {
     KeyS: "down",
     KeyA: "left",
     KeyD: "right",
+    Tab: "menu",
   };
 
   public actions = new Set<InputAction>();
@@ -127,7 +128,7 @@ export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
     command(({ addResource }) => {
       const input = addResource(Input);
 
-      const updateJoystick = (joystick: "l" | "r", x: number, y: number) => {
+      const updateJoystick = (x: number, y: number) => {
         let xCapped = x;
         let yCapped = y;
 
@@ -137,11 +138,8 @@ export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
           yCapped /= magnitude;
         }
 
-        const xAxis = joystick === "l" ? "lx" : "rx";
-        const yAxis = joystick === "l" ? "ly" : "ry";
-
-        input.axes[xAxis] = xCapped;
-        input.axes[yAxis] = yCapped;
+        input.axes.lx = xCapped;
+        input.axes.ly = yCapped;
 
         return [xCapped, yCapped];
       };
@@ -156,7 +154,7 @@ export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
           const value = DIRECTION_TO_AXIS[action];
 
           input.keyToAxis[axis] = value;
-          updateJoystick("l", input.keyToAxis.lx, input.keyToAxis.ly);
+          updateJoystick(input.keyToAxis.lx, input.keyToAxis.ly);
         }
 
         // Add the action to the stack
@@ -182,7 +180,7 @@ export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
             lastDirection === undefined ? 0 : DIRECTION_TO_AXIS[lastDirection];
 
           input.keyToAxis[axis] = value;
-          updateJoystick("l", input.keyToAxis.lx, input.keyToAxis.ly);
+          updateJoystick(input.keyToAxis.lx, input.keyToAxis.ly);
         }
       };
 
