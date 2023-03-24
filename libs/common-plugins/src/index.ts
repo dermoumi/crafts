@@ -11,4 +11,3 @@ export type CommonSystemGroups = "fixed";
 export type CommonPlugin = Plugin<CommonSystemGroups>;
 
 // All the plugins go here:
-export { pluginFixedUpdate } from "./fixed-update";

@@ -15,12 +15,8 @@ export type ClientPlugin = Plugin<ClientSystemGroups>;
 export { pluginVariableUpdate, FrameInfo } from "./variable-update";
 export {
   pluginThree,
-  SceneNode,
-  CameraNode,
-  MeshNode,
   Node,
   ChildNode,
-  RenderPosition,
   MainScene,
   MainCamera,
   MainRenderer,
@@ -28,3 +24,4 @@ export {
 } from "./three";
 export { Input, pluginInput } from "./input";
 export type { InputAxis, DirectionInputAction, InputAction } from "./input";
+export { pluginFixedUpdate } from "./fixed-update";

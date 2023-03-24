@@ -7,9 +7,9 @@ import {
   pluginVariableUpdate,
   pluginThree,
   MeshNode,
+  pluginFixedUpdate,
 } from "@crafts/client-plugins";
 import type { ServerSystemGroups } from "@crafts/server-plugins";
-import { pluginFixedUpdate } from "@crafts/common-plugins";
 import { GameApp } from "@crafts/game-app";
 import { Component } from "@crafts/ecs";
 
