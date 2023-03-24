@@ -3,7 +3,7 @@ import type { Plugin } from "@crafts/game-app";
 /**
  * System groups used for both the client and the server
  */
-export type CommonSystemGroups = "startup" | "fixed" | "cleanup";
+export type CommonSystemGroups = "fixed";
 
 /**
  * Plugin type for both the server and client.

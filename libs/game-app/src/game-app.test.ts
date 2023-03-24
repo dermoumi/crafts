@@ -1,29 +1,13 @@
 import type { Plugin } from "./plugin-manager";
 import GameApp from "./game-app";
+import { createSystemGroup } from "./system-group";
 
 describe("GameApp", () => {
-  it("creats a startup group", () => {
-    // To make sure that the plugin was indeed called
-    const callCheck = vi.fn();
-
-    const testPlugin: Plugin<"startup"> = ({ startup }) => {
-      callCheck();
-      expect(startup).toBeDefined();
-      expect(startup).toBeInstanceOf(Function);
-      expect(startup).toHaveProperty("add");
-    };
-
-    const game = new GameApp().addPlugin(testPlugin);
-    game.run();
-
-    expect(callCheck).toHaveBeenCalled();
-  });
-
-  it("invokes the startup group on run()", () => {
+  it("invokes the init handlers on run()", () => {
     const startupFunc = vi.fn();
 
-    const testPlugin: Plugin<"startup"> = ({ startup }) => {
-      startup.add({}, startupFunc);
+    const testPlugin: Plugin = ({ onInit }) => {
+      onInit(startupFunc);
     };
 
     const game = new GameApp().addPlugin(testPlugin);
@@ -33,29 +17,11 @@ describe("GameApp", () => {
     expect(startupFunc).toHaveBeenCalled();
   });
 
-  it("creates a cleanup group", () => {
-    // To make sure that the plugin was indeed called
-    const callCheck = vi.fn();
-
-    const testPlugin: Plugin<"cleanup"> = ({ cleanup }) => {
-      callCheck();
-
-      expect(cleanup).toBeDefined();
-      expect(cleanup).toBeInstanceOf(Function);
-      expect(cleanup).toHaveProperty("add");
-    };
-
-    const game = new GameApp().addPlugin(testPlugin);
-    game.run();
-
-    expect(callCheck).toHaveBeenCalled();
-  });
-
   it("invokes the cleanup group on stop()", () => {
     const cleanupFunc = vi.fn();
 
-    const testPlugin: Plugin<"cleanup"> = ({ cleanup }) => {
-      cleanup.add({}, cleanupFunc);
+    const testPlugin: Plugin = ({ onInit }) => {
+      onInit(() => cleanupFunc);
     };
 
     const game = new GameApp().addPlugin(testPlugin);
@@ -68,8 +34,23 @@ describe("GameApp", () => {
 });
 
 describe("GameApp plugins", () => {
+  it("can retrieve existing groups", () => {
+    const testPlugin: Plugin<"startup"> = (_, { startup }) => {
+      startup.add({}, vi.fn());
+    };
+
+    const game = new GameApp();
+    const startupGroup = createSystemGroup(game.world);
+    const startupAddMock = vi.spyOn(startupGroup, "add");
+    game.groups.startup = startupGroup;
+
+    game.addPlugin(testPlugin).run();
+
+    expect(startupAddMock).toHaveBeenCalledOnce();
+  });
+
   it("cannot reassign system groups", () => {
-    const testPlugin: Plugin<"startup"> = (groups) => {
+    const testPlugin: Plugin<"startup"> = (_, groups) => {
       const dummySystem = vi.fn();
 
       // @ts-expect-error - We want to test assignment outside typescript
@@ -82,7 +63,7 @@ describe("GameApp plugins", () => {
   });
 
   it("cannot add new system groups", () => {
-    const testPlugin: Plugin<"startup" | "newGroup"> = (groups) => {
+    const testPlugin: Plugin<"startup" | "newGroup"> = (_, groups) => {
       const dummySystem = vi.fn();
 
       // @ts-expect-error - We want to test assignment outside typescript
@@ -98,7 +79,7 @@ describe("GameApp plugins", () => {
     // To make sure that the plugin was indeed called
     const callCheck = vi.fn();
 
-    const testPlugin: Plugin<"startup" | "newGroup"> = ({ newGroup }) => {
+    const testPlugin: Plugin<"newGroup"> = (_, { newGroup }) => {
       callCheck();
 
       expect(newGroup).toBeDefined();

@@ -19,20 +19,19 @@ describe("Variable update plugin", () => {
 
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
-      .addPlugin(({ update }) => {
+      .addPlugin((_, { update }) => {
         update.add({}, renderFunc);
       });
 
     expect(renderFunc).not.toHaveBeenCalled();
 
     game.run();
+
+    vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(1);
 
     vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(2);
-
-    vi.advanceTimersByTime(REFRESH_RATE);
-    expect(renderFunc).toHaveBeenCalledTimes(3);
   });
 
   it("stops updates whon the game stops", () => {
@@ -40,17 +39,17 @@ describe("Variable update plugin", () => {
 
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
-      .addPlugin(({ update }) => {
+      .addPlugin((_, { update }) => {
         update.add({}, renderFunc);
       });
 
     game.run();
     vi.advanceTimersByTime(REFRESH_RATE);
-    expect(renderFunc).toHaveBeenCalledTimes(2);
+    expect(renderFunc).toHaveBeenCalledTimes(1);
 
     game.stop();
     vi.advanceTimersByTime(REFRESH_RATE * 20);
-    expect(renderFunc).toHaveBeenCalledTimes(2);
+    expect(renderFunc).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -74,7 +73,7 @@ describe("FrameInfo resource", () => {
 
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
-      .addPlugin(({ update }) => {
+      .addPlugin((_, { update }) => {
         update.add({ resources: [FrameInfo] }, ({ resources }) => {
           const [frameInfo] = resources;
 

@@ -186,33 +186,38 @@ const fixCameraAsepectRatio = (
 /**
  * Plugin to manage ThreeJS scenes.
  */
-export const pluginThree: ClientPlugin = ({ startup, update, cleanup }) => {
-  const resizeListeners: Array<() => void> = [];
+export const pluginThree: ClientPlugin = ({ onInit }, { update }) => {
+  // Listen for window resize events
+  onInit(({ resources }) => {
+    const resizeListener = () => {
+      resources.add(WindowResized);
+    };
 
-  startup.add({}, ({ command }) => {
-    // Listen for window resize events
-    command(({ addResource }) => {
-      const resizeListener = () => {
-        addResource(WindowResized);
-      };
+    window.addEventListener("resize", resizeListener, { passive: true });
 
-      resizeListeners.push(resizeListener);
-      window.addEventListener("resize", resizeListener, { passive: true });
-    });
+    return () => {
+      window.removeEventListener("resize", resizeListener);
+    };
+  });
 
-    // Spawn the initial scene and camera
-    command(({ spawn, addNewResource }) => {
-      const camera = spawn().add(CameraNode).add(RenderPosition, { z: 5 });
-      addNewResource(MainCamera, camera);
+  // Spawn the initial scene and camera
+  onInit((world) => {
+    const camera = world.spawn().add(CameraNode).add(RenderPosition, { z: 5 });
+    world.resources.addNew(MainCamera, camera);
 
-      const scene = spawn().add(SceneNode);
-      addNewResource(MainScene, scene);
-    });
+    const scene = world.spawn().add(SceneNode);
+    world.resources.addNew(MainScene, scene);
+  });
 
-    // Add the main renderer
-    command(({ addNewResource }) => {
-      addNewResource(MainRenderer, document.body);
-    });
+  // Add the main renderer
+  onInit(({ resources }) => {
+    resources.addNew(MainRenderer, document.body);
+
+    return () => {
+      const { renderer } = resources.get(MainRenderer);
+      renderer.domElement.remove();
+      renderer.dispose();
+    };
   });
 
   update
@@ -331,18 +336,4 @@ export const pluginThree: ClientPlugin = ({ startup, update, cleanup }) => {
         renderer.render(scene.node, camera.node);
       }
     );
-
-  cleanup
-    // Remove the registered resize listeners
-    .add({}, () => {
-      for (const listener of resizeListeners) {
-        window.removeEventListener("resize", listener);
-      }
-    })
-    // When the renderer is removed, remove the canvas from the DOM
-    .add({ resources: [MainRenderer] }, ({ resources }) => {
-      const [{ renderer }] = resources;
-
-      renderer.domElement.remove();
-    });
 };

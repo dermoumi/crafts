@@ -9,16 +9,11 @@ export default class GameApp<T extends string> {
   public world = new Ecs.World();
   public groupsProxy: Record<T, SystemGroup>;
   public groups: {
-    startup: SystemGroup;
-    cleanup: SystemGroup;
     [K: string]: SystemGroup;
   };
 
   public constructor() {
-    this.groups = {
-      startup: createSystemGroup(this.world),
-      cleanup: createSystemGroup(this.world),
-    };
+    this.groups = {};
 
     // This proxy will create new system groups on demand.
     this.groupsProxy = new Proxy(this.groups, {
@@ -37,7 +32,7 @@ export default class GameApp<T extends string> {
     }) as Record<T, SystemGroup>;
 
     // Create the plugin manager using the proxy.
-    this.plugins = new PluginManager(this.groupsProxy);
+    this.plugins = new PluginManager(this.groupsProxy, this.world);
   }
 
   public addPlugin(plugin: Plugin<T>) {
@@ -48,11 +43,9 @@ export default class GameApp<T extends string> {
 
   public run() {
     this.plugins.init();
-
-    this.groups.startup();
   }
 
   public stop() {
-    this.groups.cleanup();
+    this.plugins.cleanup();
   }
 }

@@ -82,7 +82,7 @@ module.exports = {
     "@typescript-eslint/no-require-imports": "off",
     "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-unused-expressions": "error",
-    "@typescript-eslint/no-use-before-define": "error",
+    "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
     "@typescript-eslint/no-useless-constructor": "error",
     "@typescript-eslint/no-useless-empty-export": "error",
     "@typescript-eslint/prefer-enum-initializers": "error",

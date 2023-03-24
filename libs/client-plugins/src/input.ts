@@ -121,124 +121,85 @@ function isInputElementActive() {
 /**
  * Plugin to track the input state and expose it as a resource.
  */
-export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
-  const windowEventListeners = new Map<(...args: any) => void, string>();
+export const pluginInput: ClientPlugin = ({ onInit }, { update }) => {
+  onInit(({ resources }) => {
+    resources.add(Input);
+    const input = resources.get(Input);
 
-  startup.add({}, ({ command }) => {
-    command(({ addResource }) => {
-      const input = addResource(Input);
+    const updateJoystick = (x: number, y: number) => {
+      let xCapped = x;
+      let yCapped = y;
 
-      const updateJoystick = (x: number, y: number) => {
-        let xCapped = x;
-        let yCapped = y;
+      const magnitude = Math.sqrt(x * x + y * y);
+      if (magnitude > 1) {
+        xCapped /= magnitude;
+        yCapped /= magnitude;
+      }
 
-        const magnitude = Math.sqrt(x * x + y * y);
-        if (magnitude > 1) {
-          xCapped /= magnitude;
-          yCapped /= magnitude;
-        }
+      input.axes.lx = xCapped;
+      input.axes.ly = yCapped;
 
-        input.axes.lx = xCapped;
-        input.axes.ly = yCapped;
+      return [xCapped, yCapped];
+    };
 
-        return [xCapped, yCapped];
-      };
+    const axesActionKeyDown = (action: DirectionInputAction) => {
+      const axis = action === "up" || action === "down" ? "ly" : "lx";
+      const stack = input.axesActionStacks.get(axis);
 
-      const axesActionKeyDown = (action: DirectionInputAction) => {
-        const axis = action === "up" || action === "down" ? "ly" : "lx";
-        const stack = input.axesActionStacks.get(axis);
+      // Only change axis value if this action was not the last one in the stack
+      const lastDirection = stack[0];
+      if (action !== lastDirection) {
+        const value = DIRECTION_TO_AXIS[action];
 
-        // Only change axis value if this action was not the last one in the stack
+        input.keyToAxis[axis] = value;
+        updateJoystick(input.keyToAxis.lx, input.keyToAxis.ly);
+      }
+
+      // Add the action to the stack
+      stack.unshift(action);
+    };
+
+    const axesActionKeyUp = (action: DirectionInputAction) => {
+      const axis = action === "up" || action === "down" ? "ly" : "lx";
+      const stack = input.axesActionStacks.get(axis);
+
+      // If the action is not in the stack, then there's nothing to do
+      const actionIndex = stack.indexOf(action);
+      if (actionIndex === -1) return;
+
+      // Remove the action from the stack
+      stack.splice(actionIndex, 1);
+
+      // If the removed action was the first in the stack, then update the axis
+      // value to the previous action. Or to 0 if there are no previous actions.
+      if (actionIndex === 0) {
         const lastDirection = stack[0];
-        if (action !== lastDirection) {
-          const value = DIRECTION_TO_AXIS[action];
+        const value =
+          lastDirection === undefined ? 0 : DIRECTION_TO_AXIS[lastDirection];
 
-          input.keyToAxis[axis] = value;
-          updateJoystick(input.keyToAxis.lx, input.keyToAxis.ly);
-        }
+        input.keyToAxis[axis] = value;
+        updateJoystick(input.keyToAxis.lx, input.keyToAxis.ly);
+      }
+    };
 
-        // Add the action to the stack
-        stack.unshift(action);
-      };
+    const keydownHandler = (event: KeyboardEvent) => {
+      if (isInputElementActive()) return;
 
-      const axesActionKeyUp = (action: DirectionInputAction) => {
-        const axis = action === "up" || action === "down" ? "ly" : "lx";
-        const stack = input.axesActionStacks.get(axis);
+      const { code } = event;
 
-        // If the action is not in the stack, then there's nothing to do
-        const actionIndex = stack.indexOf(action);
-        if (actionIndex === -1) return;
+      const action = input.keymap[code];
+      if (action === undefined) return;
 
-        // Remove the action from the stack
-        stack.splice(actionIndex, 1);
+      // Prevent the default behavior
+      event.preventDefault();
+      event.stopPropagation();
 
-        // If the removed action was the first in the stack, then update the axis
-        // value to the previous action. Or to 0 if there are no previous actions.
-        if (actionIndex === 0) {
-          const lastDirection = stack[0];
-          const value =
-            lastDirection === undefined ? 0 : DIRECTION_TO_AXIS[lastDirection];
+      const actionKeysDown = input.keysDownForAction.get(action);
+      const actionIsRepeated = actionKeysDown.has(code);
 
-          input.keyToAxis[axis] = value;
-          updateJoystick(input.keyToAxis.lx, input.keyToAxis.ly);
-        }
-      };
-
-      const keydownHandler = (event: KeyboardEvent) => {
-        if (isInputElementActive()) return;
-
-        const { code } = event;
-
-        const action = input.keymap[code];
-        if (action === undefined) return;
-
-        // Prevent the default behavior
-        event.preventDefault();
-        event.stopPropagation();
-
-        const actionKeysDown = input.keysDownForAction.get(action);
-        const actionIsRepeated = actionKeysDown.has(code);
-
-        if (!actionIsRepeated) {
-          actionKeysDown.add(code);
-          input.actions.add(action);
-
-          // Trigger axis update
-          switch (action) {
-            case "up":
-            case "right":
-            case "down":
-            case "left": {
-              axesActionKeyDown(action);
-              break;
-            }
-
-            default: {
-              break;
-            }
-          }
-        }
-      };
-
-      const keyupHandler = (event: KeyboardEvent) => {
-        if (isInputElementActive()) return;
-
-        const { code } = event;
-
-        // Check if this key is mapped to an action
-        const action = input.keymap[code];
-        if (action === undefined) return;
-
-        // Prevent the default behavior
-        event.preventDefault();
-        event.stopPropagation();
-
-        // Mark the action as currently up
-        const actionKeysDown = input.keysDownForAction.get(action);
-        actionKeysDown.delete(code);
-        if (actionKeysDown.size === 0) {
-          input.actions.delete(action);
-        }
+      if (!actionIsRepeated) {
+        actionKeysDown.add(code);
+        input.actions.add(action);
 
         // Trigger axis update
         switch (action) {
@@ -246,7 +207,7 @@ export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
           case "right":
           case "down":
           case "left": {
-            axesActionKeyUp(action);
+            axesActionKeyDown(action);
             break;
           }
 
@@ -254,37 +215,69 @@ export const pluginInput: ClientPlugin = ({ startup, update, cleanup }) => {
             break;
           }
         }
-      };
+      }
+    };
 
-      const blurHandler = () => {
-        input.actions.clear();
-        input.keysDownForAction.clear();
+    const keyupHandler = (event: KeyboardEvent) => {
+      if (isInputElementActive()) return;
 
-        // Reset axes
-        input.axesActionStacks.clear();
-        for (const axis of Object.keys(input.axes)) {
-          input.axes[axis as InputAxis] = 0;
+      const { code } = event;
+
+      // Check if this key is mapped to an action
+      const action = input.keymap[code];
+      if (action === undefined) return;
+
+      // Prevent the default behavior
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Mark the action as currently up
+      const actionKeysDown = input.keysDownForAction.get(action);
+      actionKeysDown.delete(code);
+      if (actionKeysDown.size === 0) {
+        input.actions.delete(action);
+      }
+
+      // Trigger axis update
+      switch (action) {
+        case "up":
+        case "right":
+        case "down":
+        case "left": {
+          axesActionKeyUp(action);
+          break;
         }
-      };
 
-      window.addEventListener("keydown", keydownHandler, { capture: true });
-      window.addEventListener("keyup", keyupHandler, { capture: true });
-      window.addEventListener("blur", blurHandler);
+        default: {
+          break;
+        }
+      }
+    };
 
-      windowEventListeners.set(keydownHandler, "keydown");
-      windowEventListeners.set(keyupHandler, "keyup");
-      windowEventListeners.set(blurHandler, "blur");
-    });
+    const blurHandler = () => {
+      input.actions.clear();
+      input.keysDownForAction.clear();
+
+      // Reset axes
+      input.axesActionStacks.clear();
+      for (const axis of Object.keys(input.axes)) {
+        input.axes[axis as InputAxis] = 0;
+      }
+    };
+
+    window.addEventListener("keydown", keydownHandler, { capture: true });
+    window.addEventListener("keyup", keyupHandler, { capture: true });
+    window.addEventListener("blur", blurHandler);
+
+    return () => {
+      window.removeEventListener("blur", blurHandler);
+      window.removeEventListener("keyup", keyupHandler, { capture: true });
+      window.removeEventListener("keydown", keydownHandler, { capture: true });
+    };
   });
 
   update.add({ resources: [Input] }, ({ resources }) => {
     const [input] = resources;
     input.oldActions = new Set(input.actions);
-  });
-
-  cleanup.add({}, () => {
-    for (const [listener, event] of windowEventListeners) {
-      window.removeEventListener(event, listener);
-    }
   });
 };

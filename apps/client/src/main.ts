@@ -15,11 +15,9 @@ import { Component } from "@crafts/ecs";
 
 class Controllable extends Component {}
 
-const pluginTestContent: ClientPlugin = ({ startup, update }) => {
-  startup.add({}, ({ command }) => {
-    command(({ spawn }) => {
-      spawn().add(MeshNode).add(RenderPosition).add(Controllable);
-    });
+const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
+  onInit((world) => {
+    world.spawn().add(MeshNode).add(RenderPosition).add(Controllable);
   });
 
   update.add(
@@ -39,10 +37,10 @@ const pluginTestContent: ClientPlugin = ({ startup, update }) => {
 };
 
 const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
-  .addPlugin(pluginTestContent)
-  .addPlugin(pluginInput)
   .addPlugin(pluginThree)
   .addPlugin(pluginFixedUpdate)
-  .addPlugin(pluginVariableUpdate);
+  .addPlugin(pluginVariableUpdate)
+  .addPlugin(pluginInput)
+  .addPlugin(pluginTestContent);
 
 game.run();

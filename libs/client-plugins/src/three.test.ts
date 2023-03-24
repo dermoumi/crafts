@@ -29,6 +29,10 @@ vi.mock("three", async () => {
       public render() {
         // Nothing to do
       }
+
+      public dispose() {
+        // Nothing to do
+      }
     },
   };
 });
@@ -214,6 +218,8 @@ describe("Threejs plugin", () => {
   });
 
   it("removes the renderer from the DOM when the game is stopped", () => {
+    const disposeRenderer = vi.spyOn(WebGLRenderer.prototype, "dispose");
+
     const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
     gameApp.run();
 
@@ -222,5 +228,6 @@ describe("Threejs plugin", () => {
 
     gameApp.stop();
     expect(document.body.innerHTML).toBe("");
+    expect(disposeRenderer).toHaveBeenCalledOnce();
   });
 });
