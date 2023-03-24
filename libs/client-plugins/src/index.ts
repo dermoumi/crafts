@@ -27,3 +27,4 @@ export {
   WindowResized,
 } from "./three";
 export { Input, pluginInput } from "./input";
+export type { InputAxis, DirectionInputAction, InputAction } from "./input";
