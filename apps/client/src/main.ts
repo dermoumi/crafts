@@ -1,9 +1,9 @@
 import type { ClientPlugin, ClientSystemGroups } from "@crafts/client-plugins";
 import {
   FrameInfo,
-  KeyboardInput,
+  Input,
   RenderPosition,
-  pluginKeyboardInput,
+  pluginInput,
   pluginVariableUpdate,
   pluginThree,
   MeshNode,
@@ -25,27 +25,14 @@ const pluginTestContent: ClientPlugin = ({ startup, update }) => {
   update.add(
     {
       players: [RenderPosition, Controllable.present()],
-      resources: [KeyboardInput, FrameInfo],
+      resources: [Input, FrameInfo],
     },
     ({ players, resources }) => {
-      const [keyboard, frameInfo] = resources;
+      const [input, frameInfo] = resources;
 
       for (const [position] of players.asComponents()) {
-        if (keyboard.isDown("ArrowUp")) {
-          position.y += 2 * frameInfo.delta;
-        }
-
-        if (keyboard.isDown("ArrowDown")) {
-          position.y -= 2 * frameInfo.delta;
-        }
-
-        if (keyboard.isDown("ArrowLeft")) {
-          position.x -= 2 * frameInfo.delta;
-        }
-
-        if (keyboard.isDown("ArrowRight")) {
-          position.x += 2 * frameInfo.delta;
-        }
+        position.x += input.axes.lx * 2 * frameInfo.delta;
+        position.y -= input.axes.ly * 2 * frameInfo.delta;
       }
     }
   );
@@ -53,7 +40,7 @@ const pluginTestContent: ClientPlugin = ({ startup, update }) => {
 
 const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginTestContent)
-  .addPlugin(pluginKeyboardInput)
+  .addPlugin(pluginInput)
   .addPlugin(pluginThree)
   .addPlugin(pluginFixedUpdate)
   .addPlugin(pluginVariableUpdate);
