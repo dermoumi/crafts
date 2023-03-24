@@ -5,18 +5,22 @@ import * as Ecs from "@crafts/ecs";
  * Resource to track the frame time.
  */
 export class FrameInfo extends Ecs.Resource {
-  private lastFrameTime: number | undefined;
-  private frameTime: number | undefined;
+  private lastFrameTime: number;
+  private frameTime: number;
+
+  public constructor() {
+    super();
+
+    const now = performance.now() / 1000;
+    this.lastFrameTime = now;
+    this.frameTime = now;
+  }
 
   public get delta() {
-    if (this.frameTime === undefined || this.lastFrameTime === undefined) {
-      return 0;
-    }
-
     return this.frameTime - this.lastFrameTime;
   }
 
-  public update(frameTime?: number) {
+  public update(frameTime: number) {
     this.lastFrameTime = this.frameTime;
     this.frameTime = frameTime;
   }
