@@ -25,32 +25,25 @@ export class FrameInfo extends Ecs.Resource {
 /**
  * Plugin to run updates at a variable, framerate.
  */
-export const pluginVariableUpdate: ClientPlugin = ({
-  startup,
-  update,
-  cleanup,
-}) => {
-  let rafID: ReturnType<typeof requestAnimationFrame> | undefined;
+export const pluginVariableUpdate: ClientPlugin = ({ onInit }, { update }) => {
+  onInit(({ resources }) => {
+    let rafID: ReturnType<typeof requestAnimationFrame> | undefined;
 
-  startup.add({}, ({ command }) => {
-    command(({ addResource }) => {
-      const frameInfo = addResource(FrameInfo);
+    resources.add(FrameInfo);
+    const frameInfo = resources.get(FrameInfo);
 
-      const renderFunc = (frametime?: number) => {
-        rafID = requestAnimationFrame(renderFunc);
+    const renderFunc = (frametime?: number) => {
+      rafID = requestAnimationFrame(renderFunc);
 
-        frameInfo.update(
-          frametime === undefined ? undefined : frametime / 1000
-        );
-        update();
-      };
+      frameInfo.update(frametime === undefined ? undefined : frametime / 1000);
+      update();
+    };
 
-      renderFunc();
-    });
-  });
+    renderFunc();
 
-  cleanup.add({}, () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    cancelAnimationFrame(rafID!);
+    return () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      cancelAnimationFrame(rafID!);
+    };
   });
 };

@@ -15,11 +15,9 @@ import { Component } from "@crafts/ecs";
 
 class Controllable extends Component {}
 
-const pluginTestContent: ClientPlugin = ({ startup, update }) => {
-  startup.add({}, ({ command }) => {
-    command(({ spawn }) => {
-      spawn().add(MeshNode).add(RenderPosition).add(Controllable);
-    });
+const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
+  onInit((world) => {
+    world.spawn().add(MeshNode).add(RenderPosition).add(Controllable);
   });
 
   update.add(

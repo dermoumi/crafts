@@ -9,26 +9,58 @@ describe("Plugin manager", () => {
     const world = new Ecs.World();
     const groups = { startup: createSystemGroup(world) };
 
-    new PluginManager(groups).add(myPlugin).init();
+    new PluginManager(groups, world).add(myPlugin).init();
 
     expect(myPlugin).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs the onInit hook", () => {
+    const myPlugin = vi.fn();
+
+    const world = new Ecs.World();
+    const groups = { startup: createSystemGroup(world) };
+
+    new PluginManager(groups, world)
+      .add(({ onInit }) => {
+        onInit(myPlugin);
+      })
+      .init();
+
+    expect(myPlugin).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs the cleanup hook", () => {
+    const myCleanupFunc = vi.fn();
+
+    const world = new Ecs.World();
+    const groups = { cleanup: createSystemGroup(world) };
+
+    const pluginManager = new PluginManager(groups, world).add(({ onInit }) => {
+      onInit(() => myCleanupFunc);
+    });
+
+    pluginManager.init();
+    expect(myCleanupFunc).not.toHaveBeenCalled();
+
+    pluginManager.cleanup();
+    expect(myCleanupFunc).toHaveBeenCalledTimes(1);
   });
 
   it("runs systems", () => {
     const mySystem = vi.fn();
 
     const world = new Ecs.World();
-    const groups = { startup: createSystemGroup(world) };
+    const groups = { update: createSystemGroup(world) };
 
-    new PluginManager(groups)
-      .add(({ startup }) => {
-        startup.add({}, mySystem);
+    new PluginManager(groups, world)
+      .add((_, { update }) => {
+        update.add({}, mySystem);
       })
       .init();
 
     expect(mySystem).not.toHaveBeenCalled();
 
-    groups.startup();
+    groups.update();
     expect(mySystem).toHaveBeenCalledTimes(1);
   });
 });
