@@ -14,6 +14,12 @@ const DIRECTION_TO_AXIS = {
 } as const;
 
 export class Input extends Resource {
+  public readonly keyToAxis = { lx: 0, ly: 0 };
+  public readonly axesActionStacks = new ArrayMap<
+    InputAxis,
+    DirectionInputAction
+  >();
+
   public readonly axes: Record<InputAxis, number> = {
     lx: 0,
     ly: 0,
@@ -23,12 +29,9 @@ export class Input extends Resource {
     rt: 0,
   };
 
-  public keysDownForAction = new SetMap<InputAction, string>();
-  public axesActionStacks = new ArrayMap<InputAxis, DirectionInputAction>();
-  public keyToAxis = {
-    lx: 0,
-    ly: 0,
-  };
+  public oldActions = new Set<InputAction>();
+  public readonly actions = new Set<InputAction>();
+  public readonly keysDownForAction = new SetMap<InputAction, string>();
 
   public keymap: Record<string, InputAction> = {
     ArrowUp: "up",
@@ -41,9 +44,6 @@ export class Input extends Resource {
     KeyD: "right",
     Tab: "menu",
   };
-
-  public actions = new Set<InputAction>();
-  public oldActions = new Set<InputAction>();
 
   /**
    * Check if a action is currently down.
