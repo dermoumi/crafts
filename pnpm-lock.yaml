@@ -200,6 +200,7 @@ importers:
 
   libs/game-app:
     specifiers:
+      '@crafts/default-map': workspace:^0.1.0
       '@crafts/ecs': workspace:^
       '@crafts/eslint-config': workspace:^
       '@crafts/tsconfig': workspace:^
@@ -210,6 +211,7 @@ importers:
       vite: ^4.2.1
       vitest: ^0.29.7
     dependencies:
+      '@crafts/default-map': link:../default-map
       '@crafts/ecs': link:../ecs
     devDependencies:
       '@crafts/eslint-config': link:../eslint-config
@@ -1091,7 +1093,7 @@ packages:
       istanbul-lib-source-maps: 4.0.1
       istanbul-reports: 3.1.5
       test-exclude: 6.0.0
-      vitest: 0.29.7_jsdom@21.1.1
+      vitest: 0.29.7
     transitivePeerDependencies:
       - supports-color
     dev: true

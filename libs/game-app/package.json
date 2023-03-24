@@ -10,6 +10,7 @@
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
   },
   "dependencies": {
+    "@crafts/default-map": "workspace:^0.1.0",
     "@crafts/ecs": "workspace:^"
   },
   "devDependencies": {
