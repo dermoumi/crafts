@@ -4,11 +4,11 @@ export const UPDATE_RATE = 1000 / 20;
 
 export const pluginFixedUpdate: CommonPlugin = ({ onInit }, { fixed }) => {
   onInit(() => {
-    let updateTimeoutID: ReturnType<typeof setTimeout> | undefined;
     let lastUpdateTime = performance.now();
     let accumulatedTime = 0;
 
-    const updateFunc = () => {
+    let updateTimeoutID = setTimeout(updateFunc, UPDATE_RATE);
+    function updateFunc() {
       updateTimeoutID = setTimeout(updateFunc, UPDATE_RATE);
 
       const now = performance.now();
@@ -19,9 +19,7 @@ export const pluginFixedUpdate: CommonPlugin = ({ onInit }, { fixed }) => {
         fixed();
         accumulatedTime -= UPDATE_RATE;
       }
-    };
-
-    updateFunc();
+    }
 
     return () => {
       clearTimeout(updateTimeoutID);

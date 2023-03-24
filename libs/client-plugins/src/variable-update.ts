@@ -26,25 +26,21 @@ export class FrameInfo extends Ecs.Resource {
  * Plugin to run updates at a variable, framerate.
  */
 export const pluginVariableUpdate: ClientPlugin = ({ onInit }, { update }) => {
-  onInit(
-    ({ resources }) => {
-      resources.add(FrameInfo);
-      const frameInfo = resources.get(FrameInfo);
+  onInit(({ resources }) => {
+    resources.add(FrameInfo);
+    const frameInfo = resources.get(FrameInfo);
 
-      let rafID = requestAnimationFrame(renderFunc);
+    let rafID = requestAnimationFrame(renderFunc);
+    function renderFunc(frametime: number) {
+      rafID = requestAnimationFrame(renderFunc);
 
-      function renderFunc(frametime: number) {
-        rafID = requestAnimationFrame(renderFunc);
+      const frametimeSeconds = frametime / 1000;
+      frameInfo.update(frametimeSeconds);
+      update();
+    }
 
-        const frametimeSeconds = frametime / 1000;
-        frameInfo.update(frametimeSeconds);
-        update();
-      }
-
-      return () => {
-        cancelAnimationFrame(rafID);
-      };
-    },
-    { name: "variable-refresh" }
-  );
+    return () => {
+      cancelAnimationFrame(rafID);
+    };
+  });
 };
