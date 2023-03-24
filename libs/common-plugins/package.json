@@ -5,6 +5,8 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
   },
   "dependencies": {

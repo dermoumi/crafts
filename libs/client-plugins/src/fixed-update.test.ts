@@ -1,27 +1,33 @@
-import type { ClientSystemGroups } from ".";
+import type { ClientPlugin, ClientSystemGroups } from ".";
 import { GameApp } from "@crafts/game-app";
 import { pluginVariableUpdate } from "./variable-update";
-import { pluginFixedUpdate, UPDATE_RATE } from "./fixed-update";
+import { pluginFixedUpdate } from "./fixed-update";
+import { GameConfig } from "@crafts/common-plugins";
 
 // Vitest's fake timers emulate requestAnimationFrame at 60fps
 const REFRESH_RATE = 1000 / 60;
+const UPDATE_RATE = 1000 / 30; // Less false positives than the default 20tps
 
 function advanceTimeBy(ms: number) {
+  const duration = ms / REFRESH_RATE < ms ? ms + REFRESH_RATE : ms;
+
   return new Promise((resolve) => {
-    setTimeout(resolve, nearestMultipleOf(ms, REFRESH_RATE));
+    setTimeout(resolve, duration);
   });
 }
 
-function nearestMultipleOf(num: number, multiple: number) {
-  return Math.ceil(Math.floor(num) / Math.floor(multiple)) * multiple;
-}
+const pluginTestConfig: ClientPlugin = ({ onInit }) => {
+  onInit(({ resources }) => {
+    resources.add(GameConfig, { fixedUpdateRateMs: UPDATE_RATE });
+  });
+};
 
 describe("Fixed update plugin", () => {
   beforeAll(() => {
     vi.spyOn(global, "requestAnimationFrame").mockImplementation((cb) => {
       const handle = setTimeout(() => {
         cb(performance.now());
-      }, Math.floor(REFRESH_RATE));
+      }, REFRESH_RATE);
 
       return handle as unknown as number;
     });
@@ -37,6 +43,7 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
+      .addPlugin(pluginTestConfig)
       .addPlugin(pluginFixedUpdate)
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { fixed }) => {
@@ -57,6 +64,7 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
+      .addPlugin(pluginTestConfig)
       .addPlugin(pluginVariableUpdate)
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
@@ -76,6 +84,7 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
+      .addPlugin(pluginTestConfig)
       .addPlugin(pluginVariableUpdate)
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
