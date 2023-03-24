@@ -26,13 +26,12 @@ describe("Variable update plugin", () => {
     expect(renderFunc).not.toHaveBeenCalled();
 
     game.run();
+
+    vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(1);
 
     vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(2);
-
-    vi.advanceTimersByTime(REFRESH_RATE);
-    expect(renderFunc).toHaveBeenCalledTimes(3);
   });
 
   it("stops updates whon the game stops", () => {
@@ -46,11 +45,11 @@ describe("Variable update plugin", () => {
 
     game.run();
     vi.advanceTimersByTime(REFRESH_RATE);
-    expect(renderFunc).toHaveBeenCalledTimes(2);
+    expect(renderFunc).toHaveBeenCalledTimes(1);
 
     game.stop();
     vi.advanceTimersByTime(REFRESH_RATE * 20);
-    expect(renderFunc).toHaveBeenCalledTimes(2);
+    expect(renderFunc).toHaveBeenCalledTimes(1);
   });
 });
 

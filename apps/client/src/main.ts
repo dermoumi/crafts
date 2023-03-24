@@ -37,10 +37,10 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
 };
 
 const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
-  .addPlugin(pluginTestContent)
-  .addPlugin(pluginInput)
   .addPlugin(pluginThree)
   .addPlugin(pluginFixedUpdate)
-  .addPlugin(pluginVariableUpdate);
+  .addPlugin(pluginVariableUpdate)
+  .addPlugin(pluginInput)
+  .addPlugin(pluginTestContent);
 
 game.run();
