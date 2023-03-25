@@ -1,6 +1,6 @@
 import type { ClientPlugin, ClientSystemGroups } from "@crafts/client-plugins";
 import {
-  FrameInfo,
+  pluginWorldEntities,
   Input,
   RenderPosition,
   pluginInput,
@@ -12,25 +12,51 @@ import {
 import type { ServerSystemGroups } from "@crafts/server-plugins";
 import { GameApp } from "@crafts/game-app";
 import { Component } from "@crafts/ecs";
+import { GameConfig, pluginGameConfig, Position } from "@crafts/common-plugins";
 
 class Controllable extends Component {}
 
-const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
+class Velocity extends Component {
+  public x = 0;
+  public y = 0;
+  public z = 0;
+}
+
+const pluginTestContent: ClientPlugin = ({ onInit }, { update, fixed }) => {
   onInit((world) => {
-    world.spawn().add(MeshNode).add(RenderPosition).add(Controllable);
+    world
+      .spawn()
+      .add(MeshNode)
+      .add(RenderPosition)
+      .add(Position)
+      .add(Velocity)
+      .add(Controllable);
   });
 
   update.add(
     {
-      players: [RenderPosition, Controllable.present()],
-      resources: [Input, FrameInfo],
+      players: [Velocity, Controllable.present()],
+      resources: [Input],
     },
     ({ players, resources }) => {
-      const [input, frameInfo] = resources;
+      const [input] = resources;
 
-      for (const [position] of players.asComponents()) {
-        position.x += input.axes.lx * 2 * frameInfo.delta;
-        position.y -= input.axes.ly * 2 * frameInfo.delta;
+      for (const [velocity] of players.asComponents()) {
+        velocity.x = input.axes.lx * 2;
+        velocity.y = -input.axes.ly * 2;
+      }
+    }
+  );
+
+  fixed.add(
+    { positions: [Position, Velocity], resources: [GameConfig] },
+    ({ positions, resources }) => {
+      const [gameConfig] = resources;
+
+      for (const [position, velocity] of positions.asComponents()) {
+        position.x += velocity.x * gameConfig.fixedUpdateRate;
+        position.y += velocity.y * gameConfig.fixedUpdateRate;
+        position.z += velocity.z * gameConfig.fixedUpdateRate;
       }
     }
   );
@@ -41,6 +67,8 @@ const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginFixedUpdate)
   .addPlugin(pluginVariableUpdate)
   .addPlugin(pluginInput)
+  .addPlugin(pluginGameConfig)
+  .addPlugin(pluginWorldEntities)
   .addPlugin(pluginTestContent);
 
 game.run();
