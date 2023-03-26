@@ -23,9 +23,8 @@ describe("Variable update plugin", () => {
         update.add({}, renderFunc);
       });
 
-    expect(renderFunc).not.toHaveBeenCalled();
-
     game.run();
+    expect(renderFunc).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(1);

@@ -10,6 +10,12 @@ import {
   PerspectiveCamera,
   WebGLRenderer,
 } from "three";
+import {
+  CameraNode,
+  MeshNode,
+  RenderPosition,
+  SceneNode,
+} from "./world-entities";
 
 /**
  * An abstract node component.
@@ -27,32 +33,6 @@ export class Node extends Component {
     super();
     this.node = node;
   }
-}
-
-/**
- * Represents a ThreeJS scene.
- */
-export class SceneNode extends Component {}
-
-/**
- * Represents a ThreeJS camera.
- */
-export class CameraNode extends Component {}
-
-/**
- * Represents a ThreeJS mesh.
- */
-export class MeshNode extends Component {}
-
-/**
- * The position of an entity in the world.
- *
- * This is di
- */
-export class RenderPosition extends Component {
-  public x = 0;
-  public y = 0;
-  public z = 0;
 }
 
 /**

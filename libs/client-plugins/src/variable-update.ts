@@ -5,21 +5,7 @@ import * as Ecs from "@crafts/ecs";
  * Resource to track the frame time.
  */
 export class FrameInfo extends Ecs.Resource {
-  private lastFrameTime: number | undefined;
-  private frameTime: number | undefined;
-
-  public get delta() {
-    if (this.frameTime === undefined || this.lastFrameTime === undefined) {
-      return 0;
-    }
-
-    return this.frameTime - this.lastFrameTime;
-  }
-
-  public update(frameTime?: number) {
-    this.lastFrameTime = this.frameTime;
-    this.frameTime = frameTime;
-  }
+  public delta = 0;
 }
 
 /**
@@ -30,12 +16,18 @@ export const pluginVariableUpdate: ClientPlugin = ({ onInit }, { update }) => {
     resources.add(FrameInfo);
     const frameInfo = resources.get(FrameInfo);
 
+    const now = performance.now();
+    let lastFrameTime = now;
+    let frameTime = now;
+
     let rafID = requestAnimationFrame(renderFunc);
-    function renderFunc(frametime: number) {
+    function renderFunc(timestamp: number) {
       rafID = requestAnimationFrame(renderFunc);
 
-      const frametimeSeconds = frametime / 1000;
-      frameInfo.update(frametimeSeconds);
+      lastFrameTime = frameTime;
+      frameTime = timestamp;
+      frameInfo.delta = (frameTime - lastFrameTime) / 1000;
+
       update();
     }
 
