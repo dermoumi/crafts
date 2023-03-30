@@ -10,7 +10,7 @@
     "@crafts/eslint-config": "workspace:^",
     "@crafts/game-app": "workspace:^",
     "@crafts/server-plugins": "workspace:^",
-    "eslint": "^8.36.0",
+    "eslint": "^8.37.0",
     "prettier": "^2.8.7",
     "vite": "^4.2.1",
     "vite-node": "^0.29.8"
