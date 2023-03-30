@@ -15,7 +15,7 @@
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^",
     "@types/three": "^0.150.0",
-    "three": "^0.150.1"
+    "three": "^0.151.0"
   },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
