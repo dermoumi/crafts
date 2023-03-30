@@ -4,12 +4,12 @@
   "private": true,
   "packageManager": "pnpm@8.0.0",
   "scripts": {
-    "build": "nx run-many --parallel 8 -t build",
+    "prepare": "husky install",
     "dev": "pnpm -r --parallel run dev",
-    "lint": "nx run-many --parallel 8 -t lint",
-    "test": "nx run-many --parallel 8 -t test",
-    "test:cov": "nx run-many --parallel 8 --output-style=static -t test:cov",
-    "prepare": "husky install"
+    "build": "nx run-many --parallel -t build",
+    "lint": "nx run-many --parallel -t lint",
+    "test": "nx run-many --parallel -t test",
+    "test:cov": "nx run-many --parallel --output-style=static -t test:cov"
   },
   "devDependencies": {
     "husky": "^8.0.3",
