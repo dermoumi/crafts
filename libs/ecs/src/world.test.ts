@@ -402,3 +402,151 @@ describe("Default ID generator", () => {
     expect(generator()).toBe((Number.MIN_SAFE_INTEGER + 1).toString());
   });
 });
+
+describe("Trait disposal", () => {
+  const disposeMock = vi.fn();
+
+  class DisposableComponent extends Component {
+    public __dispose() {
+      disposeMock();
+    }
+  }
+
+  class DisposableResource extends Resource {
+    public __dispose() {
+      disposeMock();
+    }
+  }
+
+  beforeEach(() => {
+    disposeMock.mockClear();
+  });
+
+  it("disposes components when they're removed", () => {
+    const world = new World();
+    const entity = world.spawn().add(DisposableComponent);
+
+    entity.remove(DisposableComponent);
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+
+  it("disposes components when they're replaced", () => {
+    const world = new World();
+    const entity = world.spawn().add(DisposableComponent);
+
+    entity.add(DisposableComponent);
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+
+  it("disposes components when their containing entities are removed", () => {
+    const world = new World();
+    const entity = world.spawn().add(DisposableComponent);
+
+    world.remove(entity);
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+
+  it("disposes components when the world is disposed", () => {
+    const world = new World();
+    world.spawn().add(DisposableComponent);
+
+    world.clear();
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+
+  it("disposes resources when they're removed", () => {
+    const world = new World();
+    world.resources.add(DisposableResource);
+
+    world.resources.remove(DisposableResource);
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+
+  it("disposes resources when they're replaced", () => {
+    const world = new World();
+    world.resources.add(DisposableResource);
+
+    world.resources.add(DisposableResource);
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+
+  it("disposes resources when the world is disposed", () => {
+    const world = new World();
+    world.resources.add(DisposableResource);
+
+    world.clear();
+
+    expect(disposeMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe("World disposal", () => {
+  it("removes all entities", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position);
+
+    world.clear();
+
+    expect(world.get(entity.id)).toBeUndefined();
+  });
+
+  it("removes all resources", () => {
+    const world = new World();
+    world.resources.add(FrameInfo);
+
+    world.clear();
+
+    expect(world.resources.has(FrameInfo)).toBe(false);
+  });
+
+  it("invalidates created queries", () => {
+    const world = new World();
+    const query = world.query(Position);
+
+    world.spawn().add(Position);
+    expect([...query]).toHaveLength(1);
+
+    world.clear();
+    world.spawn().add(Position);
+    expect([...query]).toHaveLength(0);
+  });
+
+  it("invalidates systems that query resources", () => {
+    const callback = vi.fn();
+
+    const world = new World();
+    const system = world.addSystem({ resources: [FrameInfo] }, callback);
+
+    world.resources.add(FrameInfo);
+    system();
+    expect(callback).toHaveBeenCalledOnce();
+
+    world.clear();
+    callback.mockClear();
+    system();
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  test("systems can still query resources after disposal", () => {
+    // The `.resources` object is just another container
+    // This test ensure that the `.resources` object is not removed
+    // from the resources manager after a `.clear()`
+
+    const callback = vi.fn();
+
+    const world = new World();
+    world.clear();
+
+    world.resources.add(FrameInfo);
+    const system = world.addSystem({ resources: [FrameInfo] }, callback);
+    system();
+
+    expect(callback).toHaveBeenCalledOnce();
+  });
+});

@@ -226,6 +226,15 @@ export class QueryBuilder<
   }
 
   /**
+   * Clears the query results.
+   *
+   * @internal
+   */
+  public clear(): void {
+    this.containers.clear();
+  }
+
+  /**
    * Update the query with the given container.
    *
    * @param container - The container to update with

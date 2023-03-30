@@ -362,6 +362,24 @@ const SystemDefinition = new Ecs.System(
 );
 ```
 
+### Component and resource disposal
+
+If a component or resource has a `__dispose()` method, it will be
+automatically called when it is removed or replaced.
+
+This exclusively to free up external resources, any game logic
+that would interact with the ECS world should run in a system instead.
+
+```ts
+class Mesh extends Component {
+  public threeJsMesh: THREE.Mesh | undefined;
+
+  public __dispose() {
+    this.threeJsMesh?.dispose();
+  }
+}
+```
+
 ### Commands
 
 Commands allow you to queue operations on the world for execution after

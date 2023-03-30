@@ -274,4 +274,12 @@ export default class World {
 
     return handle;
   }
+
+  /**
+   * Dispose of the world
+   */
+  public clear(): void {
+    this.entityManager.clear();
+    this.resourceManager.clear(true);
+  }
 }
