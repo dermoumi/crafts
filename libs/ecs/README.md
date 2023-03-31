@@ -181,6 +181,15 @@ for (const [entity, position, velocity] of query.withComponents()) {
 }
 ```
 
+Or, if you know your query will only return a single entity, you can use
+
+```ts
+// Will throw an exception if no entity is found
+const entity = query.getOne();
+const [position, velocity] = query.getOneAsComponents();
+const [entity, position, velocity] = query.getOneWithComponents();
+```
+
 You can also use _filters_ to only match specific conditions.
 
 ```ts
