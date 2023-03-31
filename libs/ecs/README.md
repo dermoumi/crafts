@@ -255,8 +255,10 @@ for (const entities of query) {
 // properties of sub-objects are ignored.
 
 // Note 2:
-// Adding an existing component with different values
-// counts as a change.
+// Adding an existing component will always count as a change
+
+// Note 3:
+// Removing then adding a component between resets will count as a change
 
 // Filter with component removals
 query = world.query(Position.removed());
@@ -271,6 +273,9 @@ for (const entities of query) {
   //
   // Note that the removed components are no longer accessible.
 }
+
+// Note 4:
+// Removing and adding a component between resets will not count as a removal
 ```
 
 You can also make composite filters using AND and OR operators:
