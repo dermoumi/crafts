@@ -29,7 +29,7 @@ export type Plugin<T extends string = string> = {
   (
     registry: { onInit: OnInit },
     groups: { readonly [K in T]: SystemGroup }
-  ): void;
+  ): Promise<void> | void;
 };
 
 /**
@@ -110,7 +110,8 @@ export default class PluginManager<T extends string> {
     };
 
     for (const plugin of this.plugins) {
-      plugin({ onInit }, this.systemGroups);
+      // eslint-disable-next-line no-await-in-loop
+      await plugin({ onInit }, this.systemGroups);
     }
 
     for (const handler of initHandlers) {

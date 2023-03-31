@@ -13,7 +13,29 @@ describe("Plugin manager", () => {
     const pluginManager = new PluginManager(groups, world).add(myPlugin);
     await pluginManager.init();
 
-    expect(myPlugin).toHaveBeenCalledTimes(1);
+    expect(myPlugin).toHaveBeenCalledOnce();
+  });
+
+  it("registers async plugins", async () => {
+    const myPluginCallback = vi.fn();
+    const myPlugin: Plugin = async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+
+      myPluginCallback();
+    };
+
+    const world = new Ecs.World();
+    const groups = { startup: createSystemGroup(world) };
+
+    const pluginManager = new PluginManager(groups, world).add(myPlugin);
+
+    const initPromise = pluginManager.init();
+    expect(myPluginCallback).not.toHaveBeenCalled();
+
+    await initPromise;
+    expect(myPluginCallback).toHaveBeenCalledOnce();
   });
 
   it("runs the onInit hook", async () => {
