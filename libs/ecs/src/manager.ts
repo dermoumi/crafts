@@ -103,7 +103,7 @@ export default class Manager<
    * Notifies the queries that a container has been added.
    *
    * @internal
-   * @param container - The container that has been removed
+   * @param container - The container that has been added
    */
   public onContainerAdded(container: C): void {
     for (const query of this.cleanRefSet(this.queries)) {
@@ -120,6 +120,30 @@ export default class Manager<
   public onContainerRemoved(container: C): void {
     for (const query of this.cleanRefSet(this.queries)) {
       query.onContainerRemoved(container);
+    }
+
+    container.clear();
+  }
+
+  /**
+   * Removes all containers and queries.
+   */
+  public clear(keepContainers = false): void {
+    // Dispose of the containers' traits
+    for (const container of this.containers.values()) {
+      container.clear();
+    }
+
+    // Clear existing queries
+    for (const query of this.cleanRefSet(this.queries)) {
+      query.clear();
+    }
+
+    this.index.clear();
+    this.queries.clear();
+
+    if (!keepContainers) {
+      this.containers.clear();
     }
   }
 

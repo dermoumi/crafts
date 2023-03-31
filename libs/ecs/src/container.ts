@@ -35,6 +35,17 @@ export default abstract class Container<T extends Trait> {
   }
 
   /**
+   * Remove all traits from this container.
+   */
+  public clear(): void {
+    for (const trait of this.traitMap.values()) {
+      trait.__dispose();
+    }
+
+    this.traitMap.clear();
+  }
+
+  /**
    * Add a trait to the container.
    *
    * @typeParam C - The type of the trait
@@ -83,6 +94,9 @@ export default abstract class Container<T extends Trait> {
     const trait = this.tryGet(constructor);
 
     if (trait !== undefined) {
+      // Dispose of the trait
+      trait.__dispose();
+
       this.traitMap.delete(constructor);
       this.manager.onTraitRemoved(this, constructor);
     }
@@ -175,6 +189,11 @@ export default abstract class Container<T extends Trait> {
     });
 
     const previousTrait = this.traitMap.get(constructor);
+    if (previousTrait) {
+      // Dispose of the previous trait if it exists
+      previousTrait.__dispose();
+    }
+
     this.traitMap.set(constructor, proxy);
 
     // Notify the query manager about the addition/change

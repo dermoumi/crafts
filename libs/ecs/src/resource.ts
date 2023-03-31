@@ -19,6 +19,13 @@ export default abstract class Resource {
   }
 
   /**
+   * Called when the resource is disposed of
+   */
+  public __dispose(): void {
+    // Nothing to do
+  }
+
+  /**
    * Create a filter that only allows containers that have the trait.
    *
    * @returns An instance of PresentFilter
