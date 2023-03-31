@@ -17,7 +17,7 @@ const pluginTestConfig: ClientPlugin = ({ onInit }) => {
 };
 
 describe("Fixed update plugin", () => {
-  it("runs updates periodically", () => {
+  it("runs updates periodically", async () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
@@ -27,7 +27,7 @@ describe("Fixed update plugin", () => {
         fixed.add({}, updateFunc);
       });
 
-    game.run();
+    await game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     game.groupsProxy.update();
@@ -39,7 +39,7 @@ describe("Fixed update plugin", () => {
     expect(updateFunc).toHaveBeenCalledTimes(2);
   });
 
-  it("runs updates as many times as needed", () => {
+  it("runs updates as many times as needed", async () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
@@ -49,7 +49,7 @@ describe("Fixed update plugin", () => {
         fixed.add({}, updateFunc);
       });
 
-    game.run();
+    await game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     for (let i = 0; i < 10; ++i) {

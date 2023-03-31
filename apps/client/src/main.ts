@@ -71,4 +71,4 @@ const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginWorldEntities)
   .addPlugin(pluginTestContent);
 
-game.run();
+await game.run();

@@ -17,12 +17,12 @@ const pluginTestConfig: ClientPlugin = ({ onInit }) => {
 };
 
 describe("World entities render position animation", () => {
-  it("matches the original position when a Position is added", () => {
+  it("matches the original position when a Position is added", async () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginTestConfig)
       .addPlugin(pluginWorldEntities);
 
-    game.run();
+    await game.run();
 
     const entity = game.world
       .spawn()
@@ -43,12 +43,12 @@ describe("World entities render position animation", () => {
     });
   });
 
-  it("resets the animation when the position changes", () => {
+  it("resets the animation when the position changes", async () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginTestConfig)
       .addPlugin(pluginWorldEntities);
 
-    game.run();
+    await game.run();
 
     const entity = game.world
       .spawn()
@@ -74,14 +74,14 @@ describe("World entities render position animation", () => {
     });
   });
 
-  it("animates position correctly", () => {
+  it("animates position correctly", async () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginTestConfig)
       .addPlugin(pluginWorldEntities);
 
     const entity = game.world.spawn().add(Position).add(RenderPosition);
 
-    game.run();
+    await game.run();
 
     // We need to set the value after the initialization
     const position = entity.get(Position);

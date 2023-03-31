@@ -14,7 +14,7 @@ describe("Variable update plugin", () => {
     vi.useRealTimers();
   });
 
-  it("runs updates periodically", () => {
+  it("runs updates periodically", async () => {
     const renderFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
@@ -23,7 +23,7 @@ describe("Variable update plugin", () => {
         update.add({}, renderFunc);
       });
 
-    game.run();
+    await game.run();
     expect(renderFunc).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(REFRESH_RATE);
@@ -33,7 +33,7 @@ describe("Variable update plugin", () => {
     expect(renderFunc).toHaveBeenCalledTimes(2);
   });
 
-  it("stops updates whon the game stops", () => {
+  it("stops updates whon the game stops", async () => {
     const renderFunc = vi.fn();
 
     const game = new GameApp<ClientSystemGroups>()
@@ -42,7 +42,7 @@ describe("Variable update plugin", () => {
         update.add({}, renderFunc);
       });
 
-    game.run();
+    await game.run();
     vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(1);
 
@@ -80,7 +80,7 @@ describe("FrameInfo resource", () => {
         });
       });
 
-    game.run();
+    await game.run();
 
     // First frame has no delta, because the first frametime is undefined
     await new Promise((resolve) => {

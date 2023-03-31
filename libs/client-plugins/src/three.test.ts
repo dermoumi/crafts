@@ -57,7 +57,7 @@ describe("Threejs plugin", () => {
     document.body.innerHTML = "";
   });
 
-  it("resizes the renderer when the window is resized", () => {
+  it("resizes the renderer when the window is resized", async () => {
     const eventListeners = new SetMap<string, any>();
     const addEventListener = vi
       .spyOn(window, "addEventListener")
@@ -66,8 +66,8 @@ describe("Threejs plugin", () => {
       });
     const spySetSize = vi.spyOn(WebGLRenderer.prototype, "setSize");
 
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
     expect(addEventListener).toHaveBeenCalled();
     for (const listener of eventListeners.get("resize")) {
@@ -76,120 +76,120 @@ describe("Threejs plugin", () => {
 
     expect(spySetSize).not.toHaveBeenCalled();
 
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
     expect(spySetSize).toHaveBeenCalled();
   });
 
-  it("mounts the renderer to the DOM", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("mounts the renderer to the DOM", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
 
     expect(document.body.innerHTML).toBe("<canvas></canvas>");
   });
 
-  it("creates a ThreeJS camera when a CameraNode is added", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("creates a ThreeJS camera when a CameraNode is added", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    const cameras = gameApp.world.query(Node, CameraNode.present());
+    const cameras = game.world.query(Node, CameraNode.present());
     expect(cameras.size).toBe(0);
 
     // A main camera is autamatically added when the game starts
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
     expect(cameras.size).toBe(1);
 
     // Add a new camera
-    gameApp.world.spawn().add(CameraNode);
-    gameApp.groupsProxy.update();
+    game.world.spawn().add(CameraNode);
+    game.groupsProxy.update();
     expect(cameras.size).toBe(2);
   });
 
-  it("creates a ThreeJS scene when a SceneNode is added", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("creates a ThreeJS scene when a SceneNode is added", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    const scenes = gameApp.world.query(Node, SceneNode.present());
+    const scenes = game.world.query(Node, SceneNode.present());
     expect(scenes.size).toBe(0);
 
     // A main scene is autamatically added when the game starts
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
     expect(scenes.size).toBe(1);
 
     // Add a new scene
-    gameApp.world.spawn().add(SceneNode);
-    gameApp.groupsProxy.update();
+    game.world.spawn().add(SceneNode);
+    game.groupsProxy.update();
     expect(scenes.size).toBe(2);
   });
 
-  it("creates a ThreeJS mesh when a MeshNode is added", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("creates a ThreeJS mesh when a MeshNode is added", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    const meshes = gameApp.world.query(Node, MeshNode.present());
+    const meshes = game.world.query(Node, MeshNode.present());
     expect(meshes.size).toBe(0);
 
     // Add a new mesh
-    gameApp.world.spawn().add(MeshNode);
-    gameApp.groupsProxy.update();
+    game.world.spawn().add(MeshNode);
+    game.groupsProxy.update();
     expect(meshes.size).toBe(1);
   });
 
-  it("adds nodes to the main scene when ChildNode is absent", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("adds nodes to the main scene when ChildNode is absent", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    gameApp.groupsProxy.update();
-    const [sceneEntity] = gameApp.world.query(Node, MainScene.present());
+    game.groupsProxy.update();
+    const [sceneEntity] = game.world.query(Node, MainScene.present());
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { node: mainScene } = sceneEntity!.get(Node);
 
-    const mesh = gameApp.world.spawn().add(MeshNode);
-    gameApp.groupsProxy.update();
+    const mesh = game.world.spawn().add(MeshNode);
+    game.groupsProxy.update();
 
     expect(mainScene.children).toContain(mesh.get(Node).node);
   });
 
-  it("nests nodes within others when ChildNode is present", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("nests nodes within others when ChildNode is present", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    gameApp.groupsProxy.update();
-    const [sceneEntity] = gameApp.world.query(Node, MainScene.present());
+    game.groupsProxy.update();
+    const [sceneEntity] = game.world.query(Node, MainScene.present());
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { node: mainScene } = sceneEntity!.get(Node);
 
-    const parent = gameApp.world.spawn().add(MeshNode);
-    const child = gameApp.world.spawn().add(MeshNode).addNew(ChildNode, parent);
-    gameApp.groupsProxy.update();
+    const parent = game.world.spawn().add(MeshNode);
+    const child = game.world.spawn().add(MeshNode).addNew(ChildNode, parent);
+    game.groupsProxy.update();
 
     expect(parent.get(Node).node.children).toContain(child.get(Node).node);
     expect(mainScene.children).not.toContain(child.get(Node).node);
   });
 
-  it("updates a node's position when RenderPosition is added", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("updates a node's position when RenderPosition is added", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    const mesh = gameApp.world.spawn().add(MeshNode);
-    gameApp.groupsProxy.update();
+    const mesh = game.world.spawn().add(MeshNode);
+    game.groupsProxy.update();
 
     const { node } = mesh.get(Node);
     expect(node.position).toEqual({ x: 0, y: 0, z: 0 });
 
     mesh.add(RenderPosition, { x: 42, z: 144 });
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
 
     expect(node.position).toEqual({ x: 42, y: 0, z: 144 });
   });
 
-  it("updates a node's position when RenderPosition is changed", () => {
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+  it("updates a node's position when RenderPosition is changed", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    const mesh = gameApp.world.spawn().add(MeshNode).add(RenderPosition);
-    gameApp.groupsProxy.update();
+    const mesh = game.world.spawn().add(MeshNode).add(RenderPosition);
+    game.groupsProxy.update();
 
     const { node } = mesh.get(Node);
     expect(node.position).toEqual({ x: 0, y: 0, z: 0 });
@@ -197,12 +197,12 @@ describe("Threejs plugin", () => {
     const position = mesh.get(RenderPosition);
     position.x = 144;
     position.y = 42;
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
 
     expect(node.position).toEqual({ x: 144, y: 42, z: 0 });
   });
 
-  it("removes event listeners when the game is stopped", () => {
+  it("removes event listeners when the game is stopped", async () => {
     const eventListeners = new SetMap<string, any>();
     const addEventListener = vi
       .spyOn(window, "addEventListener")
@@ -215,24 +215,24 @@ describe("Threejs plugin", () => {
         expect(eventListeners.get(type).has(listener)).toBe(true);
       });
 
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
     expect(addEventListener).toHaveBeenCalled();
 
-    gameApp.stop();
+    game.stop();
     expect(removeEventListener).toHaveBeenCalled();
   });
 
-  it("removes the renderer from the DOM when the game is stopped", () => {
+  it("removes the renderer from the DOM when the game is stopped", async () => {
     const disposeRenderer = vi.spyOn(WebGLRenderer.prototype, "dispose");
 
-    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    gameApp.run();
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
 
-    gameApp.groupsProxy.update();
+    game.groupsProxy.update();
     expect(document.body.innerHTML).toBe("<canvas></canvas>");
 
-    gameApp.stop();
+    game.stop();
     expect(document.body.innerHTML).toBe("");
     expect(disposeRenderer).toHaveBeenCalledOnce();
   });
