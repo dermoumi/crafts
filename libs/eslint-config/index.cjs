@@ -21,6 +21,7 @@ module.exports = {
     node: { tryExtensions: [".ts", ".js", ".json"] },
   },
   rules: {
+    camelcase: ["error", { properties: "never", ignoreDestructuring: true }],
     quotes: ["error", "double", { avoidEscape: true }],
     "no-undef": "off", // Typescript handles this
     "no-dupe-class-members": "off", // Overridden by @typescript-eslint
@@ -37,7 +38,6 @@ module.exports = {
     "no-warning-comments": "off",
     "max-params": ["error", 5],
     "require-await": "error",
-    camelcase: "off",
 
     "@typescript-eslint/array-type": ["error", { default: "array-simple" }],
     "@typescript-eslint/ban-ts-comment": [
