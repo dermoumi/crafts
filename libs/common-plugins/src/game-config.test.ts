@@ -3,10 +3,10 @@ import { GameApp } from "@crafts/game-app";
 import { GameConfig, pluginGameConfig } from "./game-config";
 
 describe("GameConfig plugin", () => {
-  it("adds a GameConfig resource", () => {
+  it("adds a GameConfig resource", async () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginGameConfig);
 
-    game.run();
+    await game.run();
 
     const resource = game.world.resources.get(GameConfig);
     expect(resource).toBeInstanceOf(GameConfig);
@@ -14,10 +14,10 @@ describe("GameConfig plugin", () => {
 });
 
 describe("GameConfig resource", () => {
-  it("retrieves the fixed update rate", () => {
+  it("retrieves the fixed update rate", async () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginGameConfig);
 
-    game.run();
+    await game.run();
 
     const resource = game.world.resources.get(GameConfig);
 

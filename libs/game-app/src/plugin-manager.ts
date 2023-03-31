@@ -5,7 +5,9 @@ import type { SystemGroup } from "./system-group";
 /**
  * A handler to initalize a plugin.
  */
-export type OnInitHandler = (world: World) => (() => void) | void;
+export type OnInitHandler = (
+  world: World
+) => Promise<() => void> | Promise<void> | (() => void) | void;
 
 /**
  * Options to register an OnInit handler.
@@ -64,7 +66,7 @@ export default class PluginManager<T extends string> {
   /**
    * Initialize all the plugins.
    */
-  public init() {
+  public async init(): Promise<void> {
     const addedDependencies = new Set<string>();
     const pendingHandlers = new SetMap<
       string,
@@ -112,7 +114,8 @@ export default class PluginManager<T extends string> {
     }
 
     for (const handler of initHandlers) {
-      const cleanup = handler(this.world);
+      // eslint-disable-next-line no-await-in-loop
+      const cleanup = await handler(this.world);
       if (cleanup !== undefined) {
         this.cleanupHandlers.unshift(cleanup);
       }
