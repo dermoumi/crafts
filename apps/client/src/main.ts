@@ -12,7 +12,12 @@ import {
 import type { ServerSystemGroups } from "@crafts/server-plugins";
 import { GameApp } from "@crafts/game-app";
 import { Component } from "@crafts/ecs";
-import { GameConfig, pluginGameConfig, Position } from "@crafts/common-plugins";
+import {
+  GameConfig,
+  pluginGameConfig,
+  pluginPhysics,
+  Position,
+} from "@crafts/common-plugins";
 
 class Controllable extends Component {}
 
@@ -69,6 +74,7 @@ const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginInput)
   .addPlugin(pluginGameConfig)
   .addPlugin(pluginWorldEntities)
+  .addPlugin(pluginPhysics)
   .addPlugin(pluginTestContent);
 
 game.run();

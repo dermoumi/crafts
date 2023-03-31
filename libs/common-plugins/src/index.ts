@@ -13,3 +13,4 @@ export type CommonPlugin = Plugin<CommonSystemGroups>;
 // All the plugins go here:
 export { GameConfig, pluginGameConfig } from "./game-config";
 export { Position } from "./world-entities";
+export { pluginPhysics } from "./physics";
