@@ -58,9 +58,7 @@ export default class Entity extends Container<Component> {
       );
 
       for (const container of builder.containers) {
-        if (container !== this) {
-          container.remove(constructor);
-        }
+        container.remove(constructor);
       }
     }
 
