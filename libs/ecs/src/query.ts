@@ -135,9 +135,13 @@ export class QueryBuilder<
    *
    * @internal
    * @param container - The container that changed
-   * @param _trait - The trait that was removed
+   * @param trait - The trait that was removed
    */
-  public onTraitRemoved(container: C, _trait: TraitConstructor<T>): void {
+  public onTraitRemoved(container: C, trait: TraitConstructor<T>): void {
+    if (this.trackingTraits.has(trait)) {
+      this.changeTrackMap.get("removed").get(container).add(trait);
+    }
+
     this.updateWith(container);
   }
 

@@ -3,6 +3,7 @@ import {
   AddedFilter,
   ChangedFilter,
   PresentFilter,
+  RemovedFilter,
 } from "./filter";
 
 /**
@@ -61,5 +62,15 @@ export default abstract class Resource {
    */
   public static changed(): ChangedFilter<Resource> {
     return new ChangedFilter(this);
+  }
+
+  /**
+   * Create a filters that only allows containers that had the trait
+   * removed since the last query reset.
+   *
+   * @returns An instance of RemovedFilter
+   */
+  public static removed(): RemovedFilter<Resource> {
+    return new RemovedFilter(this);
   }
 }
