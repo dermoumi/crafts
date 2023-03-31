@@ -15,7 +15,7 @@
       "{projectRoot}/src/**/*",
       "!{projectRoot}/src/**/*.test.ts"
     ],
-    "testFiles": ["{projectRoot}/src/**/*"],
+    "testFiles": ["{projectRoot}/src/**/*", "{projectRoot}/setup-tests.ts"],
     "miscFiles": ["{projectRoot}/**/*.md"],
     "buildConfig": [
       "{projectRoot}/package.json",
@@ -26,7 +26,8 @@
     "lintConfig": [
       "{projectRoot}/.eslintrc.cjs",
       "{projectRoot}/.eslintignore",
-      "{projectRoot}/.prettierignore"
+      "{projectRoot}/.prettierignore",
+      "{projectRoot}/tsconfig.*.json"
     ],
     "baseLintConfig": ["{projectRoot}/.noop"]
   },
