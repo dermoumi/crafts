@@ -251,13 +251,15 @@ export default class World {
     };
 
     const handle: SystemHandle = () => {
-      // Execute the system callback if no resources are requested
-      // or if the resource query set is not empty
-      const resources = resourceQueryBuilder
-        ? resourceQueryBuilder.getResources()
-        : [];
-      if (resources) {
-        callback({ ...querySets, resources, command } as SystemResult<Q>);
+      // Only call the callback if all queries have results
+      if (queryBuilders.every(({ containers }) => containers.size > 0)) {
+        const resources = resourceQueryBuilder
+          ? resourceQueryBuilder.getResources()
+          : [];
+
+        if (resources) {
+          callback({ ...querySets, resources, command } as SystemResult<Q>);
+        }
       }
 
       // Execute all pending commands

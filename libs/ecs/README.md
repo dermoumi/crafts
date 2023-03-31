@@ -300,6 +300,9 @@ const CollisionSystem = new Ecs.System(
 );
 ```
 
+Note that if a system has queries (components or resources), its callback
+will only be called if all of those queries have at least one result.
+
 ### Resources
 
 Sometimes you may need to share unique resources, such as the renderer instance,
