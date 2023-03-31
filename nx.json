@@ -13,15 +13,13 @@
   "namedInputs": {
     "sourceFiles": [
       "{projectRoot}/src/**/*",
-      "!{projectRoot}/src/**/*.test.ts"
-    ],
-    "testFiles": ["{projectRoot}/src/**/*", "{projectRoot}/setup-tests.ts"],
-    "miscFiles": ["{projectRoot}/**/*.md"],
-    "buildConfig": [
+      "!{projectRoot}/src/**/*.test.ts",
       "{projectRoot}/package.json",
       "{projectRoot}/tsconfig.json",
       "{projectRoot}/vite.config.ts"
     ],
+    "testFiles": ["{projectRoot}/src/**/*", "{projectRoot}/setup-tests.ts"],
+    "miscFiles": ["{projectRoot}/**/*.md"],
     "lintConfig": [
       "{projectRoot}/.eslintrc.cjs",
       "{projectRoot}/.eslintignore",
@@ -33,7 +31,7 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["sourceFiles", "^sourceFiles", "buildConfig", "^buildConfig"],
+      "inputs": ["sourceFiles", "^sourceFiles"],
       "outputs": ["dist/**"]
     },
     "lint": {
@@ -42,17 +40,16 @@
         "sourceFiles",
         "^sourceFiles",
         "testFiles",
-        "buildConfig",
         "lintConfig",
         "^baseLintConfig"
       ],
       "outputs": [".eslintcache"]
     },
     "test": {
-      "inputs": ["testFiles", "^sourceFiles", "buildConfig", "^buildConfig"]
+      "inputs": ["testFiles", "^sourceFiles"]
     },
     "test:cov": {
-      "inputs": ["testFiles", "^sourceFiles", "buildConfig", "^buildConfig"],
+      "inputs": ["testFiles", "^sourceFiles"],
       "outputs": ["coverage/**"]
     }
   }
