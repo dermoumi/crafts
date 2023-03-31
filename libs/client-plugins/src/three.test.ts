@@ -140,26 +140,32 @@ describe("Threejs plugin", () => {
     const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
     gameApp.run();
 
-    const mainScene = gameApp.world.resources.get(MainScene);
+    gameApp.groupsProxy.update();
+    const [sceneEntity] = gameApp.world.query(Node, MainScene.present());
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { node: mainScene } = sceneEntity!.get(Node);
 
     const mesh = gameApp.world.spawn().add(MeshNode);
     gameApp.groupsProxy.update();
 
-    expect(mainScene.node.children).toContain(mesh.get(Node).node);
+    expect(mainScene.children).toContain(mesh.get(Node).node);
   });
 
   it("nests nodes within others when ChildNode is present", () => {
     const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
     gameApp.run();
 
-    const mainScene = gameApp.world.resources.get(MainScene);
+    gameApp.groupsProxy.update();
+    const [sceneEntity] = gameApp.world.query(Node, MainScene.present());
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { node: mainScene } = sceneEntity!.get(Node);
 
     const parent = gameApp.world.spawn().add(MeshNode);
     const child = gameApp.world.spawn().add(MeshNode).addNew(ChildNode, parent);
     gameApp.groupsProxy.update();
 
     expect(parent.get(Node).node.children).toContain(child.get(Node).node);
-    expect(mainScene.node.children).not.toContain(child.get(Node).node);
+    expect(mainScene.children).not.toContain(child.get(Node).node);
   });
 
   it("updates a node's position when RenderPosition is added", () => {
