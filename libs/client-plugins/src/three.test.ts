@@ -219,7 +219,7 @@ describe("Threejs plugin", () => {
     await game.run();
     expect(addEventListener).toHaveBeenCalled();
 
-    game.stop();
+    await game.stop();
     expect(removeEventListener).toHaveBeenCalled();
   });
 
@@ -232,7 +232,7 @@ describe("Threejs plugin", () => {
     game.groupsProxy.update();
     expect(document.body.innerHTML).toBe("<canvas></canvas>");
 
-    game.stop();
+    await game.stop();
     expect(document.body.innerHTML).toBe("");
     expect(disposeRenderer).toHaveBeenCalledOnce();
   });

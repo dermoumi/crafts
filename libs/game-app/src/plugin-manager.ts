@@ -3,11 +3,16 @@ import type { World } from "@crafts/ecs";
 import type { SystemGroup } from "./system-group";
 
 /**
+ * A handler to cleanup a plugin.
+ */
+export type CleanupHandler = () => Promise<void> | void;
+
+/**
  * A handler to initalize a plugin.
  */
 export type OnInitHandler = (
   world: World
-) => Promise<() => void> | Promise<void> | (() => void) | void;
+) => Promise<CleanupHandler | void> | CleanupHandler | void;
 
 /**
  * Options to register an OnInit handler.
@@ -43,7 +48,7 @@ export default class PluginManager<T extends string> {
   };
 
   private readonly world: World;
-  private readonly cleanupHandlers: Array<() => void> = [];
+  private readonly cleanupHandlers: CleanupHandler[] = [];
   private plugins: Array<Plugin<T>> = [];
 
   public constructor(systemGroups: Record<T, SystemGroup>, world: World) {
@@ -133,9 +138,10 @@ export default class PluginManager<T extends string> {
   /**
    * Stops all the plugins.
    */
-  public cleanup() {
+  public async cleanup(): Promise<void> {
     for (const handler of this.cleanupHandlers) {
-      handler();
+      // eslint-disable-next-line no-await-in-loop
+      await handler();
     }
   }
 }

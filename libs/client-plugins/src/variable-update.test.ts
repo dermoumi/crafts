@@ -46,7 +46,7 @@ describe("Variable update plugin", () => {
     vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(1);
 
-    game.stop();
+    await game.stop();
     vi.advanceTimersByTime(REFRESH_RATE * 20);
     expect(renderFunc).toHaveBeenCalledTimes(1);
   });

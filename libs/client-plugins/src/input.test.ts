@@ -123,7 +123,7 @@ describe("Input plugin", () => {
     expect(addEventListener).toHaveBeenCalledTimes(3);
     expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
-    game.stop();
+    await game.stop();
     expect(removeEventListenerSpy).toHaveBeenCalledTimes(3);
   });
 

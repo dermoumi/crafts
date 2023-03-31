@@ -45,7 +45,7 @@ export default class GameApp<T extends string> {
     await this.plugins.init();
   }
 
-  public stop() {
-    this.plugins.cleanup();
+  public async stop() {
+    await this.plugins.cleanup();
   }
 }
