@@ -12,9 +12,13 @@ export { default as Resource } from "./resource";
 
 export type { ResettableQuery } from "./query";
 
-export type { ChangeTrackMap } from "./filter";
-export {
+export type {
   default as Filter,
+  PresentFilter,
+  AbsentFilter,
+  AddedFilter,
+  ChangedFilter,
+  RemovedFilter,
   SingleFilter,
   CompositeFilter,
   AggregateFilter,

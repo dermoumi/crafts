@@ -257,6 +257,20 @@ for (const entities of query) {
 // Note 2:
 // Adding an existing component with different values
 // counts as a change.
+
+// Filter with component removals
+query = world.query(Position.removed());
+query.reset();
+
+entityA.remove(Position);
+
+for (const entities of query) {
+  // Will only loop over entityA
+  // It's the only one who had the component Position removed
+  // since the last query reset.
+  //
+  // Note that the removed components are no longer accessible.
+}
 ```
 
 You can also make composite filters using AND and OR operators:

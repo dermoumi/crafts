@@ -4,6 +4,7 @@ import {
   AddedFilter,
   ChangedFilter,
   PresentFilter,
+  RemovedFilter,
 } from "./filter";
 
 class Position extends Component {
@@ -51,6 +52,15 @@ describe("component filter shortcuts", () => {
     const { trait } = filter;
 
     expect(filter).toBeInstanceOf(ChangedFilter);
+    expect(trait).toBe(Position);
+  });
+
+  it("provides a shortcut to RemovedFilter", () => {
+    const filter = Position.removed();
+    // @ts-expect-error 2341 - We want to check its private property
+    const { trait } = filter;
+
+    expect(filter).toBeInstanceOf(RemovedFilter);
     expect(trait).toBe(Position);
   });
 });
