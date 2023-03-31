@@ -15,7 +15,7 @@
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^",
     "@types/three": "^0.150.0",
-    "three": "^0.150.1"
+    "three": "^0.151.1"
   },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
@@ -23,7 +23,7 @@
     "@vitest/coverage-istanbul": "^0.29.8",
     "eslint": "^8.37.0",
     "prettier": "^2.8.7",
-    "typescript": "^4.9.5",
+    "typescript": "^5.0.3",
     "vite": "^4.2.1",
     "vitest": "^0.29.8"
   }
