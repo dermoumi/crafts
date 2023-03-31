@@ -16,18 +16,19 @@
       "!{projectRoot}/src/**/*.test.ts"
     ],
     "testFiles": ["{projectRoot}/src/**/*"],
+    "miscFiles": ["{projectRoot}/**/*.md"],
     "buildConfig": [
       "{projectRoot}/package.json",
       "{projectRoot}/tsconfig.json",
       "{projectRoot}/vite.config.ts"
     ],
-    "baseBuildConfig": [],
+    "baseBuildConfig": ["{projectRoot}/.noop"],
     "lintConfig": [
       "{projectRoot}/.eslintrc.cjs",
       "{projectRoot}/.eslintignore",
       "{projectRoot}/.prettierignore"
     ],
-    "baseLintConfig": []
+    "baseLintConfig": ["{projectRoot}/.noop"]
   },
   "targetDefaults": {
     "build": {
@@ -42,6 +43,7 @@
     },
     "lint": {
       "inputs": [
+        "miscFiles",
         "sourceFiles",
         "testFiles",
         "buildConfig",
