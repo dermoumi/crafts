@@ -189,36 +189,17 @@ export default abstract class Container<T extends Trait> {
     });
 
     const previousTrait = this.traitMap.get(constructor);
+    this.traitMap.set(constructor, proxy);
     if (previousTrait) {
       // Dispose of the previous trait if it exists
       previousTrait.__dispose();
-    }
-
-    this.traitMap.set(constructor, proxy);
-
-    // Notify the query manager about the addition/change
-    if (!previousTrait) {
-      this.manager.onTraitAdded(this, constructor);
-    } else if (!this.areTraitsIdentical(previousTrait, trait)) {
+      // Notify the query manager about the change
       this.manager.onTraitChanged(this, constructor);
+    } else {
+      // Notify the query manager about the addition
+      this.manager.onTraitAdded(this, constructor);
     }
 
     return this;
-  }
-
-  /**
-   * Check if two traits are identical.
-   *
-   * @internal
-   * @param a - The first trait
-   * @param b - The second trait
-   * @returns True if the trait are identical, false otherwise
-   */
-  private areTraitsIdentical<C extends T>(a: C, b: C): boolean {
-    for (const key in a) {
-      if (a[key] !== b[key]) return false;
-    }
-
-    return true;
   }
 }

@@ -123,8 +123,15 @@ export class QueryBuilder<
    * @param trait - The trait that was added
    */
   public onTraitAdded(container: C, trait: TraitConstructor<T>): void {
-    if (this.trackingTraits.has(trait)) {
-      this.changeTrackMap.get("added").get(container).add(trait);
+    const { trackingTraits, changeTrackMap } = this;
+
+    if (trackingTraits.has(trait)) {
+      // If it's in the removed set, remove it and add it to the changed set
+      if (changeTrackMap.get("removed").get(container).delete(trait)) {
+        changeTrackMap.get("changed").get(container).add(trait);
+      } else {
+        changeTrackMap.get("added").get(container).add(trait);
+      }
     }
 
     this.updateWith(container);
