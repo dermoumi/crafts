@@ -28,7 +28,7 @@ describe("GameApp", () => {
     await game.run();
     expect(cleanupFunc).not.toHaveBeenCalled();
 
-    game.stop();
+    await game.stop();
     expect(cleanupFunc).toHaveBeenCalled();
   });
 });
