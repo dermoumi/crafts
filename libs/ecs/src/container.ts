@@ -171,7 +171,7 @@ export default abstract class Container<T extends Trait> {
    * @param trait - The trait instance to add
    * @returns This object
    */
-  private addTrait(constructor: TraitConstructor<T>, trait: T): this {
+  protected addTrait(constructor: TraitConstructor<T>, trait: T): this {
     // Wrap the trait with a proxy to monitor changes
     const proxy = new Proxy(trait, {
       set: (target, key, value): boolean => {

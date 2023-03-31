@@ -1,6 +1,6 @@
 import type Entity from "./entity";
 
-import Component from "./component";
+import Component, { UniqueComponent } from "./component";
 import World from "./world";
 
 class TestComponent extends Component {
@@ -50,5 +50,38 @@ describe("Component management", () => {
     expect(() => entity.get(TestComponent)).toThrow(
       `TestComponent is not present in Entity ${entity.id}`
     );
+  });
+});
+
+describe("Unique component management", () => {
+  class TestUniqueComponent extends UniqueComponent {
+    public value = 0;
+  }
+
+  it("removes the component from all other entities when added", () => {
+    const world = new World();
+    const entityA = world.spawn();
+    const entityB = world.spawn().add(TestUniqueComponent);
+
+    expect(entityA.has(TestUniqueComponent)).toBe(false);
+    expect(entityB.has(TestUniqueComponent)).toBe(true);
+
+    entityA.add(TestUniqueComponent);
+
+    expect(entityA.has(TestUniqueComponent)).toBe(true);
+    expect(entityB.has(TestUniqueComponent)).toBe(false);
+  });
+
+  it("replaces tho component when added to the same entity", () => {
+    const world = new World();
+    const entity = world.spawn().add(TestUniqueComponent);
+
+    expect(entity.has(TestUniqueComponent)).toBe(true);
+    expect(entity.get(TestUniqueComponent)?.value).toBe(0);
+
+    entity.add(TestUniqueComponent, { value: 1 });
+
+    expect(entity.has(TestUniqueComponent)).toBe(true);
+    expect(entity.get(TestUniqueComponent)?.value).toBe(1);
   });
 });
