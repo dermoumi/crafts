@@ -196,6 +196,17 @@ describe("Threejs plugin", () => {
     expect(node.position).toEqual({ x: 144, y: 42, z: 0 });
   });
 
+  it("renders each update", () => {
+    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    gameApp.run();
+
+    const render = vi.spyOn(WebGLRenderer.prototype, "render");
+
+    gameApp.groupsProxy.update();
+    gameApp.groupsProxy.postupdate();
+    expect(render).toHaveBeenCalled();
+  });
+
   it("removes event listeners when the game is stopped", () => {
     const eventListeners = new SetMap<string, any>();
     const addEventListener = vi

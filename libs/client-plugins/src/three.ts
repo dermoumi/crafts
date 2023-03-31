@@ -166,7 +166,10 @@ const fixCameraAsepectRatio = (
 /**
  * Plugin to manage ThreeJS scenes.
  */
-export const pluginThree: ClientPlugin = ({ onInit }, { update }) => {
+export const pluginThree: ClientPlugin = (
+  { onInit },
+  { update, postupdate }
+) => {
   // Listen for window resize events
   onInit(({ resources }) => {
     const resizeListener = () => {
@@ -304,16 +307,17 @@ export const pluginThree: ClientPlugin = ({ onInit }, { update }) => {
       command(({ removeResource }) => {
         removeResource(WindowResized);
       });
-    })
-    // Render the scene, each frame
-    .add(
-      {
-        resources: [MainRenderer, MainCamera, MainScene],
-      },
-      ({ resources }) => {
-        const [{ renderer }, camera, scene] = resources;
+    });
 
-        renderer.render(scene.node, camera.node);
-      }
-    );
+  // Render the scene, each frame
+  postupdate.add(
+    {
+      resources: [MainRenderer, MainCamera, MainScene],
+    },
+    ({ resources }) => {
+      const [{ renderer }, camera, scene] = resources;
+
+      renderer.render(scene.node, camera.node);
+    }
+  );
 };

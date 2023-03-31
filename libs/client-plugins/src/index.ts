@@ -4,7 +4,11 @@ import type { Plugin } from "@crafts/game-app";
 /**
  * System groups used only on the client side
  */
-export type ClientSystemGroups = CommonSystemGroups | "update";
+export type ClientSystemGroups =
+  | CommonSystemGroups
+  | "preupdate"
+  | "update"
+  | "postupdate";
 
 /**
  * Plugin type for client game apps
