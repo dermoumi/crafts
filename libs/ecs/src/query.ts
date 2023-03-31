@@ -309,6 +309,45 @@ export class Query<F extends FilterSet<Component>> {
   }
 
   /**
+   * Get a single entity from the query.
+   *
+   * @throws If the query has no entities
+   * @returns The first entity in the query
+   */
+  public getOne(): Entity {
+    const { containers } = this.query;
+
+    if (containers.size === 0) {
+      throw new Error("Query has no entities");
+    } else if (containers.size > 1) {
+      console.warn("Query has more than one entity");
+    }
+
+    return containers.values().next().value;
+  }
+
+  /**
+   * Get a single entity from the query as a component tuple.
+   *
+   * @throws If the query has no entities
+   * @returns A tuple containing the components requested for the first entity
+   */
+  public getOneAsComponents(): TraitInstances<Component, F> {
+    const entity = this.getOne();
+    return this.query.getTraitInstances(entity);
+  }
+
+  /**
+   * Get a single entity from the query along with its components an a tuple.
+   *
+   * @throws If the query has no entities
+   */
+  public getOneWithComponents(): [Entity, ...TraitInstances<Component, F>] {
+    const entity = this.getOne();
+    return [entity, ...this.query.getTraitInstances(entity)];
+  }
+
+  /**
    * Check if a given entity is in the query.
    *
    * @param entity - The entity to check for

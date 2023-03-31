@@ -260,6 +260,14 @@ describe("Query builder", () => {
 });
 
 describe("Query", () => {
+  const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {
+    // Nothing to do
+  });
+
+  afterEach(() => {
+    warnSpy.mockClear();
+  });
+
   it("iterates directly over entities", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
@@ -365,6 +373,89 @@ describe("Query", () => {
     const query = new Query(builder);
 
     expect(query.size).toBe(3);
+  });
+
+  it("can retrieve a single entity in the queryset", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entityA = new Entity("a", manager).add(Position);
+    entityPool.set(entityA.id, entityA);
+
+    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
+      [Position],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    expect(query.getOne()).toBe(entityA);
+  });
+
+  it("throws an error if there are no entities in the queryset", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+
+    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
+      [Position],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    expect(() => query.getOne()).toThrowError();
+  });
+
+  it("warns if there are more than one entities in the queryset", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityA = new Entity("a", manager).add(Position);
+    const entityB = new Entity("b", manager).add(Position);
+
+    const entityPool = manager.containers;
+    entityPool.set(entityA.id, entityA);
+    entityPool.set(entityB.id, entityB);
+
+    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
+      [Position],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    const result = query.getOne();
+
+    expect(query.size).toBe(2);
+    expect(result).toBe(entityA);
+    expect(warnSpy).toHaveBeenCalledOnce();
+  });
+
+  it("can retrieve a single entity as components", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entityA = new Entity("a", manager).add(Position);
+    entityPool.set(entityA.id, entityA);
+
+    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
+      [Position],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    expect(query.getOneAsComponents()).toEqual([entityA.get(Position)]);
+  });
+
+  it("can retrieve a single entity with its components", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entityA = new Entity("a", manager).add(Position);
+    entityPool.set(entityA.id, entityA);
+
+    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
+      [Position],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    expect(query.getOneWithComponents()).toEqual([
+      entityA,
+      entityA.get(Position),
+    ]);
   });
 });
 
