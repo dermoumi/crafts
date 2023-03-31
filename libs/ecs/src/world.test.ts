@@ -152,6 +152,34 @@ describe("World systems", () => {
     expect(systemCallback).not.toHaveBeenCalled();
   });
 
+  it("does not call the system's callback when any of the component queries is empty", () => {
+    const systemCallback = vi.fn();
+    const TestSystem = new System(
+      { queryA: [Position], queryB: [Position.absent()] },
+      systemCallback
+    );
+    const world = new World();
+    world.spawn().add(Position);
+    const system = world.addSystem(TestSystem);
+
+    systemCallback.mockClear();
+    system();
+
+    expect(systemCallback).not.toHaveBeenCalled();
+  });
+
+  it("calls the system's callback when there's no resource or component queries", () => {
+    const systemCallback = vi.fn();
+    const TestSystem = new System({}, systemCallback);
+    const world = new World();
+    const system = world.addSystem(TestSystem);
+
+    systemCallback.mockClear();
+    system();
+
+    expect(systemCallback).toHaveBeenCalledOnce();
+  });
+
   it("retrieves multiple queries correctly", () => {
     const queryAResult = vi.fn();
     const queryBResult = vi.fn();
