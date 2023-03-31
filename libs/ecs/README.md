@@ -110,6 +110,26 @@ entity.hasAll(Position, Renderable); // False
 entity.remove(Velocity); // Needs the component constructor, not the instance
 ```
 
+### Unique components
+
+Unique components can only exist on one entity at a time. This is useful for
+things like a controllable character, or a main camera.
+
+Adding a unique component to an entity will automatically remove it from all
+other entities.
+
+```ts
+import * as Ecs from "@crafts/ecs";
+
+class MainCamera extends Ecs.UniqueComponent {}
+
+const cameraA = world.spawn();
+const cameraB = world.spawn().add(MainCamera);
+
+cameraA.add(MainCamera);
+cameraB.has(MainCamera); // false
+```
+
 ### Bundles
 
 A Bundle is just a utility for adding multiple components at once.

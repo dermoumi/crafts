@@ -1,4 +1,4 @@
-import Component from "./component";
+import Component, { UniqueComponent } from "./component";
 import {
   AbsentFilter,
   AddedFilter,
@@ -15,6 +15,14 @@ class Position extends Component {
 describe("Component class", () => {
   it("is a component", () => {
     expect(new Position().__isComponent()).toBe(true);
+  });
+});
+
+describe("UniqueComponent class", () => {
+  class TestComponent extends UniqueComponent {}
+
+  it("is a unique component", () => {
+    expect(new TestComponent().__isUniqueComponent()).toBe(true);
   });
 });
 

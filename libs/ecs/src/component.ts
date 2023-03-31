@@ -74,3 +74,14 @@ export default abstract class Component {
     return new RemovedFilter(this);
   }
 }
+
+export abstract class UniqueComponent extends Component {
+  /**
+   * Marker to identify unique components.
+   *
+   * @returns true
+   */
+  public __isUniqueComponent(): boolean {
+    return true;
+  }
+}
