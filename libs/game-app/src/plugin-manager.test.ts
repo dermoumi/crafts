@@ -45,8 +45,11 @@ describe("Plugin manager", () => {
         myPlugin();
       });
     });
-    await pluginManager.init();
 
+    const initPromise = pluginManager.init();
+    expect(myPlugin).not.toHaveBeenCalled();
+
+    await initPromise;
     expect(myPlugin).toHaveBeenCalledTimes(1);
   });
 
@@ -63,7 +66,33 @@ describe("Plugin manager", () => {
     await pluginManager.init();
     expect(myCleanupFunc).not.toHaveBeenCalled();
 
-    pluginManager.cleanup();
+    await pluginManager.cleanup();
+    expect(myCleanupFunc).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs async cleanup hooks", async () => {
+    const myCleanupFunc = vi.fn();
+
+    const world = new Ecs.World();
+    const groups = { cleanup: createSystemGroup(world) };
+
+    const pluginManager = new PluginManager(groups, world).add(({ onInit }) => {
+      onInit(() => async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+
+        myCleanupFunc();
+      });
+    });
+
+    await pluginManager.init();
+    expect(myCleanupFunc).not.toHaveBeenCalled();
+
+    const cleanupPromise = pluginManager.cleanup();
+    expect(myCleanupFunc).not.toHaveBeenCalled();
+
+    await cleanupPromise;
     expect(myCleanupFunc).toHaveBeenCalledTimes(1);
   });
 
