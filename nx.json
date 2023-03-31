@@ -22,7 +22,6 @@
       "{projectRoot}/tsconfig.json",
       "{projectRoot}/vite.config.ts"
     ],
-    "baseBuildConfig": ["{projectRoot}/.noop"],
     "lintConfig": [
       "{projectRoot}/.eslintrc.cjs",
       "{projectRoot}/.eslintignore",
@@ -34,18 +33,14 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "sourceFiles",
-        "^sourceFiles",
-        "buildConfig",
-        "^baseBuildConfig"
-      ],
+      "inputs": ["sourceFiles", "^sourceFiles", "buildConfig", "^buildConfig"],
       "outputs": ["dist/**"]
     },
     "lint": {
       "inputs": [
         "miscFiles",
         "sourceFiles",
+        "^sourceFiles",
         "testFiles",
         "buildConfig",
         "lintConfig",
@@ -54,15 +49,10 @@
       "outputs": [".eslintcache"]
     },
     "test": {
-      "inputs": ["testFiles", "^sourceFiles", "buildConfig", "^baseBuildConfig"]
+      "inputs": ["testFiles", "^sourceFiles", "buildConfig", "^buildConfig"]
     },
     "test:cov": {
-      "inputs": [
-        "testFiles",
-        "^sourceFiles",
-        "buildConfig",
-        "^baseBuildConfig"
-      ],
+      "inputs": ["testFiles", "^sourceFiles", "buildConfig", "^buildConfig"],
       "outputs": ["coverage/**"]
     }
   }
