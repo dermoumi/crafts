@@ -37,6 +37,12 @@ jobs:
           node-version: "lts/*"
           cache: "pnpm"
 
+      - name: NX cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules/.cache/nx
+          key: nx-${{ github.ref }}
+
       - name: Derive HEAD and BASE shas for 'nx affected'
         uses: nrwl/nx-set-shas@v3
 
