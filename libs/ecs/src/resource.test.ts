@@ -4,6 +4,7 @@ import {
   AddedFilter,
   ChangedFilter,
   PresentFilter,
+  RemovedFilter,
 } from "./filter";
 
 class AppInfo extends Resource {
@@ -50,6 +51,15 @@ describe("resource filter shortcuts", () => {
     const { trait } = filter;
 
     expect(filter).toBeInstanceOf(ChangedFilter);
+    expect(trait).toBe(AppInfo);
+  });
+
+  it("provides a shortcut to RemovedFilter", () => {
+    const filter = AppInfo.removed();
+    // @ts-expect-error 2341 - We want to check its private property
+    const { trait } = filter;
+
+    expect(filter).toBeInstanceOf(RemovedFilter);
     expect(trait).toBe(AppInfo);
   });
 });

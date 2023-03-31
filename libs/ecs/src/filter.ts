@@ -9,7 +9,7 @@ import { DefaultMap, SetMap } from "@crafts/default-map";
  * @typeParam T - Lock to a type of the trait (Component, Resource...)
  */
 export class ChangeTrackMap<T extends Trait = any> extends DefaultMap<
-  "added" | "changed",
+  "added" | "changed" | "removed",
   SetMap<Container<T>, TraitConstructor<T>>
 > {
   /**
@@ -244,6 +244,35 @@ export class ChangedFilter<T extends Trait> extends SingleFilter<T> {
     if (!container.has(trait)) return false;
 
     return initial || tracked.get("changed").get(container).has(trait);
+  }
+}
+
+/**
+ * Filters containers that had their instance of the given trait
+ * removed since the last reset.
+ *
+ * @typeParam T - Lock to a type of the trait (Component, Resource...)
+ */
+export class RemovedFilter<T extends Trait> extends SingleFilter<T> {
+  /**
+   * @override
+   */
+  public *getTrackingTraits(): IterableIterator<TraitConstructor<T>> {
+    yield this.trait;
+  }
+
+  /**
+   * @override
+   * @returns `true` if the container has this filter's trait
+   */
+  public matches(
+    container: Container<T>,
+    tracked: ChangeTrackMap<any>
+  ): boolean {
+    const { trait } = this;
+    if (container.has(trait)) return false;
+
+    return tracked.get("removed").get(container).has(trait);
   }
 }
 
