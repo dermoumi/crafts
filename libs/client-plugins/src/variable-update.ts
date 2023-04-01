@@ -11,7 +11,10 @@ export class FrameInfo extends Ecs.Resource {
 /**
  * Plugin to run updates at a variable, framerate.
  */
-export const pluginVariableUpdate: ClientPlugin = ({ onInit }, { update }) => {
+export const pluginVariableUpdate: ClientPlugin = (
+  { onInit },
+  { preupdate, update, postupdate }
+) => {
   onInit(({ resources }) => {
     resources.add(FrameInfo);
     const frameInfo = resources.get(FrameInfo);
@@ -28,7 +31,9 @@ export const pluginVariableUpdate: ClientPlugin = ({ onInit }, { update }) => {
       frameTime = timestamp;
       frameInfo.delta = (frameTime - lastFrameTime) / 1000;
 
+      preupdate();
       update();
+      postupdate();
     }
 
     return () => {
