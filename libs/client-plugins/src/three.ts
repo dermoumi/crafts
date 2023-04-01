@@ -16,6 +16,7 @@ import {
   RenderPosition,
   SceneNode,
 } from "./world-entities";
+import { Position } from "@crafts/common-plugins";
 
 /**
  * An abstract node component.
@@ -140,7 +141,12 @@ export const pluginThree: ClientPlugin = (
 
   // Spawn the initial scene and camera
   onInit((world) => {
-    world.spawn().add(CameraNode).add(RenderPosition, { z: 5 }).add(MainCamera);
+    world
+      .spawn()
+      .add(CameraNode)
+      .add(RenderPosition)
+      .add(Position, { z: 5 })
+      .add(MainCamera);
     world.spawn().add(SceneNode).add(MainScene);
   });
 
