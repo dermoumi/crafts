@@ -3,7 +3,7 @@ import GameApp from "./game-app";
 import { createSystemGroup } from "./system-group";
 
 describe("GameApp", () => {
-  it("invokes the init handlers on run()", () => {
+  it("invokes the init handlers on run()", async () => {
     const startupFunc = vi.fn();
 
     const testPlugin: Plugin = ({ onInit }) => {
@@ -13,11 +13,11 @@ describe("GameApp", () => {
     const game = new GameApp().addPlugin(testPlugin);
     expect(startupFunc).not.toHaveBeenCalled();
 
-    game.run();
+    await game.run();
     expect(startupFunc).toHaveBeenCalled();
   });
 
-  it("invokes the cleanup group on stop()", () => {
+  it("invokes the cleanup group on stop()", async () => {
     const cleanupFunc = vi.fn();
 
     const testPlugin: Plugin = ({ onInit }) => {
@@ -25,16 +25,16 @@ describe("GameApp", () => {
     };
 
     const game = new GameApp().addPlugin(testPlugin);
-    game.run();
+    await game.run();
     expect(cleanupFunc).not.toHaveBeenCalled();
 
-    game.stop();
+    await game.stop();
     expect(cleanupFunc).toHaveBeenCalled();
   });
 });
 
 describe("GameApp plugins", () => {
-  it("can retrieve existing groups", () => {
+  it("can retrieve existing groups", async () => {
     const testPlugin: Plugin<"startup"> = (_, { startup }) => {
       startup.add({}, vi.fn());
     };
@@ -44,7 +44,8 @@ describe("GameApp plugins", () => {
     const startupAddMock = vi.spyOn(startupGroup, "add");
     game.groups.startup = startupGroup;
 
-    game.addPlugin(testPlugin).run();
+    game.addPlugin(testPlugin);
+    await game.run();
 
     expect(startupAddMock).toHaveBeenCalledOnce();
   });
@@ -59,7 +60,7 @@ describe("GameApp plugins", () => {
 
     const game = new GameApp().addPlugin(testPlugin);
 
-    expect(() => game.run()).toThrowError("Cannot set system groups");
+    expect(game.run()).rejects.toThrowError("Cannot set system groups");
   });
 
   it("cannot add new system groups", () => {
@@ -72,10 +73,10 @@ describe("GameApp plugins", () => {
 
     const game = new GameApp().addPlugin(testPlugin);
 
-    expect(() => game.run()).toThrowError("Cannot set system groups");
+    expect(game.run()).rejects.toThrowError("Cannot set system groups");
   });
 
-  it("can retrieve non-registered system groups", () => {
+  it("can retrieve non-registered system groups", async () => {
     // To make sure that the plugin was indeed called
     const callCheck = vi.fn();
 
@@ -88,7 +89,7 @@ describe("GameApp plugins", () => {
     };
 
     const game = new GameApp().addPlugin(testPlugin);
-    game.run();
+    await game.run();
 
     expect(callCheck).toHaveBeenCalled();
   });

@@ -110,6 +110,26 @@ entity.hasAll(Position, Renderable); // False
 entity.remove(Velocity); // Needs the component constructor, not the instance
 ```
 
+### Unique components
+
+Unique components can only exist on one entity at a time. This is useful for
+things like a controllable character, or a main camera.
+
+Adding a unique component to an entity will automatically remove it from all
+other entities.
+
+```ts
+import * as Ecs from "@crafts/ecs";
+
+class MainCamera extends Ecs.UniqueComponent {}
+
+const cameraA = world.spawn();
+const cameraB = world.spawn().add(MainCamera);
+
+cameraA.add(MainCamera);
+cameraB.has(MainCamera); // false
+```
+
 ### Bundles
 
 A Bundle is just a utility for adding multiple components at once.
@@ -181,6 +201,15 @@ for (const [entity, position, velocity] of query.withComponents()) {
 }
 ```
 
+Or, if you know your query will only return a single entity, you can use
+
+```ts
+// Will throw an exception if no entity is found
+const entity = query.getOne();
+const [position, velocity] = query.getOneAsComponents();
+const [entity, position, velocity] = query.getOneWithComponents();
+```
+
 You can also use _filters_ to only match specific conditions.
 
 ```ts
@@ -226,8 +255,27 @@ for (const entities of query) {
 // properties of sub-objects are ignored.
 
 // Note 2:
-// Adding an existing component with different values
-// counts as a change.
+// Adding an existing component will always count as a change
+
+// Note 3:
+// Removing then adding a component between resets will count as a change
+
+// Filter with component removals
+query = world.query(Position.removed());
+query.reset();
+
+entityA.remove(Position);
+
+for (const entities of query) {
+  // Will only loop over entityA
+  // It's the only one who had the component Position removed
+  // since the last query reset.
+  //
+  // Note that the removed components are no longer accessible.
+}
+
+// Note 4:
+// Removing and adding a component between resets will not count as a removal
 ```
 
 You can also make composite filters using AND and OR operators:
@@ -299,6 +347,9 @@ const CollisionSystem = new Ecs.System(
   }
 );
 ```
+
+Note that if a system has queries (components or resources), its callback
+will only be called if all of those queries have at least one result.
 
 ### Resources
 

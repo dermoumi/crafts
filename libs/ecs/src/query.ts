@@ -123,8 +123,15 @@ export class QueryBuilder<
    * @param trait - The trait that was added
    */
   public onTraitAdded(container: C, trait: TraitConstructor<T>): void {
-    if (this.trackingTraits.has(trait)) {
-      this.changeTrackMap.get("added").get(container).add(trait);
+    const { trackingTraits, changeTrackMap } = this;
+
+    if (trackingTraits.has(trait)) {
+      // If it's in the removed set, remove it and add it to the changed set
+      if (changeTrackMap.get("removed").get(container).delete(trait)) {
+        changeTrackMap.get("changed").get(container).add(trait);
+      } else {
+        changeTrackMap.get("added").get(container).add(trait);
+      }
     }
 
     this.updateWith(container);
@@ -135,9 +142,13 @@ export class QueryBuilder<
    *
    * @internal
    * @param container - The container that changed
-   * @param _trait - The trait that was removed
+   * @param trait - The trait that was removed
    */
-  public onTraitRemoved(container: C, _trait: TraitConstructor<T>): void {
+  public onTraitRemoved(container: C, trait: TraitConstructor<T>): void {
+    if (this.trackingTraits.has(trait)) {
+      this.changeTrackMap.get("removed").get(container).add(trait);
+    }
+
     this.updateWith(container);
   }
 
@@ -306,6 +317,45 @@ export class Query<F extends FilterSet<Component>> {
     for (const entity of this.query.containers) {
       yield [entity, ...this.query.getTraitInstances(entity)];
     }
+  }
+
+  /**
+   * Get a single entity from the query.
+   *
+   * @throws If the query has no entities
+   * @returns The first entity in the query
+   */
+  public getOne(): Entity {
+    const { containers } = this.query;
+
+    if (containers.size === 0) {
+      throw new Error("Query has no entities");
+    } else if (containers.size > 1) {
+      console.warn("Query has more than one entity");
+    }
+
+    return containers.values().next().value;
+  }
+
+  /**
+   * Get a single entity from the query as a component tuple.
+   *
+   * @throws If the query has no entities
+   * @returns A tuple containing the components requested for the first entity
+   */
+  public getOneAsComponents(): TraitInstances<Component, F> {
+    const entity = this.getOne();
+    return this.query.getTraitInstances(entity);
+  }
+
+  /**
+   * Get a single entity from the query along with its components an a tuple.
+   *
+   * @throws If the query has no entities
+   */
+  public getOneWithComponents(): [Entity, ...TraitInstances<Component, F>] {
+    const entity = this.getOne();
+    return [entity, ...this.query.getTraitInstances(entity)];
   }
 
   /**

@@ -53,89 +53,89 @@ describe("Input plugin", () => {
     document.body.innerHTML = "";
   });
 
-  it("registers an Input resource", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("registers an Input resource", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.tryGet(Input);
+    const input = game.world.resources.tryGet(Input);
     expect(input).toBeDefined();
     expect(input).toBeInstanceOf(Input);
   });
 
-  it("updates the Input resource when a key is pressed", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("updates the Input resource when a key is pressed", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const event = new KeyboardEvent("keydown", { code: "KeyW" });
     window.dispatchEvent(event);
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
     expect(input.isDown("up")).toBe(true);
     expect(input.isPressed("up")).toBe(true);
   });
 
-  it("updates the Input resource when a key is released", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("updates the Input resource when a key is released", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const event = new KeyboardEvent("keydown", { code: "KeyW" });
     window.dispatchEvent(event);
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const event2 = new KeyboardEvent("keyup", { code: "KeyW" });
     window.dispatchEvent(event2);
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
     expect(input.isDown("up")).toBe(false);
     expect(input.isReleased("up")).toBe(true);
   });
 
-  it("releases all actions when the window loses focus", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("releases all actions when the window loses focus", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const event = new KeyboardEvent("keydown", { code: "KeyW" });
     window.dispatchEvent(event);
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const event2 = new FocusEvent("blur");
     window.dispatchEvent(event2);
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
     expect(input.isDown("up")).toBe(false);
     expect(input.isReleased("up")).toBe(true);
   });
 
-  it("removes all listeners when the app is destroyed", () => {
+  it("removes all listeners when the game is destroyed", async () => {
     const addEventListener = vi.spyOn(window, "addEventListener");
     const removeEventListenerSpy = vi.spyOn(window, "removeEventListener");
 
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
     expect(addEventListener).toHaveBeenCalledTimes(3);
     expect(removeEventListenerSpy).not.toHaveBeenCalled();
 
-    app.stop();
+    await game.stop();
     expect(removeEventListenerSpy).toHaveBeenCalledTimes(3);
   });
 
-  it("prevents default keyboard events", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("prevents default keyboard events", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
     const callback = vi.fn();
     window.addEventListener("keydown", callback);
     window.addEventListener("keyup", callback);
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const event = new KeyboardEvent("keydown", { code: "KeyW" });
     window.dispatchEvent(event);
@@ -146,15 +146,15 @@ describe("Input plugin", () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("does not prevent keyboard events if an input element is focused", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("does not prevent keyboard events if an input element is focused", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
     const callback = vi.fn();
     window.addEventListener("keydown", callback);
     window.addEventListener("keyup", callback);
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     const input = document.createElement("input");
     document.body.append(input);
@@ -169,11 +169,11 @@ describe("Input plugin", () => {
     expect(callback).toHaveBeenCalled();
   });
 
-  it("ignores non-mapped keys", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("ignores non-mapped keys", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
     const actionsSnapshot = [...input.actions];
 
     const event = new KeyboardEvent("keydown", { code: "KeyO" });
@@ -187,16 +187,16 @@ describe("Input plugin", () => {
     expect([...input.actions]).toEqual(actionsSnapshot);
   });
 
-  it("only releases an action when all its keys are released", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("only releases an action when all its keys are released", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
 
     window.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyW" }));
     window.dispatchEvent(new KeyboardEvent("keydown", { code: "ArrowUp" }));
 
-    app.groupsProxy.update();
+    game.groupsProxy.update();
 
     expect(input.isDown("up")).toBe(true);
     expect(input.isReleased("up")).toBe(false);
@@ -213,11 +213,11 @@ describe("Input plugin", () => {
     ["ArrowLeft", -1, 0],
     ["ArrowDown", 0, 1],
     ["ArrowRight", 1, 0],
-  ])("moves the joystick when %s is pressed", (key, lx, ly) => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  ])("moves the joystick when %s is pressed", async (key, lx, ly) => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
 
     expect(input.axes.lx).toEqual(0);
     expect(input.axes.ly).toEqual(0);
@@ -233,11 +233,11 @@ describe("Input plugin", () => {
     expect(input.axes.ly).toEqual(0);
   });
 
-  it("does not move the joystick when not using a directional key", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("does not move the joystick when not using a directional key", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
 
     expect(input.axes.lx).toEqual(0);
     expect(input.axes.ly).toEqual(0);
@@ -253,11 +253,11 @@ describe("Input plugin", () => {
     expect(input.axes.ly).toEqual(0);
   });
 
-  it("does not move axis when releasing a key that was not pressed", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("does not move axis when releasing a key that was not pressed", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
 
     expect(input.axes.lx).toEqual(0);
     expect(input.axes.ly).toEqual(0);
@@ -268,11 +268,11 @@ describe("Input plugin", () => {
     expect(input.axes.ly).toEqual(0);
   });
 
-  it("moves the joystick according to the order of the keys", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("moves the joystick according to the order of the keys", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
 
     expect(input.axes.ly).toEqual(0);
 
@@ -301,11 +301,11 @@ describe("Input plugin", () => {
     expect(input.axes.ly).toEqual(0);
   });
 
-  it("moves diagonally at a constant speed", () => {
-    const app = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
-    app.run();
+  it("moves diagonally at a constant speed", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginInput);
+    await game.run();
 
-    const input = app.world.resources.get(Input);
+    const input = game.world.resources.get(Input);
 
     expect(input.axes.lx).toEqual(0);
     expect(input.axes.ly).toEqual(0);

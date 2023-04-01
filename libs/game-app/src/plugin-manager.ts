@@ -3,9 +3,16 @@ import type { World } from "@crafts/ecs";
 import type { SystemGroup } from "./system-group";
 
 /**
+ * A handler to cleanup a plugin.
+ */
+export type CleanupHandler = () => Promise<void> | void;
+
+/**
  * A handler to initalize a plugin.
  */
-export type OnInitHandler = (world: World) => (() => void) | void;
+export type OnInitHandler = (
+  world: World
+) => Promise<CleanupHandler | void> | CleanupHandler | void;
 
 /**
  * Options to register an OnInit handler.
@@ -27,7 +34,7 @@ export type Plugin<T extends string = string> = {
   (
     registry: { onInit: OnInit },
     groups: { readonly [K in T]: SystemGroup }
-  ): void;
+  ): Promise<void> | void;
 };
 
 /**
@@ -41,7 +48,7 @@ export default class PluginManager<T extends string> {
   };
 
   private readonly world: World;
-  private readonly cleanupHandlers: Array<() => void> = [];
+  private readonly cleanupHandlers: CleanupHandler[] = [];
   private plugins: Array<Plugin<T>> = [];
 
   public constructor(systemGroups: Record<T, SystemGroup>, world: World) {
@@ -64,7 +71,7 @@ export default class PluginManager<T extends string> {
   /**
    * Initialize all the plugins.
    */
-  public init() {
+  public async init(): Promise<void> {
     const addedDependencies = new Set<string>();
     const pendingHandlers = new SetMap<
       string,
@@ -108,11 +115,13 @@ export default class PluginManager<T extends string> {
     };
 
     for (const plugin of this.plugins) {
-      plugin({ onInit }, this.systemGroups);
+      // eslint-disable-next-line no-await-in-loop
+      await plugin({ onInit }, this.systemGroups);
     }
 
     for (const handler of initHandlers) {
-      const cleanup = handler(this.world);
+      // eslint-disable-next-line no-await-in-loop
+      const cleanup = await handler(this.world);
       if (cleanup !== undefined) {
         this.cleanupHandlers.unshift(cleanup);
       }
@@ -130,9 +139,10 @@ export default class PluginManager<T extends string> {
   /**
    * Stops all the plugins.
    */
-  public cleanup() {
+  public async cleanup(): Promise<void> {
     for (const handler of this.cleanupHandlers) {
-      handler();
+      // eslint-disable-next-line no-await-in-loop
+      await handler();
     }
   }
 }

@@ -1,7 +1,7 @@
 import type { ClientPlugin } from ".";
 import type { Entity } from "@crafts/ecs";
+import { UniqueComponent, Component, Resource } from "@crafts/ecs";
 import type { Renderer, Object3D } from "three";
-import { Component, Resource } from "@crafts/ecs";
 import {
   Scene,
   BoxGeometry,
@@ -56,57 +56,12 @@ export class ChildNode extends Component {
 /**
  * The main camera.
  */
-export class MainCamera extends Resource {
-  /**
-   * The camera's entity.
-   */
-  public readonly camera: Entity;
-
-  /**
-   * @param camera - The camera's entity.
-   *  It needs to have a `CameraNode` component.
-   */
-  public constructor(camera: Entity) {
-    super();
-    camera.get(CameraNode); // Raises an exception if the entity is not a camera
-    this.camera = camera;
-  }
-
-  /**
-   * Retrieve's the camera's three.js node.
-   *
-   * @returns The camera's three.js node
-   */
-  public get node(): PerspectiveCamera {
-    return this.camera.get(Node).node as PerspectiveCamera;
-  }
-}
+export class MainCamera extends UniqueComponent {}
 
 /**
  * The main scene
  */
-export class MainScene extends Resource {
-  /**
-   * The main scene's entity.
-   */
-  public readonly scene: Entity;
-
-  /**
-   * @param scene - The scene to be marked as main scene
-   */
-  public constructor(scene: Entity) {
-    super();
-    scene.get(SceneNode); // Raises an exception if the entity is not a scene
-    this.scene = scene;
-  }
-
-  /**
-   * Retrieve the scene's three.js node.
-   */
-  public get node(): PerspectiveCamera {
-    return this.scene.get(Node).node as PerspectiveCamera;
-  }
-}
+export class MainScene extends UniqueComponent {}
 
 /**
  * The main ThreeJS renderer
@@ -185,11 +140,8 @@ export const pluginThree: ClientPlugin = (
 
   // Spawn the initial scene and camera
   onInit((world) => {
-    const camera = world.spawn().add(CameraNode).add(RenderPosition, { z: 5 });
-    world.resources.addNew(MainCamera, camera);
-
-    const scene = world.spawn().add(SceneNode);
-    world.resources.addNew(MainScene, scene);
+    world.spawn().add(CameraNode).add(RenderPosition, { z: 5 }).add(MainCamera);
+    world.spawn().add(SceneNode).add(MainScene);
   });
 
   // Add the main renderer
@@ -225,12 +177,14 @@ export const pluginThree: ClientPlugin = (
     // When a camera is set as main camera, fix its aspect ratio
     .add(
       {
-        resources: [MainRenderer, MainCamera, MainCamera.added()],
+        resources: [MainRenderer],
+        camera: [Node, MainCamera.added()],
       },
-      ({ resources }) => {
-        const [{ renderer }, camera] = resources;
+      ({ resources, camera }) => {
+        const [{ renderer }] = resources;
+        const [{ node: cameraNode }] = camera.getOneAsComponents();
 
-        fixCameraAsepectRatio(renderer, camera.node);
+        fixCameraAsepectRatio(renderer, cameraNode as PerspectiveCamera);
       }
     )
     // When a scene is added, create a new ThreeJS scene
@@ -253,14 +207,14 @@ export const pluginThree: ClientPlugin = (
     .add(
       {
         nodes: [Node, Node.added(), ChildNode.absent()],
-        resources: [MainScene],
+        scene: [Node, MainScene],
       },
-      ({ nodes, resources }) => {
-        const [scene] = resources;
+      ({ nodes, scene }) => {
+        const [{ node: sceneNode }] = scene.getOneAsComponents();
 
         for (const [{ node }] of nodes.asComponents()) {
-          if (scene.node === node) continue;
-          scene.node.add(node);
+          if (sceneNode === node) continue;
+          sceneNode.add(node);
         }
       }
     )
@@ -293,13 +247,15 @@ export const pluginThree: ClientPlugin = (
     // its container.
     .add(
       {
-        resources: [MainRenderer, MainCamera, MainScene, WindowResized.added()],
+        resources: [MainRenderer, WindowResized.added()],
+        camera: [Node, MainCamera],
       },
-      ({ resources }) => {
-        const [{ renderer, element }, camera] = resources;
+      ({ resources, camera }) => {
+        const [{ renderer, element }] = resources;
+        const [{ node: cameraNode }] = camera.getOneAsComponents();
 
         fitContainer(renderer, element);
-        fixCameraAsepectRatio(renderer, camera.node);
+        fixCameraAsepectRatio(renderer, cameraNode as PerspectiveCamera);
       }
     )
     // Remove the WindowResized Marker
@@ -312,12 +268,16 @@ export const pluginThree: ClientPlugin = (
   // Render the scene, each frame
   postupdate.add(
     {
-      resources: [MainRenderer, MainCamera, MainScene],
+      resources: [MainRenderer],
+      camera: [Node, MainCamera],
+      scene: [Node, MainScene],
     },
-    ({ resources }) => {
-      const [{ renderer }, camera, scene] = resources;
+    ({ resources, camera, scene }) => {
+      const [{ renderer }] = resources;
+      const [{ node: cameraNode }] = camera.getOneAsComponents();
+      const [{ node: sceneNode }] = scene.getOneAsComponents();
 
-      renderer.render(scene.node, camera.node);
+      renderer.render(sceneNode, cameraNode as PerspectiveCamera);
     }
   );
 };

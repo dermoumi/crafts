@@ -1,9 +1,10 @@
-import Component from "./component";
+import Component, { UniqueComponent } from "./component";
 import {
   AbsentFilter,
   AddedFilter,
   ChangedFilter,
   PresentFilter,
+  RemovedFilter,
 } from "./filter";
 
 class Position extends Component {
@@ -14,6 +15,14 @@ class Position extends Component {
 describe("Component class", () => {
   it("is a component", () => {
     expect(new Position().__isComponent()).toBe(true);
+  });
+});
+
+describe("UniqueComponent class", () => {
+  class TestComponent extends UniqueComponent {}
+
+  it("is a unique component", () => {
+    expect(new TestComponent().__isUniqueComponent()).toBe(true);
   });
 });
 
@@ -51,6 +60,15 @@ describe("component filter shortcuts", () => {
     const { trait } = filter;
 
     expect(filter).toBeInstanceOf(ChangedFilter);
+    expect(trait).toBe(Position);
+  });
+
+  it("provides a shortcut to RemovedFilter", () => {
+    const filter = Position.removed();
+    // @ts-expect-error 2341 - We want to check its private property
+    const { trait } = filter;
+
+    expect(filter).toBeInstanceOf(RemovedFilter);
     expect(trait).toBe(Position);
   });
 });

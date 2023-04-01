@@ -4,33 +4,78 @@ import { createSystemGroup } from "./system-group";
 import * as Ecs from "@crafts/ecs";
 
 describe("Plugin manager", () => {
-  it("registers plugins", () => {
+  it("registers plugins", async () => {
     const myPlugin = vi.fn();
 
     const world = new Ecs.World();
     const groups = { startup: createSystemGroup(world) };
 
-    new PluginManager(groups, world).add(myPlugin).init();
+    const pluginManager = new PluginManager(groups, world).add(myPlugin);
+    await pluginManager.init();
 
-    expect(myPlugin).toHaveBeenCalledTimes(1);
+    expect(myPlugin).toHaveBeenCalledOnce();
   });
 
-  it("runs the onInit hook", () => {
+  it("registers async plugins", async () => {
+    const myPluginCallback = vi.fn();
+    const myPlugin: Plugin = async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 0);
+      });
+
+      myPluginCallback();
+    };
+
+    const world = new Ecs.World();
+    const groups = { startup: createSystemGroup(world) };
+
+    const pluginManager = new PluginManager(groups, world).add(myPlugin);
+
+    const initPromise = pluginManager.init();
+    expect(myPluginCallback).not.toHaveBeenCalled();
+
+    await initPromise;
+    expect(myPluginCallback).toHaveBeenCalledOnce();
+  });
+
+  it("runs the onInit hook", async () => {
     const myPlugin = vi.fn();
 
     const world = new Ecs.World();
     const groups = { startup: createSystemGroup(world) };
 
-    new PluginManager(groups, world)
-      .add(({ onInit }) => {
-        onInit(myPlugin);
-      })
-      .init();
+    const pluginManager = new PluginManager(groups, world).add(({ onInit }) => {
+      onInit(myPlugin);
+    });
+    await pluginManager.init();
 
     expect(myPlugin).toHaveBeenCalledTimes(1);
   });
 
-  it("runs the cleanup hook", () => {
+  it("runs async onInit hooks", async () => {
+    const myPlugin = vi.fn();
+
+    const world = new Ecs.World();
+    const groups = { startup: createSystemGroup(world) };
+
+    const pluginManager = new PluginManager(groups, world).add(({ onInit }) => {
+      onInit(async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+
+        myPlugin();
+      });
+    });
+
+    const initPromise = pluginManager.init();
+    expect(myPlugin).not.toHaveBeenCalled();
+
+    await initPromise;
+    expect(myPlugin).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs the cleanup hook", async () => {
     const myCleanupFunc = vi.fn();
 
     const world = new Ecs.World();
@@ -40,24 +85,51 @@ describe("Plugin manager", () => {
       onInit(() => myCleanupFunc);
     });
 
-    pluginManager.init();
+    await pluginManager.init();
     expect(myCleanupFunc).not.toHaveBeenCalled();
 
-    pluginManager.cleanup();
+    await pluginManager.cleanup();
     expect(myCleanupFunc).toHaveBeenCalledTimes(1);
   });
 
-  it("runs systems", () => {
+  it("runs async cleanup hooks", async () => {
+    const myCleanupFunc = vi.fn();
+
+    const world = new Ecs.World();
+    const groups = { cleanup: createSystemGroup(world) };
+
+    const pluginManager = new PluginManager(groups, world).add(({ onInit }) => {
+      onInit(() => async () => {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 0);
+        });
+
+        myCleanupFunc();
+      });
+    });
+
+    await pluginManager.init();
+    expect(myCleanupFunc).not.toHaveBeenCalled();
+
+    const cleanupPromise = pluginManager.cleanup();
+    expect(myCleanupFunc).not.toHaveBeenCalled();
+
+    await cleanupPromise;
+    expect(myCleanupFunc).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs systems", async () => {
     const mySystem = vi.fn();
 
     const world = new Ecs.World();
     const groups = { update: createSystemGroup(world) };
 
-    new PluginManager(groups, world)
-      .add((_, { update }) => {
+    const pluginManager = new PluginManager(groups, world).add(
+      (_, { update }) => {
         update.add({}, mySystem);
-      })
-      .init();
+      }
+    );
+    await pluginManager.init();
 
     expect(mySystem).not.toHaveBeenCalled();
 
@@ -72,6 +144,7 @@ describe("loading plugins with a single dependency", () => {
   afterEach(() => {
     orderArray = [];
   });
+
   const depPlugin: Plugin = ({ onInit }) => {
     onInit(
       () => {
@@ -90,26 +163,65 @@ describe("loading plugins with a single dependency", () => {
     );
   };
 
-  it("initializes dependencies after the dependent plugin even if it was added after", () => {
+  it("initializes dependencies after the dependent plugin even if it was added after", async () => {
     const world = new Ecs.World();
     const groups = { startup: createSystemGroup(world) };
 
-    new PluginManager(groups, world)
+    const pluginManager = new PluginManager(groups, world)
       .add(testPlugin) // Add testPlugin first
-      .add(depPlugin)
-      .init();
+      .add(depPlugin);
+    await pluginManager.init();
 
     expect(orderArray).toEqual(["depPlugin", "testPlugin"]);
   });
 
-  it("initializes dependencies after the dependent plugin even if it was added after", () => {
+  it("initializes dependencies after the dependent plugin even if it was added after", async () => {
     const world = new Ecs.World();
     const groups = { startup: createSystemGroup(world) };
 
-    new PluginManager(groups, world)
+    const pluginManager = new PluginManager(groups, world)
       .add(depPlugin)
-      .add(testPlugin) // Add testPlugin last
-      .init();
+      .add(testPlugin); // Add testPlugin last
+    await pluginManager.init();
+
+    expect(orderArray).toEqual(["depPlugin", "testPlugin"]);
+  });
+
+  it("awaits async onInit hooks, and in order", async () => {
+    const world = new Ecs.World();
+    const groups = { startup: createSystemGroup(world) };
+
+    const asyncDepPlugin: Plugin = ({ onInit }) => {
+      onInit(
+        async () => {
+          await new Promise((resolve) => {
+            setTimeout(resolve, 0);
+          });
+
+          orderArray.push("depPlugin");
+        },
+        { name: "depPlugin" }
+      );
+    };
+
+    const asyncTestPlugin: Plugin = ({ onInit }) => {
+      onInit(
+        async () => {
+          await new Promise((resolve) => {
+            setTimeout(resolve, 0);
+          });
+
+          orderArray.push("testPlugin");
+        },
+        { name: "testPlugin", deps: ["depPlugin"] }
+      );
+    };
+
+    const pluginManager = new PluginManager(groups, world)
+      .add(asyncTestPlugin)
+      .add(asyncDepPlugin);
+
+    await pluginManager.init();
 
     expect(orderArray).toEqual(["depPlugin", "testPlugin"]);
   });
@@ -149,15 +261,15 @@ describe("loading plugins with multiple dependencies", () => {
     );
   };
 
-  it("initializes dependent plugin once after its dependencies, even if added before", () => {
+  it("initializes dependent plugin once after its dependencies, even if added before", async () => {
     const world = new Ecs.World();
     const groups = { startup: createSystemGroup(world) };
 
-    new PluginManager(groups, world)
+    const pluginManager = new PluginManager(groups, world)
       .add(testPlugin) // Add testPlugin first
       .add(depPlugin1)
-      .add(depPlugin2)
-      .init();
+      .add(depPlugin2);
+    await pluginManager.init();
 
     expect(orderArray).toEqual(["depPlugin1", "depPlugin2", "testPlugin"]);
   });
@@ -172,9 +284,11 @@ describe("loading plugins with circular dependencies", () => {
       onInit(vi.fn(), { name: "testPlugin", deps: ["depPlugin"] });
     };
 
-    expect(() => {
-      new PluginManager(groups, world).add(testPlugin).init();
-    }).toThrow("The following dependencies are missing: depPlugin");
+    const pluginManager = new PluginManager(groups, world).add(testPlugin);
+
+    expect(pluginManager.init()).rejects.toThrow(
+      "The following dependencies are missing: depPlugin"
+    );
   });
 
   it("throws an error when a dependency depends on itself indirectly", () => {
@@ -189,8 +303,12 @@ describe("loading plugins with circular dependencies", () => {
       onInit(vi.fn(), { name: "testPlugin", deps: ["depPlugin"] });
     };
 
-    expect(() => {
-      new PluginManager(groups, world).add(testPlugin).add(depPlugin).init();
-    }).toThrow("The following dependencies are missing: depPlugin, testPlugin");
+    const pluginManager = new PluginManager(groups, world)
+      .add(testPlugin)
+      .add(depPlugin);
+
+    expect(pluginManager.init()).rejects.toThrow(
+      "The following dependencies are missing: depPlugin, testPlugin"
+    );
   });
 });

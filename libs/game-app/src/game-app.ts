@@ -41,11 +41,11 @@ export default class GameApp<T extends string> {
     return this;
   }
 
-  public run() {
-    this.plugins.init();
+  public async run(): Promise<void> {
+    await this.plugins.init();
   }
 
-  public stop() {
-    this.plugins.cleanup();
+  public async stop() {
+    await this.plugins.cleanup();
   }
 }
