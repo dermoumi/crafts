@@ -29,7 +29,7 @@ describe("World entities render position animation", () => {
       .add(RenderPosition)
       .add(Position, { x: 10, y: 100, z: 1000 });
 
-    game.groupsProxy.update();
+    game.groupsProxy.preupdate();
 
     const renderPosition = entity.get(RenderPosition);
     expect(renderPosition).toEqual({
@@ -55,12 +55,12 @@ describe("World entities render position animation", () => {
       .add(RenderPosition)
       .add(Position, { x: 10, y: 100, z: 1000 });
 
-    game.groupsProxy.update();
+    game.groupsProxy.preupdate();
 
     const position = entity.get(Position);
     Object.assign(position, { x: 20, y: 200, z: 2000 });
 
-    game.groupsProxy.update();
+    game.groupsProxy.preupdate();
 
     const renderPosition = entity.get(RenderPosition);
     expect(renderPosition).toEqual({
@@ -87,7 +87,7 @@ describe("World entities render position animation", () => {
     const position = entity.get(Position);
     Object.assign(position, { x: 10, y: 100, z: 1000 });
 
-    game.groupsProxy.update();
+    game.groupsProxy.preupdate();
 
     const renderPosition = entity.get(RenderPosition);
     expect(renderPosition).toEqual({
