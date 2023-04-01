@@ -202,6 +202,17 @@ describe("Threejs plugin", () => {
     expect(node.position).toEqual({ x: 144, y: 42, z: 0 });
   });
 
+  it("renders each update", async () => {
+    const gameApp = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await gameApp.run();
+
+    const render = vi.spyOn(WebGLRenderer.prototype, "render");
+
+    gameApp.groupsProxy.update();
+    gameApp.groupsProxy.postupdate();
+    expect(render).toHaveBeenCalled();
+  });
+
   it("removes event listeners when the game is stopped", async () => {
     const eventListeners = new SetMap<string, any>();
     const addEventListener = vi

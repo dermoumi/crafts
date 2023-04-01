@@ -34,8 +34,8 @@ export class RenderPosition extends Component {
   public progress = 1;
 }
 
-export const pluginWorldEntities: ClientPlugin = (_, { update }) => {
-  update
+export const pluginWorldEntities: ClientPlugin = (_, { preupdate }) => {
+  preupdate
     .add(
       { positions: [Position, RenderPosition, Position.added()] },
       ({ positions }) => {
