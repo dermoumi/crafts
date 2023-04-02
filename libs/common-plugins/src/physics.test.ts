@@ -1,19 +1,19 @@
 import type { CommonSystemGroups } from ".";
 
 import { GameApp } from "@crafts/game-app";
-import { Collider, PhysicsWorld, pluginPhysics, RigidBody } from "./physics";
+import { Collider, Physics, pluginPhysics, RigidBody } from "./physics";
 import { GameConfig, pluginGameConfig } from "./game-config";
 import { Position, Velocity } from "./world-entities";
 
 describe("Physics plugin", () => {
-  it("adds a PhysicsWorld resource", async () => {
+  it("adds a Physics resource", async () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const physicsWorld = game.world.resources.tryGet(PhysicsWorld);
+    const physicsWorld = game.world.resources.tryGet(Physics);
 
     expect(physicsWorld).toBeDefined();
-    expect(physicsWorld).toBeInstanceOf(PhysicsWorld);
+    expect(physicsWorld).toBeInstanceOf(Physics);
   });
 
   it("updates the physics' timestep when the fixed update rate changes", async () => {
@@ -22,7 +22,7 @@ describe("Physics plugin", () => {
       .addPlugin(pluginPhysics);
     await game.run();
 
-    const physicsWorld = game.world.resources.get(PhysicsWorld);
+    const physicsWorld = game.world.resources.get(Physics);
     expect(physicsWorld.world.timestep).toBeCloseTo(1 / 60);
 
     game.world.resources.get(GameConfig).fixedUpdateRateMs = 1000 / 30;
@@ -32,7 +32,7 @@ describe("Physics plugin", () => {
   });
 });
 
-describe("Physics coliders", () => {
+describe("Physics colliders", () => {
   it("adds a collider to the world when a Collider component is added", async () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
@@ -40,7 +40,7 @@ describe("Physics coliders", () => {
     const entity = game.world.spawn();
     game.groupsProxy.fixed();
 
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     expect(world.colliders.getAll()).toHaveLength(0);
 
     entity.addNew(Collider, "cuboid", 1, 1, 1);
@@ -59,7 +59,7 @@ describe("Physics coliders", () => {
     game.groupsProxy.fixed();
 
     const { collider: oldCollider } = entity.get(Collider);
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     expect(world.colliders.getAll()).toEqual([oldCollider]);
 
     entity.addNew(Collider, "cuboid", 2, 2, 2);
@@ -77,7 +77,7 @@ describe("Physics coliders", () => {
     const entity = game.world.spawn().addNew(Collider, "cuboid", 1, 1, 1);
     game.groupsProxy.fixed();
 
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     const { collider: oldCollider } = entity.get(Collider);
     expect(world.colliders.getAll()).toEqual([oldCollider]);
 
@@ -134,7 +134,7 @@ describe("Physics rigid bodies", () => {
     const entity = game.world.spawn();
     game.groupsProxy.fixed();
 
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     expect(world.bodies.getAll()).toHaveLength(0);
 
     entity.addNew(RigidBody, "dynamic");
@@ -152,7 +152,7 @@ describe("Physics rigid bodies", () => {
     const entity = game.world.spawn().addNew(RigidBody, "dynamic");
     game.groupsProxy.fixed();
 
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     const { body: oldBody } = entity.get(RigidBody);
     expect(oldBody).toBeDefined();
     expect(world.bodies.getAll()).toEqual([oldBody]);
@@ -172,7 +172,7 @@ describe("Physics rigid bodies", () => {
     const entity = game.world.spawn().addNew(RigidBody, "dynamic");
     game.groupsProxy.fixed();
 
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     const { body: oldBody } = entity.get(RigidBody);
     expect(world.bodies.getAll()).toContain(oldBody);
 
@@ -235,7 +235,7 @@ describe("Physics rigid bodies", () => {
     const entity = game.world.spawn().addNew(RigidBody, "dynamic");
     game.groupsProxy.fixed();
 
-    const { world } = game.world.resources.get(PhysicsWorld);
+    const { world } = game.world.resources.get(Physics);
     const { body } = entity.get(RigidBody);
     expect(world.bodies.getAll()).toEqual([body]);
 

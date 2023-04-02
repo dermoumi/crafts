@@ -17,7 +17,7 @@ import { Position, Velocity } from "./world-entities";
 /**
  * The physics world.
  */
-export class PhysicsWorld extends Resource {
+export class Physics extends Resource {
   public world = new World({ x: 0, y: -9.81, z: 0 });
 }
 
@@ -126,7 +126,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
   onInit(async (world) => {
     await initRapier();
 
-    world.resources.add(PhysicsWorld);
+    world.resources.add(Physics);
   });
 
   fixed
@@ -134,7 +134,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [
-          PhysicsWorld,
+          Physics,
           GameConfig,
           GameConfig.changed().or(GameConfig.added()),
         ],
@@ -148,7 +148,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     // Re-add colliders after their rigid body is removed or changed
     .add(
       {
-        resources: [PhysicsWorld],
+        resources: [Physics],
         bodies: [Collider, RigidBody.changed().or(RigidBody.removed())],
       },
       ({ resources, bodies }) => {
@@ -164,7 +164,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     // Create/update rigid bodies
     .add(
       {
-        resources: [PhysicsWorld],
+        resources: [Physics],
         bodies: [RigidBody, RigidBody.added().or(RigidBody.changed())],
       },
       ({ resources, bodies }) => {
@@ -183,7 +183,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     // Create/update a collider
     .add(
       {
-        resources: [PhysicsWorld],
+        resources: [Physics],
         colliders: [
           Collider,
           Collider.added()
@@ -248,7 +248,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       }
     )
     // Step the physics world
-    .add({ resources: [PhysicsWorld] }, ({ resources }) => {
+    .add({ resources: [Physics] }, ({ resources }) => {
       const [physics] = resources;
 
       physics.world.step();
