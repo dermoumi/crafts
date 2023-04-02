@@ -2,6 +2,7 @@ import Component, { UniqueComponent } from "./component";
 import {
   AbsentFilter,
   AddedFilter,
+  AnyFilter,
   ChangedFilter,
   PresentFilter,
   RemovedFilter,
@@ -70,5 +71,23 @@ describe("component filter shortcuts", () => {
 
     expect(filter).toBeInstanceOf(RemovedFilter);
     expect(trait).toBe(Position);
+  });
+
+  it("provides a shortcut to Added-or-Changed filters", () => {
+    const filter = Position.addedOrChanged();
+
+    expect(filter).toBeInstanceOf(AnyFilter);
+    expect(filter).toEqual(
+      new AnyFilter(new AddedFilter(Position), new ChangedFilter(Position))
+    );
+  });
+
+  it("provides a shortcut to Changed-or-Removed filters", () => {
+    const filter = Position.changedOrRemoved();
+
+    expect(filter).toBeInstanceOf(AnyFilter);
+    expect(filter).toEqual(
+      new AnyFilter(new ChangedFilter(Position), new RemovedFilter(Position))
+    );
   });
 });

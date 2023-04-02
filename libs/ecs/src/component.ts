@@ -1,6 +1,7 @@
 import {
   AbsentFilter,
   AddedFilter,
+  AnyFilter,
   ChangedFilter,
   PresentFilter,
   RemovedFilter,
@@ -73,6 +74,28 @@ export default abstract class Component extends BaseTrait {
    */
   public static removed(): RemovedFilter<Component> {
     return new RemovedFilter(this);
+  }
+
+  /**
+   * Create a filter for components that were added or changed since the last
+   * query reset.
+   *
+   * @returns An instance of AnyFilter
+   *  composed of AddedFilter and ChangedFilter
+   */
+  public static addedOrChanged(): AnyFilter<Component> {
+    return new AnyFilter(new AddedFilter(this), new ChangedFilter(this));
+  }
+
+  /**
+   * Create a filter for components that were changed or removed since the last
+   * query reset.
+   *
+   * @returns An instance of AnyFilter
+   *  composed of ChangedFilter and RemovedFilter
+   */
+  public static changedOrRemoved(): AnyFilter<Component> {
+    return new AnyFilter(new ChangedFilter(this), new RemovedFilter(this));
   }
 }
 

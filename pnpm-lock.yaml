@@ -116,8 +116,8 @@ importers:
         specifier: workspace:^
         version: link:../game-app
       '@types/three':
-        specifier: ^0.150.0
-        version: 0.150.0
+        specifier: ^0.150.1
+        version: 0.150.1
       three:
         specifier: ^0.151.2
         version: 0.151.2
@@ -1049,8 +1049,8 @@ packages:
     resolution: {integrity: sha512-9w+a7bR8PeB0dCT/HBULU2fMqf6BAzvKbxFboYhmDtDkKPiyXYbjoe2auwsXlEFI7CFNMF1dCv3dFH5Poy9R1w==}
     dev: false
 
-  /@types/three@0.150.0:
-    resolution: {integrity: sha512-AGhnz/pfV9lajfPMrzRyP/nySpZYfpoXdayGk0Tiwkzc6hsWOCkz/Q696Muxn9HV2EkQJ3u8g/dDt7jcP5Tecg==}
+  /@types/three@0.150.1:
+    resolution: {integrity: sha512-ZXS1M3brsfAAbTeeUEt0defPi98yWQuEyPBnvjEYY1dCEYfJnFaww0mYgRpJ9JVfmtwRxqISpVcv/g/0lMl1DQ==}
     dependencies:
       '@types/stats.js': 0.17.0
       '@types/webxr': 0.5.1

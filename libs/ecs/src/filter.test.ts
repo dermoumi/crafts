@@ -196,6 +196,18 @@ describe("querying for trait gain", () => {
     expect([...query]).toContain(entity);
   });
 
+  it("gets containers that had their trait added then changed since the last reset", () => {
+    const world = new World();
+    const entity = world.spawn();
+
+    const query = world.query(Position.added());
+    query.reset();
+
+    entity.add(Position, { x: 0, y: 0 });
+    entity.get(Position).x = 42;
+    expect([...query]).toContain(entity);
+  });
+
   it("ignores containers that didn't gain the given trait since last reset", () => {
     const world = new World();
     const entity = world.spawn().add(Position, { x: 0, y: 0 });
@@ -335,7 +347,7 @@ describe("querying for trait change", () => {
     expect([...query]).not.toContain(entity);
   });
 
-  it("gets containers that had their trait added then changed since the last reset", () => {
+  it("ignores containers that had their trait added then changed since the last reset", () => {
     const world = new World();
     const entity = world.spawn();
 
@@ -344,7 +356,7 @@ describe("querying for trait change", () => {
 
     entity.add(Position, { x: 0, y: 0 });
     entity.get(Position).x = 42;
-    expect([...query]).toContain(entity);
+    expect([...query]).not.toContain(entity);
   });
 
   it("ignores containers that do not have the given trait", () => {
