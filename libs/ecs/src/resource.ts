@@ -1,6 +1,7 @@
 import {
   AbsentFilter,
   AddedFilter,
+  AnyFilter,
   ChangedFilter,
   PresentFilter,
   RemovedFilter,
@@ -72,5 +73,27 @@ export default abstract class Resource {
    */
   public static removed(): RemovedFilter<Resource> {
     return new RemovedFilter(this);
+  }
+
+  /**
+   * Create a filter for resources that were added or changed since the last
+   * query reset.
+   *
+   * @returns An instance of AnyFilter
+   *  composed of AddedFilter and ChangedFilter
+   */
+  public static addedOrChanged(): AnyFilter<Resource> {
+    return new AnyFilter(new AddedFilter(this), new ChangedFilter(this));
+  }
+
+  /**
+   * Create a filter for resources that were changed or removed since the last
+   * query reset.
+   *
+   * @returns An instance of AnyFilter
+   *  composed of ChangedFilter and RemovedFilter
+   */
+  public static changedOrRemoved(): AnyFilter<Resource> {
+    return new AnyFilter(new ChangedFilter(this), new RemovedFilter(this));
   }
 }

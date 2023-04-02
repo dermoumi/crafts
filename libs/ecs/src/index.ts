@@ -14,14 +14,16 @@ export type { ResettableQuery } from "./query";
 
 export type {
   default as Filter,
+  SingleFilter,
+  CompositeFilter,
+  AggregateFilter,
+} from "./filter";
+export {
   PresentFilter,
   AbsentFilter,
   AddedFilter,
   ChangedFilter,
   RemovedFilter,
-  SingleFilter,
-  CompositeFilter,
-  AggregateFilter,
   AnyFilter,
   AllFilter,
 } from "./filter";
