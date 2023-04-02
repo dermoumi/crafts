@@ -10,7 +10,7 @@ import {
   RigidBody,
 } from "./physics";
 import { GameConfig, pluginGameConfig } from "./game-config";
-import { Position } from "./world-entities";
+import { Position, Velocity } from "./world-entities";
 
 describe("Physics plugin", () => {
   it("adds a PhysicsWorld resource", async () => {
@@ -520,5 +520,169 @@ describe("Physics rigid bodies", () => {
     const shape = collider?.shape as Cuboid;
     expect(shape).toBeInstanceOf(Cuboid);
     expect(shape.halfExtents).toEqual({ x: 2, y: 2, z: 2 });
+  });
+
+  it("updates the rigid body's position when Position is changed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic");
+    game.groupsProxy.fixed();
+
+    const { rigidBody } = entity.get(Physics);
+    expect(rigidBody?.translation()).toEqual({ x: 0, y: 0, z: 0 });
+
+    const position = entity.get(Position);
+    Object.assign(position, { x: 1, y: 2, z: 3 });
+    game.groupsProxy.fixed();
+
+    expect(rigidBody?.translation()).toEqual({ x: 1, y: 2, z: 3 });
+  });
+
+  it("updates the entity's Position when the rigid body is updated", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic");
+    game.groupsProxy.fixed();
+
+    const { rigidBody } = entity.get(Physics);
+    const position = entity.get(Position);
+    expect(position).toEqual({ x: 0, y: 0, z: 0 });
+
+    rigidBody?.setTranslation({ x: 1, y: 2, z: 3 }, true);
+    game.groupsProxy.fixed();
+
+    expect(position).toEqual({ x: 1, y: 2, z: 3 });
+  });
+});
+
+describe("RigidBody with Velocity", () => {
+  it("updates the rigid body's velocity when Velocity is added", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic")
+      .add(Velocity, { x: 1, y: 2, z: 3 });
+    game.groupsProxy.fixed();
+
+    const { rigidBody } = entity.get(Physics);
+    expect(rigidBody?.linvel()).toEqual({ x: 1, y: 2, z: 3 });
+  });
+
+  it("updates the rigid body's velocity when Velocity is changed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic")
+      .add(Velocity, { x: 1, y: 2, z: 3 });
+    game.groupsProxy.fixed();
+
+    const { rigidBody } = entity.get(Physics);
+    expect(rigidBody?.linvel()).toEqual({ x: 1, y: 2, z: 3 });
+
+    const velocity = entity.get(Velocity);
+    Object.assign(velocity, { x: 4, y: 5, z: 6 });
+    game.groupsProxy.fixed();
+
+    expect(rigidBody?.linvel()).toEqual({ x: 4, y: 5, z: 6 });
+  });
+
+  it("updates the entities Velocity when the rigid body is updated", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic");
+    game.groupsProxy.fixed();
+
+    const { rigidBody } = entity.get(Physics);
+    expect(rigidBody?.linvel()).toEqual({ x: 0, y: 0, z: 0 });
+
+    rigidBody?.setLinvel({ x: 1, y: 2, z: 3 }, true);
+    game.groupsProxy.fixed();
+
+    expect(rigidBody?.linvel()).toEqual({ x: 1, y: 2, z: 3 });
+  });
+
+  it("does not update Velocity if a rigid body's linear veloctiy changed without waking it up", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic")
+      .add(Velocity, { x: 1, y: 2, z: 3 });
+    game.groupsProxy.fixed();
+
+    const { rigidBody } = entity.get(Physics);
+    expect(rigidBody?.linvel()).toEqual({ x: 1, y: 2, z: 3 });
+
+    rigidBody?.setLinvel({ x: 4, y: 5, z: 6 }, false);
+    rigidBody?.sleep();
+    game.groupsProxy.fixed();
+
+    const velocity = entity.get(Velocity);
+    expect(velocity).toEqual({ x: 1, y: 2, z: 3 });
+  });
+
+  it("updates the Position with a non-zero Velocity when there's a rigid body", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    game.world.resources.add(GameConfig, { fixedUpdateRateMs: 1000 / 10 });
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .addNew(RigidBody, "dynamic")
+      .add(Velocity, { x: 1, y: 2, z: 3 });
+
+    for (let i = 0; i < 10; i++) {
+      game.groupsProxy.fixed();
+    }
+
+    const position = entity.get(Position);
+    expect(position.x).toBeCloseTo(1);
+    expect(position.y).toBeCloseTo(2);
+    expect(position.z).toBeCloseTo(3);
+  });
+
+  it("does not update position based on Velocity whene there's no RigidBody", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(Physics)
+      .add(Position)
+      .add(Velocity, { x: 1, y: 2, z: 3 });
+
+    game.groupsProxy.fixed();
+
+    const position = entity.get(Position);
+    expect(position).toEqual({ x: 0, y: 0, z: 0 });
   });
 });

@@ -14,24 +14,18 @@ import {
 import { GameApp } from "@crafts/game-app";
 import { Component } from "@crafts/ecs";
 import {
-  GameConfig,
   pluginGameConfig,
   pluginPhysics,
   Position,
   Collider,
   Physics,
   RigidBody,
+  Velocity,
 } from "@crafts/common-plugins";
 
 class Controllable extends Component {}
 
-class Velocity extends Component {
-  public x = 0;
-  public y = 0;
-  public z = 0;
-}
-
-const pluginTestContent: ClientPlugin = ({ onInit }, { update, fixed }) => {
+const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
   onInit((world) => {
     // Ground
     world
@@ -55,7 +49,7 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update, fixed }) => {
     const [cameraPosition] = world
       .query(Position, MainCamera.present())
       .getOneAsComponents();
-    cameraPosition.z = 20;
+    cameraPosition.y = 2;
   });
 
   update.add(
@@ -66,22 +60,14 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update, fixed }) => {
     ({ players, resources }) => {
       const [input] = resources;
 
+      const { lx, ly } = input.axes;
+
       for (const [velocity] of players.asComponents()) {
-        velocity.x = input.axes.lx * 5;
-        velocity.y = -input.axes.ly * 5;
-      }
-    }
-  );
+        velocity.x = lx * 5;
 
-  fixed.add(
-    { positions: [Position, Velocity], resources: [GameConfig] },
-    ({ positions, resources }) => {
-      const [gameConfig] = resources;
-
-      for (const [position, velocity] of positions.asComponents()) {
-        position.x += velocity.x * gameConfig.fixedUpdateRate;
-        position.y += velocity.y * gameConfig.fixedUpdateRate;
-        position.z += velocity.z * gameConfig.fixedUpdateRate;
+        if (Math.abs(ly) > 0.1) {
+          velocity.y = -ly * 5;
+        }
       }
     }
   );

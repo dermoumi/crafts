@@ -12,7 +12,7 @@ import {
 } from "@dimforge/rapier3d-compat";
 import { Component, Resource } from "@crafts/ecs";
 import { GameConfig } from "./game-config";
-import { Position } from "./world-entities";
+import { Position, Velocity } from "./world-entities";
 
 /**
  * The physics world.
@@ -107,7 +107,13 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
   fixed
     // Update the timestep of the world if the fixed update rate changes
     .add(
-      { resources: [PhysicsWorld, GameConfig, GameConfig.changed()] },
+      {
+        resources: [
+          PhysicsWorld,
+          GameConfig,
+          GameConfig.changed().or(GameConfig.added()),
+        ],
+      },
       ({ resources }) => {
         const [physics, config] = resources;
 
@@ -235,6 +241,19 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
+    // Update the velocity of the rigid body
+    .add(
+      {
+        colliders: [Physics, Velocity, Velocity.added().or(Velocity.changed())],
+      },
+      ({ colliders }) => {
+        for (const [{ rigidBody }, velocity] of colliders.asComponents()) {
+          if (rigidBody) {
+            rigidBody.setLinvel(velocity, true);
+          }
+        }
+      }
+    )
     // Step the physics world
     .add({ resources: [PhysicsWorld] }, ({ resources }) => {
       const [physics] = resources;
@@ -247,6 +266,15 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         if (rigidBody && !rigidBody.isSleeping()) {
           const newPosition = rigidBody.translation();
           Object.assign(position, newPosition);
+        }
+      }
+    })
+    // Update the velocity of rigid bodies
+    .add({ bodies: [Physics, Velocity] }, ({ bodies }) => {
+      for (const [{ rigidBody }, velocity] of bodies.asComponents()) {
+        if (rigidBody && !rigidBody.isSleeping()) {
+          const newVelocity = rigidBody.linvel();
+          Component.assignNoChange(velocity, newVelocity);
         }
       }
     });
