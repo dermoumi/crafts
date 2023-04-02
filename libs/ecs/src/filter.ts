@@ -243,7 +243,11 @@ export class ChangedFilter<T extends Trait> extends SingleFilter<T> {
     const { trait } = this;
     if (!container.has(trait)) return false;
 
-    return initial || tracked.get("changed").get(container).has(trait);
+    return (
+      initial ||
+      (tracked.get("changed").get(container).has(trait) &&
+        !tracked.get("added").get(container).has(trait))
+    );
   }
 }
 
