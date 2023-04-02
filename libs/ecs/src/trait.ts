@@ -2,6 +2,27 @@ import type Component from "./component";
 import type Resource from "./resource";
 
 /**
+ * Common base type to traits
+ */
+export abstract class BaseTrait {
+  public static assignNoChange<T extends object>(obj: T, value: Partial<T>): T {
+    try {
+      (obj as any).__noTriggerChange__ = true;
+      return Object.assign(obj, value);
+    } finally {
+      delete (obj as any).__noTriggerChange__;
+    }
+  }
+
+  /**
+   * Called when the component is disposed of
+   */
+  public __dispose(): void {
+    // Nothing to do
+  }
+}
+
+/**
  * Supported trait types.
  */
 export type Trait = Component | Resource;
