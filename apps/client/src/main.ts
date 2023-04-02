@@ -18,7 +18,6 @@ import {
   pluginPhysics,
   Position,
   Collider,
-  Physics,
   RigidBody,
   Velocity,
 } from "@crafts/common-plugins";
@@ -28,11 +27,7 @@ class Controllable extends Component {}
 const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
   onInit((world) => {
     // Ground
-    world
-      .spawn()
-      .add(Physics)
-      .add(Position)
-      .addNew(Collider, "cuboid", 10, 0.1, 10);
+    world.spawn().add(Position).addNew(Collider, "cuboid", 10, 0.1, 10);
 
     // Main cube
     world
@@ -42,7 +37,6 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .add(Velocity)
       .add(RenderPosition)
       .add(Position, { x: 0, y: 10, z: 0 })
-      .add(Physics)
       .addNew(Collider, "cuboid", 0.5, 0.5, 0.5)
       .addNew(RigidBody, "dynamic");
 

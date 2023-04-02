@@ -41,19 +41,33 @@ export type ColliderParams<T extends ColliderType> = Parameters<
  * Defines the collision shape of a rigid body.
  */
 export class Collider<T extends ColliderType> extends Component {
-  public desc: ColliderDesc;
+  private _desc: ColliderDesc;
+  private _collider?: RapierCollider;
+  private _worldRef?: World;
 
   public constructor(type: T, ...params: ColliderParams<T>) {
     super();
 
     const colliderFunc = ColliderTypeMap[type];
     // @ts-expect-error - Typescript refuses to acknowledge params as a tuple
-    this.desc = colliderFunc(...params);
+    this._desc = colliderFunc(...params);
   }
 
-  public create(world: World, rigidBody?: RapierRigidBody) {
-    const collider = world.createCollider(this.desc, rigidBody);
-    return collider;
+  public get collider() {
+    return this._collider;
+  }
+
+  public __init(world: World, rigidBody?: RapierRigidBody) {
+    this.__dispose();
+
+    this._worldRef = world;
+    this._collider = world.createCollider(this._desc, rigidBody);
+  }
+
+  public __dispose(): void {
+    if (this._worldRef && this._collider) {
+      this._worldRef.removeCollider(this._collider, true);
+    }
   }
 }
 
@@ -78,23 +92,34 @@ export type RigidBodyParams<T extends RigidBodyType> = Parameters<
  * Defines the physics properties of a rigid body.
  */
 export class RigidBody<T extends RigidBodyType> extends Component {
-  public desc: RigidBodyDesc;
+  private _desc: RigidBodyDesc;
+  private _body?: RapierRigidBody;
+  private _worldRef?: World;
 
   public constructor(type: T, ...params: RigidBodyParams<T>) {
     super();
 
     const rigidBodyFunc = RigidBodyTypeMap[type];
     // @ts-expect-error - Typescript refuses to acknowledge params as a tuple
-    this.desc = rigidBodyFunc(...params);
+    this._desc = rigidBodyFunc(...params);
   }
-}
 
-/**
- * Enables physics on an entity.
- */
-export class Physics extends Component {
-  public collider?: RapierCollider;
-  public rigidBody?: RapierRigidBody;
+  public get body() {
+    return this._body;
+  }
+
+  public __init(world: World) {
+    this.__dispose();
+
+    this._worldRef = world;
+    this._body = world.createRigidBody(this._desc);
+  }
+
+  public __dispose(): void {
+    if (this._worldRef && this._body) {
+      this._worldRef.removeRigidBody(this._body);
+    }
+  }
 }
 
 export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
@@ -120,42 +145,19 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         physics.world.timestep = config.fixedUpdateRate;
       }
     )
-    // Create rigid bodies
+    // Re-add colliders after their rigid body is removed or changed
     .add(
       {
         resources: [PhysicsWorld],
-        removed: [Physics, Collider.removed().or(Position.removed())],
-      },
-      ({ resources, removed }) => {
-        const [{ world }] = resources;
-
-        for (const [physics] of removed.asComponents()) {
-          if (physics.collider) {
-            world.removeCollider(physics.collider, true);
-            physics.collider = undefined;
-          }
-        }
-      }
-    )
-    // Remove rigid bodies
-    .add(
-      {
-        resources: [PhysicsWorld],
-        bodies: [Physics, RigidBody.removed().or(Position.removed())],
+        bodies: [Collider, RigidBody.changed().or(RigidBody.removed())],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
 
-        for (const [entity, physics] of bodies.withComponents()) {
-          if (physics.rigidBody) {
-            world.removeRigidBody(physics.rigidBody);
-            physics.rigidBody = undefined;
+        for (const [entity, collider] of bodies.withComponents()) {
+          const body = entity.tryGet(RigidBody)?.body;
 
-            const colliderDesc = entity.tryGet(Collider);
-            if (colliderDesc) {
-              physics.collider = colliderDesc.create(world);
-            }
-          }
+          collider.__init(world, body);
         }
       }
     )
@@ -163,33 +165,18 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [PhysicsWorld],
-        bodies: [
-          RigidBody,
-          Physics,
-          Position,
-          RigidBody.added()
-            .or(RigidBody.changed())
-            .or(Physics.added())
-            .or(Position.added()),
-        ],
+        bodies: [RigidBody, RigidBody.added().or(RigidBody.changed())],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
 
-        for (const [rigidBody, physics, position] of bodies.asComponents()) {
-          if (physics.rigidBody) {
-            world.removeRigidBody(physics.rigidBody);
-          } else if (physics.collider) {
-            // We can't update a collider's parent,
-            // so we need to remove and recreate it
-            world.removeCollider(physics.collider, true);
+        for (const [entity, rigidBody] of bodies.withComponents()) {
+          rigidBody.__init(world);
+
+          const position = entity.tryGet(Position);
+          if (position) {
+            rigidBody.body?.setTranslation(position, true);
           }
-
-          physics.collider = undefined;
-
-          const body = world.createRigidBody(rigidBody.desc);
-          body.setTranslation(position, true);
-          physics.rigidBody = body;
         }
       }
     )
@@ -198,13 +185,9 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       {
         resources: [PhysicsWorld],
         colliders: [
-          Physics,
           Collider,
-          Position,
           Collider.added()
             .or(Collider.changed())
-            .or(Physics.added())
-            .or(Position.added())
             .or(RigidBody.added())
             .or(RigidBody.changed()),
         ],
@@ -212,45 +195,55 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       ({ resources, colliders }) => {
         const [{ world }] = resources;
 
-        for (const [physics, desc, position] of colliders.asComponents()) {
-          if (physics.collider) {
-            world.removeCollider(physics.collider, true);
-          }
+        for (const [entity, collider] of colliders.withComponents()) {
+          const body = entity.tryGet(RigidBody)?.body;
+          collider.__init(world, body);
 
-          const collider = desc.create(world, physics.rigidBody);
-          collider.setTranslation(position);
-          physics.collider = collider;
+          const position = entity.tryGet(Position);
+          if (position) {
+            collider.collider?.setTranslation(position);
+          }
         }
       }
     )
     // Update the position of the rigid body or collider
     .add(
       {
-        colliders: [Physics, Position, Position.changed()],
+        bodies: [RigidBody, Position, Position.added().or(Position.changed())],
+      },
+      ({ bodies }) => {
+        for (const [{ body }, position] of bodies.asComponents()) {
+          body?.setTranslation(position, true);
+        }
+      }
+    )
+    // Update the position of the collider
+    .add(
+      {
+        colliders: [
+          Collider,
+          Position,
+          Position.added().or(Position.changed()),
+        ],
       },
       ({ colliders }) => {
-        for (const [
-          { rigidBody, collider },
-          position,
-        ] of colliders.asComponents()) {
-          if (rigidBody) {
-            rigidBody.setTranslation(position, true);
-          } else if (collider) {
-            collider.setTranslation(position);
-          }
+        for (const [{ collider }, position] of colliders.asComponents()) {
+          collider?.setTranslation(position);
         }
       }
     )
     // Update the velocity of the rigid body
     .add(
       {
-        colliders: [Physics, Velocity, Velocity.added().or(Velocity.changed())],
+        colliders: [
+          RigidBody,
+          Velocity,
+          Velocity.added().or(Velocity.changed()),
+        ],
       },
       ({ colliders }) => {
-        for (const [{ rigidBody }, velocity] of colliders.asComponents()) {
-          if (rigidBody) {
-            rigidBody.setLinvel(velocity, true);
-          }
+        for (const [{ body }, velocity] of colliders.asComponents()) {
+          body?.setLinvel(velocity, true);
         }
       }
     )
@@ -261,19 +254,19 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       physics.world.step();
     })
     // Update the position of rigid bodies
-    .add({ bodies: [Physics, Position] }, ({ bodies }) => {
-      for (const [{ rigidBody }, position] of bodies.asComponents()) {
-        if (rigidBody && !rigidBody.isSleeping()) {
-          const newPosition = rigidBody.translation();
+    .add({ bodies: [RigidBody, Position] }, ({ bodies }) => {
+      for (const [{ body }, position] of bodies.asComponents()) {
+        if (!body?.isSleeping()) {
+          const newPosition = body?.translation();
           Object.assign(position, newPosition);
         }
       }
     })
     // Update the velocity of rigid bodies
-    .add({ bodies: [Physics, Velocity] }, ({ bodies }) => {
-      for (const [{ rigidBody }, velocity] of bodies.asComponents()) {
-        if (rigidBody && !rigidBody.isSleeping()) {
-          const newVelocity = rigidBody.linvel();
+    .add({ bodies: [RigidBody, Velocity] }, ({ bodies }) => {
+      for (const [{ body }, velocity] of bodies.asComponents()) {
+        if (!body?.isSleeping()) {
+          const newVelocity = body?.linvel();
           Component.assignNoChange(velocity, newVelocity);
         }
       }
