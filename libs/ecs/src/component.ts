@@ -6,11 +6,12 @@ import {
   PresentFilter,
   RemovedFilter,
 } from "./filter";
+import { BaseTrait } from "./trait";
 
 /**
  * A base class for Components.
  */
-export default abstract class Component {
+export default abstract class Component extends BaseTrait {
   /**
    * Marker to identify components.
    *

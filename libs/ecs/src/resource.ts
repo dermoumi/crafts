@@ -6,11 +6,12 @@ import {
   PresentFilter,
   RemovedFilter,
 } from "./filter";
+import { BaseTrait } from "./trait";
 
 /**
  * A base class for Resources.
  */
-export default abstract class Resource {
+export default abstract class Resource extends BaseTrait {
   /**
    * Marker to identify resoruces.
    *
@@ -18,13 +19,6 @@ export default abstract class Resource {
    */
   public __isResource(): boolean {
     return true;
-  }
-
-  /**
-   * Called when the resource is disposed of
-   */
-  public __dispose(): void {
-    // Nothing to do
   }
 
   /**
