@@ -2,6 +2,7 @@ import Resource from "./resource";
 import {
   AbsentFilter,
   AddedFilter,
+  AnyFilter,
   ChangedFilter,
   PresentFilter,
   RemovedFilter,
@@ -61,5 +62,23 @@ describe("resource filter shortcuts", () => {
 
     expect(filter).toBeInstanceOf(RemovedFilter);
     expect(trait).toBe(AppInfo);
+  });
+
+  it("provides a shortcut to Added-or-Changed filters", () => {
+    const filter = AppInfo.addedOrChanged();
+
+    expect(filter).toBeInstanceOf(AnyFilter);
+    expect(filter).toEqual(
+      new AnyFilter(new AddedFilter(AppInfo), new ChangedFilter(AppInfo))
+    );
+  });
+
+  it("provides a shortcut to Changed-or-Removed filters", () => {
+    const filter = AppInfo.changedOrRemoved();
+
+    expect(filter).toBeInstanceOf(AnyFilter);
+    expect(filter).toEqual(
+      new AnyFilter(new ChangedFilter(AppInfo), new RemovedFilter(AppInfo))
+    );
   });
 });
