@@ -132,13 +132,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
   fixed
     // Update the timestep of the world if the fixed update rate changes
     .add(
-      {
-        resources: [
-          Physics,
-          GameConfig,
-          GameConfig.changed().or(GameConfig.added()),
-        ],
-      },
+      { resources: [Physics, GameConfig, GameConfig.addedOrChanged()] },
       ({ resources }) => {
         const [physics, config] = resources;
 
@@ -149,7 +143,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [Physics],
-        bodies: [Collider, RigidBody.changed().or(RigidBody.removed())],
+        bodies: [Collider, RigidBody.changedOrRemoved()],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
@@ -165,7 +159,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [Physics],
-        bodies: [RigidBody, RigidBody.added().or(RigidBody.changed())],
+        bodies: [RigidBody, RigidBody.addedOrChanged()],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
@@ -186,10 +180,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         resources: [Physics],
         colliders: [
           Collider,
-          Collider.added()
-            .or(Collider.changed())
-            .or(RigidBody.added())
-            .or(RigidBody.changed()),
+          Collider.addedOrChanged().or(RigidBody.addedOrChanged()),
         ],
       },
       ({ resources, colliders }) => {
@@ -208,24 +199,16 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     )
     // Update the position of the rigid body or collider
     .add(
-      {
-        bodies: [RigidBody, Position, Position.added().or(Position.changed())],
-      },
+      { bodies: [RigidBody, Position, Position.addedOrChanged()] },
       ({ bodies }) => {
         for (const [{ body }, position] of bodies.asComponents()) {
           body?.setTranslation(position, true);
         }
       }
     )
-    // Update the position of the collider
+    // Update the position of colliders
     .add(
-      {
-        colliders: [
-          Collider,
-          Position,
-          Position.added().or(Position.changed()),
-        ],
-      },
+      { colliders: [Collider, Position, Position.addedOrChanged()] },
       ({ colliders }) => {
         for (const [{ collider }, position] of colliders.asComponents()) {
           collider?.setTranslation(position);
@@ -234,15 +217,9 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     )
     // Update the velocity of the rigid body
     .add(
-      {
-        colliders: [
-          RigidBody,
-          Velocity,
-          Velocity.added().or(Velocity.changed()),
-        ],
-      },
-      ({ colliders }) => {
-        for (const [{ body }, velocity] of colliders.asComponents()) {
+      { bodies: [RigidBody, Velocity, Velocity.addedOrChanged()] },
+      ({ bodies }) => {
+        for (const [{ body }, velocity] of bodies.asComponents()) {
           body?.setLinvel(velocity, true);
         }
       }
