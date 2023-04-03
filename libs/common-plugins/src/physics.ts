@@ -254,7 +254,7 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       for (const [{ body }, velocity] of bodies.asComponents()) {
         if (!body?.isSleeping()) {
           const newVelocity = body?.linvel();
-          Component.assignNoChange(velocity, newVelocity);
+          Object.assign(velocity, newVelocity);
         }
       }
     })
