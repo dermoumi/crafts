@@ -3,7 +3,7 @@ import type { CommonSystemGroups } from ".";
 import { GameApp } from "@crafts/game-app";
 import { Collider, Physics, pluginPhysics, RigidBody } from "./physics";
 import { GameConfig, pluginGameConfig } from "./game-config";
-import { Position, Velocity } from "./world-entities";
+import { Position, Rotation, Velocity } from "./world-entities";
 
 describe("Physics plugin", () => {
   it("adds a Physics resource", async () => {
@@ -527,5 +527,93 @@ describe("RigidBody with Velocity", () => {
 
     const position = entity.get(Position);
     expect(position).toEqual({ x: 0, y: 0, z: 0 });
+  });
+});
+
+describe("RigidBody with Rotation", () => {
+  it("updates the rigid body's rotation when Rotation is added", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    game.groupsProxy.fixed();
+
+    const rotation = new Rotation(1, 2, 3, "xyz");
+    entity.add(Rotation, rotation);
+    game.groupsProxy.fixed();
+
+    const { body } = entity.get(RigidBody);
+    const bodyRotation = body?.rotation();
+    expect(bodyRotation?.x).toBeCloseTo(rotation.x);
+    expect(bodyRotation?.y).toBeCloseTo(rotation.y);
+    expect(bodyRotation?.z).toBeCloseTo(rotation.z);
+    expect(bodyRotation?.w).toBeCloseTo(rotation.w);
+  });
+
+  it("updates the rigid body's rotation when Rotation is changed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .addNew(RigidBody, "dynamic")
+      .add(Rotation);
+    game.groupsProxy.fixed();
+
+    const rotation = new Rotation(1, 2, 3, "xyz");
+    entity.add(Rotation, rotation);
+    game.groupsProxy.fixed();
+
+    const { body } = entity.get(RigidBody);
+    const bodyRotation = body?.rotation();
+    expect(bodyRotation?.x).toBeCloseTo(rotation.x);
+    expect(bodyRotation?.y).toBeCloseTo(rotation.y);
+    expect(bodyRotation?.z).toBeCloseTo(rotation.z);
+    expect(bodyRotation?.w).toBeCloseTo(rotation.w);
+  });
+
+  it("updates the entity's Rotation when the rigid body is updated", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .addNew(RigidBody, "dynamic")
+      .add(Rotation);
+    game.groupsProxy.fixed();
+
+    const rotation = new Rotation(1, 2, 3, "xyz");
+    const { body } = entity.get(RigidBody);
+    body?.setRotation(rotation, true);
+    game.groupsProxy.fixed();
+
+    const entityRotation = entity.get(Rotation);
+    expect(entityRotation?.x).toBeCloseTo(rotation.x);
+    expect(entityRotation?.y).toBeCloseTo(rotation.y);
+    expect(entityRotation?.z).toBeCloseTo(rotation.z);
+    expect(entityRotation?.w).toBeCloseTo(rotation.w);
+  });
+
+  it("does not update Rotation from sleeping rigid bodies", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .addNew(RigidBody, "dynamic")
+      .add(Rotation);
+    game.groupsProxy.fixed();
+
+    const rotation = new Rotation(1, 2, 3, "xyz");
+    const { body } = entity.get(RigidBody);
+    body?.setRotation(rotation, true);
+    body?.sleep();
+    game.groupsProxy.fixed();
+
+    const entityRotation = entity.get(Rotation);
+    expect(entityRotation?.x).toBeCloseTo(0);
+    expect(entityRotation?.y).toBeCloseTo(0);
+    expect(entityRotation?.z).toBeCloseTo(0);
+    expect(entityRotation?.w).toBeCloseTo(1);
   });
 });

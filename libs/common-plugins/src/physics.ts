@@ -12,7 +12,7 @@ import {
 } from "@dimforge/rapier3d-compat";
 import { Component, Resource } from "@crafts/ecs";
 import { GameConfig } from "./game-config";
-import { Position, Velocity } from "./world-entities";
+import { Position, Velocity, Rotation } from "./world-entities";
 
 /**
  * The physics world.
@@ -113,6 +113,7 @@ export class RigidBody<T extends RigidBodyType> extends Component {
 
     this._worldRef = world;
     this._body = world.createRigidBody(this._desc);
+    this._body.lockRotations(false, true);
   }
 
   public __dispose(): void {
@@ -215,7 +216,16 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
-    // Update the velocity of the rigid body
+    // Update the rotation of rigid bodies
+    .add(
+      { bodies: [RigidBody, Rotation, Rotation.addedOrChanged()] },
+      ({ bodies }) => {
+        for (const [{ body }, rotation] of bodies.asComponents()) {
+          body?.setRotation(rotation, true);
+        }
+      }
+    )
+    // Update the velocity of rigid bodies
     .add(
       { bodies: [RigidBody, Velocity, Velocity.addedOrChanged()] },
       ({ bodies }) => {
@@ -245,6 +255,15 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         if (!body?.isSleeping()) {
           const newVelocity = body?.linvel();
           Component.assignNoChange(velocity, newVelocity);
+        }
+      }
+    })
+    // Update the rotation of rigid bodies
+    .add({ bodies: [RigidBody, Rotation] }, ({ bodies }) => {
+      for (const [{ body }, rotation] of bodies.asComponents()) {
+        if (!body?.isSleeping()) {
+          const newRotation = body?.rotation();
+          Object.assign(rotation, newRotation);
         }
       }
     });
