@@ -5,6 +5,7 @@ import {
   pluginWorldEntities,
   Input,
   RenderPosition,
+  RenderRotation,
   pluginInput,
   pluginVariableUpdate,
   pluginThree,
@@ -20,6 +21,7 @@ import {
   Collider,
   RigidBody,
   Velocity,
+  Rotation,
 } from "@crafts/common-plugins";
 
 class Controllable extends Component {}
@@ -36,7 +38,9 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .add(MeshNode)
       .add(Velocity)
       .add(RenderPosition)
+      .add(RenderRotation)
       .add(Position, { x: 0, y: 10, z: 0 })
+      .addNew(Rotation, 0, 0, 1, "xyz")
       .addNew(Collider, "cuboid", 0.5, 0.5, 0.5)
       .addNew(RigidBody, "dynamic");
 
@@ -44,6 +48,7 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .query(Position, MainCamera.present())
       .getOneAsComponents();
     cameraPosition.y = 2;
+    cameraPosition.z = 20;
   });
 
   update.add(

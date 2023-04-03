@@ -33,6 +33,7 @@ export {
   CameraNode,
   MeshNode,
   RenderPosition,
+  RenderRotation,
   pluginWorldEntities,
 } from "./world-entities";
 export { pluginFixedUpdate } from "./fixed-update";

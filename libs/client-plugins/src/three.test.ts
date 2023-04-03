@@ -12,6 +12,7 @@ import {
 import { SetMap } from "@crafts/default-map";
 import { GameApp } from "@crafts/game-app";
 import { WebGLRenderer } from "three";
+import { RenderRotation } from "./world-entities";
 
 // Mock the three.js WebGLRenderer
 vi.mock("three", async () => {
@@ -200,6 +201,26 @@ describe("Threejs plugin", () => {
     game.groupsProxy.update();
 
     expect(node.position).toEqual({ x: 144, y: 42, z: 0 });
+  });
+
+  it("updates a node's rotation when RenderRotation is added", async () => {
+    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
+    await game.run();
+
+    const mesh = game.world.spawn().add(MeshNode).add(RenderRotation);
+    game.groupsProxy.update();
+
+    const { node } = mesh.get(Node);
+    expect(node.quaternion.toArray()).toEqual([0, 0, 0, 1]);
+
+    const rotation = mesh.get(RenderRotation);
+    rotation.x = 0.1;
+    rotation.y = 0.2;
+    rotation.z = 0.3;
+    rotation.w = 0.4;
+    game.groupsProxy.update();
+
+    expect(node.quaternion.toArray()).toEqual([0.1, 0.2, 0.3, 0.4]);
   });
 
   it("renders each update", async () => {

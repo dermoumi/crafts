@@ -14,6 +14,7 @@ import {
   CameraNode,
   MeshNode,
   RenderPosition,
+  RenderRotation,
   SceneNode,
 } from "./world-entities";
 import { Position } from "@crafts/common-plugins";
@@ -236,16 +237,19 @@ export const pluginThree: ClientPlugin = (
     )
     // Update the nodes' position
     .add(
-      {
-        nodes: [
-          Node,
-          RenderPosition,
-          RenderPosition.added().or(RenderPosition.changed()),
-        ],
-      },
+      { nodes: [Node, RenderPosition, RenderPosition.addedOrChanged()] },
       ({ nodes }) => {
         for (const [{ node }, { x, y, z }] of nodes.asComponents()) {
           node.position.set(x, y, z);
+        }
+      }
+    )
+    // Update the nodes' rotation
+    .add(
+      { nodes: [Node, RenderRotation, RenderRotation.addedOrChanged()] },
+      ({ nodes }) => {
+        for (const [{ node }, { x, y, z, w }] of nodes.asComponents()) {
+          node.quaternion.set(x, y, z, w);
         }
       }
     )
