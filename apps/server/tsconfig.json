@@ -1,0 +1,7 @@
+{
+  "extends": "@crafts/tsconfig/tsconfig.common.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"]
+  },
+  "include": ["src"]
+}

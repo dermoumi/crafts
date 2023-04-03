@@ -1,6 +1,6 @@
 import type { ClientPlugin } from ".";
 import { FrameInfo } from ".";
-import { GameConfig, Position } from "@crafts/common-plugins";
+import { GameConfig, Position, Rotation } from "@crafts/common-plugins";
 import { Component } from "@crafts/ecs";
 
 /**
@@ -31,6 +31,18 @@ export class RenderPosition extends Component {
   public lastX = 0;
   public lastY = 0;
   public lastZ = 0;
+  public progress = 1;
+}
+
+export class RenderRotation extends Component {
+  public x = 0;
+  public y = 0;
+  public z = 0;
+  public w = 1;
+  public lastX = 0;
+  public lastY = 0;
+  public lastZ = 0;
+  public lastW = 1;
   public progress = 1;
 }
 
@@ -82,6 +94,65 @@ export const pluginWorldEntities: ClientPlugin = (_, { preupdate }) => {
           renderPosition.x = lastX + (x - lastX) * animation;
           renderPosition.y = lastY + (y - lastY) * animation;
           renderPosition.z = lastZ + (z - lastZ) * animation;
+        }
+      }
+    )
+    .add(
+      { rotations: [Rotation, RenderRotation, Rotation.added()] },
+      ({ rotations }) => {
+        for (const [
+          { x, y, z, w },
+          renderRotation,
+        ] of rotations.asComponents()) {
+          renderRotation.x = x;
+          renderRotation.y = y;
+          renderRotation.z = z;
+          renderRotation.w = w;
+          renderRotation.lastX = x;
+          renderRotation.lastY = y;
+          renderRotation.lastZ = z;
+          renderRotation.lastW = w;
+          renderRotation.progress = 1;
+        }
+      }
+    )
+    .add(
+      { rotations: [RenderRotation, Rotation.changed()] },
+      ({ rotations }) => {
+        for (const [renderRotation] of rotations.asComponents()) {
+          const { x, y, z, w } = renderRotation;
+
+          renderRotation.lastX = x;
+          renderRotation.lastY = y;
+          renderRotation.lastZ = z;
+          renderRotation.lastW = w;
+          renderRotation.progress = 0;
+        }
+      }
+    )
+    .add(
+      {
+        rotations: [Rotation, RenderRotation],
+        resources: [FrameInfo, GameConfig],
+      },
+      ({ rotations, resources }) => {
+        const [frameInfo, gameConfig] = resources;
+        const animationFactor =
+          (1000 * frameInfo.delta) / gameConfig.fixedUpdateRateMs;
+
+        for (const [
+          { x, y, z, w },
+          renderRotation,
+        ] of rotations.asComponents()) {
+          const { progress, lastX, lastY, lastZ, lastW } = renderRotation;
+          if (progress >= 1) continue;
+
+          const animation = Math.min(1, progress + animationFactor);
+          renderRotation.progress = animation;
+          renderRotation.x = lastX + (x - lastX) * animation;
+          renderRotation.y = lastY + (y - lastY) * animation;
+          renderRotation.z = lastZ + (z - lastZ) * animation;
+          renderRotation.w = lastW + (w - lastW) * animation;
         }
       }
     );

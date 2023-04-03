@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@crafts/ecs": "workspace:^",
-    "@crafts/game-app": "workspace:^"
+    "@crafts/game-app": "workspace:^",
+    "@dimforge/rapier3d-compat": "^0.11.2"
   },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
