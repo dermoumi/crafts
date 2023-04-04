@@ -39,3 +39,23 @@ export type TraitConcreteConstructor<
   T extends Trait,
   TArgs extends unknown[] = any
 > = new (...args: TArgs) => T;
+
+/**
+ * A decorator to mark a component/resource as a trait.
+ */
+export function exclusive<T extends new (...args: any) => Trait>(
+  exclusionGroup: string
+) {
+  return (Base: T, _context: ClassDecoratorContext) =>
+    // @ts-expect-error - We can't satisfy this constraint cleanly
+    class extends Base {
+      /**
+       * Get the exclusion group for this trait.
+       *
+       * @returns The exclusion group's name
+       */
+      public __exclusionGroup(): string {
+        return exclusionGroup;
+      }
+    };
+}

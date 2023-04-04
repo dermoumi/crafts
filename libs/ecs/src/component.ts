@@ -96,7 +96,7 @@ export default abstract class Component extends BaseTrait {
  * Decorator to mark a component as unique.
  * Only one entity can have this component at a time.
  */
-export function Unique<T extends new (...args: any) => Component>(
+export function unique<T extends new (...args: any) => Component>(
   Base: T,
   _context: ClassDecoratorContext
 ) {
