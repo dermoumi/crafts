@@ -63,10 +63,7 @@ export default abstract class Container<T extends Trait> {
     initialValue?: Partial<C>
   ): this {
     const trait = new constructor();
-
-    if (initialValue !== undefined) {
-      Object.assign(trait, initialValue);
-    }
+    Object.assign(trait, initialValue);
 
     return this.addTrait(constructor, trait);
   }

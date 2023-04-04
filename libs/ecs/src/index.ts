@@ -5,6 +5,7 @@ export type { default as Entity } from "./entity";
 
 export type { SystemQuery, SystemCallback, SystemHandle } from "./system";
 export { default as System } from "./system";
+export { default as Event } from "./event";
 
 export { default as Component, unique } from "./component";
 export { default as Resource } from "./resource";

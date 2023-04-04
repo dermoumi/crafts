@@ -11,11 +11,14 @@ import type {
   SystemResult,
 } from "./system";
 import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
+import type { EventConstructor } from "./event";
 
 import Entity from "./entity";
 import Manager from "./manager";
 import ResourceContainer, { ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
+import { SetMap } from "@crafts/default-map";
+import Event from "./event";
 
 /**
  * A basic ID generator that uses a counter.
@@ -105,6 +108,14 @@ export default class World {
   private readonly nextIDGenerator: EntityIDGenerator;
 
   /**
+   * @internal
+   */
+  private readonly eventQueues = new SetMap<
+    EventConstructor<any>,
+    WeakRef<Set<Event>>
+  >();
+
+  /**
    * @param nextIDGenerator - A callback to generate a new entity ID
    */
   public constructor(nextIDGenerator = makeDefaultIDGenerator()) {
@@ -148,6 +159,50 @@ export default class World {
     const { entityManager } = this;
     entityManager.containers.delete(entity.id);
     entityManager.onContainerRemoved(entity);
+  }
+
+  /**
+   * Dispatch an event
+   */
+  public dispatch<T extends Event>(
+    constructor: EventConstructor<T, []>,
+    initialValue?: Partial<T>
+  ): void {
+    const event = new constructor();
+    Object.assign(event, initialValue);
+
+    return this.dispatchEvent(constructor, event);
+  }
+
+  /**
+   * Dispatch an event
+   */
+  public dispatchNew<T extends Event, TArgs extends unknown[]>(
+    constructor: EventConstructor<T, TArgs>,
+    ...args: TArgs
+  ): void {
+    const event = new constructor(...args);
+
+    return this.dispatchEvent(constructor, event);
+  }
+
+  /**
+   * Dispatch an event
+   */
+  private dispatchEvent<T extends Event>(
+    constructor: EventConstructor<T>,
+    event: T
+  ): void {
+    const queue = this.eventQueues.get(constructor);
+    for (const ref of queue) {
+      const events = ref.deref();
+
+      if (events) {
+        events.add(event);
+      } else {
+        queue.delete(ref);
+      }
+    }
   }
 
   /**
@@ -212,6 +267,8 @@ export default class World {
       callback = systemCallback;
     }
 
+    const eventQueues: Record<string, Set<Event>> = {};
+    const eventSets: Array<Set<Event>> = [];
     const querySets: Record<string, Query<any>> = {};
     const queryBuilders: Array<QueryBuilder<Component, Entity, any>> = [];
     let resourceQueryBuilder:
@@ -220,7 +277,16 @@ export default class World {
 
     // Create queries and query sets for each filter
     for (const [key, filter] of Object.entries(queries)) {
-      if (key === "resources") {
+      if ((filter as any).prototype instanceof Event) {
+        const eventQueue = new Set<Event>();
+        const constructor = filter as EventConstructor<any>;
+
+        eventQueues[key] = eventQueue;
+        eventSets.push(eventQueue);
+
+        // Register the event queue to receive events
+        this.eventQueues.get(constructor).add(new WeakRef(eventQueue));
+      } else if (key === "resources") {
         resourceQueryBuilder = this.resourceManager.createQuery(
           ...(filter as FilterSet<Resource>)
         );
@@ -252,13 +318,29 @@ export default class World {
 
     const handle: SystemHandle = () => {
       // Only call the callback if all queries have results
-      if (queryBuilders.every(({ containers }) => containers.size > 0)) {
+      if (
+        queryBuilders.every(({ containers }) => containers.size > 0) &&
+        eventSets.every((set) => set.size > 0)
+      ) {
+        const events = Object.fromEntries(
+          Object.entries(eventQueues).map(([key, queue]) => {
+            const eventArray = [...queue];
+            queue.clear();
+            return [key, eventArray];
+          })
+        );
+
         const resources = resourceQueryBuilder
           ? resourceQueryBuilder.getResources()
           : [];
 
         if (resources) {
-          callback({ ...querySets, resources, command } as SystemResult<Q>);
+          callback({
+            ...querySets,
+            ...events,
+            resources,
+            command,
+          } as SystemResult<Q>);
         }
       }
 
