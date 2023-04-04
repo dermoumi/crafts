@@ -1,6 +1,6 @@
 import type { ClientPlugin } from ".";
 import type { Entity } from "@crafts/ecs";
-import { UniqueComponent, Component, Resource } from "@crafts/ecs";
+import { Unique, Component, Resource } from "@crafts/ecs";
 import type { Renderer, Object3D } from "three";
 import {
   Scene,
@@ -58,12 +58,14 @@ export class ChildNode extends Component {
 /**
  * The main camera.
  */
-export class MainCamera extends UniqueComponent {}
+@Unique
+export class MainCamera extends Component {}
 
 /**
  * The main scene
  */
-export class MainScene extends UniqueComponent {}
+@Unique
+export class MainScene extends Component {}
 
 /**
  * The main ThreeJS renderer

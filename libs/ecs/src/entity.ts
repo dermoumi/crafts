@@ -4,7 +4,6 @@ import type { TraitConcreteConstructor } from "./trait";
 import type { TraitFilter } from "./filter";
 
 import Container from "./container";
-import { UniqueComponent } from "./component";
 import { PresentFilter } from "./filter";
 
 /**
@@ -52,7 +51,7 @@ export default class Entity extends Container<Component> {
     trait: C
   ): this {
     // Remove unique components from all other entities
-    if (trait instanceof UniqueComponent && !this.has(constructor)) {
+    if ((trait as any).__isUniqueComponent?.() && !this.has(constructor)) {
       const builder = this.manager.createQuery(
         new PresentFilter(constructor) as TraitFilter<C>
       );

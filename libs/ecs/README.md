@@ -121,7 +121,8 @@ other entities.
 ```ts
 import * as Ecs from "@crafts/ecs";
 
-class MainCamera extends Ecs.UniqueComponent {}
+@Unique
+class MainCamera extends Ecs.Component {}
 
 const cameraA = world.spawn();
 const cameraB = world.spawn().add(MainCamera);
