@@ -21,6 +21,11 @@ export default abstract class Container<T extends Trait> {
 
   /**
    * @internal
+   */
+  protected readonly exclusionGroups = new Map<string, TraitConstructor<T>>();
+
+  /**
+   * @internal
    * @param manager - The container manager to use
    */
   public constructor(manager: Manager<T, Container<T>>) {
@@ -99,6 +104,12 @@ export default abstract class Container<T extends Trait> {
 
       this.traitMap.delete(constructor);
       this.manager.onTraitRemoved(this, constructor);
+
+      // Remove from exclusion groups
+      const exclusionGroup = (trait as any).__exclusionGroup?.();
+      if (exclusionGroup !== undefined) {
+        this.exclusionGroups.delete(exclusionGroup);
+      }
     }
 
     return this;
@@ -172,6 +183,17 @@ export default abstract class Container<T extends Trait> {
    * @returns This object
    */
   protected addTrait(constructor: TraitConstructor<T>, trait: T): this {
+    // Handle exclusive traits
+    const exclusiveGroup = (trait as any).__exclusionGroup?.();
+    if (exclusiveGroup !== undefined) {
+      const currentExclusiveTrait = this.exclusionGroups.get(exclusiveGroup);
+      if (currentExclusiveTrait !== undefined) {
+        this.remove(currentExclusiveTrait);
+      }
+
+      this.exclusionGroups.set(exclusiveGroup, constructor);
+    }
+
     // Wrap the trait with a proxy to monitor changes
     const proxy = new Proxy(trait, {
       set: (target, key, value): boolean => {

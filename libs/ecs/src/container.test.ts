@@ -2,6 +2,7 @@ import type Entity from "./entity";
 
 import Component from "./component";
 import World from "./world";
+import { exclusive } from "./trait";
 
 class TestTrait extends Component {
   public x = 0;
@@ -146,6 +147,29 @@ describe("Trait retrieval", () => {
 
     const trait = entity.tryGet(TestTrait);
     expect(trait).toBeUndefined();
+  });
+});
+
+describe("Exclusive trait handling", () => {
+  @exclusive("TestGroup")
+  class ExclusiveTraitA extends Component {}
+
+  @exclusive("TestGroup")
+  class ExclusiveTraitB extends Component {
+    public value = 0;
+  }
+
+  it("removes other traits of an exclusion group when adding an exclusive trait", () => {
+    const world = new World();
+    const entity = world.spawn();
+
+    entity.add(ExclusiveTraitA);
+    entity.add(ExclusiveTraitB);
+
+    const traits = [...entity.traits()];
+    expect(traits).toHaveLength(1);
+    expect(traits).toContain(ExclusiveTraitB);
+    expect(traits).not.toContain(ExclusiveTraitA);
   });
 });
 

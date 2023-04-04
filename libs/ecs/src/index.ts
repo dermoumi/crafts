@@ -7,8 +7,8 @@ export type { SystemQuery, SystemCallback, SystemHandle } from "./system";
 export { default as System } from "./system";
 
 export { default as Component, Unique } from "./component";
-
 export { default as Resource } from "./resource";
+export { exclusive } from "./trait";
 
 export type { ResettableQuery } from "./query";
 

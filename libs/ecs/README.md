@@ -131,6 +131,33 @@ cameraA.add(MainCamera);
 cameraB.has(MainCamera); // false
 ```
 
+### Exclusive components/resources
+
+Exclusive components set an exclusion group, only one component belonging
+to a given group can exist on a entity at a time.
+
+Exclusive resources are similar, in there can only be one resource
+belonging to an exclusion group at a time.
+
+```ts
+import * as Ecs from "@crafts/ecs";
+
+@Ecs.exclusive("NpcState")
+class Idle extends Ecs.Component {}
+
+@Ecs.exclusive("NpcState")
+class Walking extends Ecs.Component {
+  public targetX = 0;
+  public targetY = 0;
+}
+
+const npc = world.spawn().add(Idle);
+npc.add(Walking, { targetX: 1, targetY: 1 });
+
+npc.has(Idle); // false
+npw.has(Walking); // true
+```
+
 ### Bundles
 
 A Bundle is just a utility for adding multiple components at once.
