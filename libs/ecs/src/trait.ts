@@ -5,18 +5,6 @@ import type Resource from "./resource";
  * Common base type to traits
  */
 export abstract class BaseTrait {
-  public static assignNoChange<T extends object>(
-    obj: T,
-    value?: Partial<T>
-  ): T {
-    try {
-      (obj as any).__noTriggerChange__ = true;
-      return Object.assign(obj, value);
-    } finally {
-      delete (obj as any).__noTriggerChange__;
-    }
-  }
-
   /**
    * Called when the component is disposed of
    */
