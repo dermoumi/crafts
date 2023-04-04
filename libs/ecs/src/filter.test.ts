@@ -391,22 +391,6 @@ describe("querying for trait change", () => {
     entity.add(Position, { x: 42, y: 0 });
     expect([...query]).toContain(entity);
   });
-
-  it("ignores changes when using .assignNoChange()", () => {
-    const world = new World();
-    const entity = world.spawn().add(Position, { x: 0, y: 0 });
-    const position = entity.get(Position);
-
-    const query = world.query(Position.changed());
-    query.reset();
-
-    Component.assignNoChange(position, { x: 42 });
-    expect([...query]).not.toContain(entity);
-
-    // Make sure that the change is still tracked normally afterwards
-    position.y = 42;
-    expect([...query]).toContain(entity);
-  });
 });
 
 describe("querying for trait removal", () => {

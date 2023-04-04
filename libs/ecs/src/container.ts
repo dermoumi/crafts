@@ -176,15 +176,10 @@ export default abstract class Container<T extends Trait> {
     const proxy = new Proxy(trait, {
       set: (target, key, value): boolean => {
         const originalValue = Reflect.get(target, key) as unknown;
-
-        const noTriggerChange =
-          key === "__noTriggerChange__" ||
-          Boolean(Reflect.get(target, "__noTriggerChange__"));
-
         const result = Reflect.set(target, key, value);
 
         // Make sure to trigger the hook after the trait has been updated
-        if (value !== originalValue && !noTriggerChange) {
+        if (value !== originalValue) {
           this.manager.onTraitChanged(this, constructor);
         }
 
