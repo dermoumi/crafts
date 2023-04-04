@@ -22,13 +22,6 @@ export default abstract class Component extends BaseTrait {
   }
 
   /**
-   * Called when the component is disposed of
-   */
-  public __dispose(): void {
-    // Nothing to do
-  }
-
-  /**
    * Create a filter that only allows containers that have the trait.
    *
    * @returns An instance of PresentFilter
@@ -99,13 +92,22 @@ export default abstract class Component extends BaseTrait {
   }
 }
 
-export abstract class UniqueComponent extends Component {
-  /**
-   * Marker to identify unique components.
-   *
-   * @returns true
-   */
-  public __isUniqueComponent(): boolean {
-    return true;
-  }
+/**
+ * Decorator to mark a component as unique.
+ * Only one entity can have this component at a time.
+ */
+export function Unique<T extends new (...args: any) => Component>(
+  Base: T,
+  _context: ClassDecoratorContext
+) {
+  return class extends Base {
+    /**
+     * Marker to identify unique components.
+     *
+     * @returns true
+     */
+    public __isUniqueComponent(): boolean {
+      return true;
+    }
+  };
 }
