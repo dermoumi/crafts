@@ -1,6 +1,6 @@
 import type Entity from "./entity";
 
-import Component, { Unique } from "./component";
+import Component, { unique } from "./component";
 import World from "./world";
 
 class TestComponent extends Component {
@@ -54,7 +54,7 @@ describe("Component management", () => {
 });
 
 describe("Unique component management", () => {
-  @Unique
+  @unique
   class TestUniqueComponent extends Component {
     public value = 0;
   }

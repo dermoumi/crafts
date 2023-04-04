@@ -1,4 +1,4 @@
-import Component, { Unique } from "./component";
+import Component, { unique } from "./component";
 import {
   AbsentFilter,
   AddedFilter,
@@ -20,7 +20,7 @@ describe("Component class", () => {
 });
 
 describe("UniqueComponent class", () => {
-  @Unique
+  @unique
   class TestComponent extends Component {}
 
   it("is a unique component", () => {
