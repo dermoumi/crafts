@@ -459,6 +459,52 @@ class Mesh extends Component {
 }
 ```
 
+### Events
+
+Events are a way to communicate between systems and the rest of the game.
+
+A system can listen for a specific event, and will receive all the events
+that were emitted since the last time it was called (or last reset).
+
+```ts
+import * as Ecs from "@crafts/ecs";
+
+// ...
+
+class CollisionEvent extends Ecs.Event {
+  public x = 0;
+  public y = 0;
+
+  constructor(x: number, y: number) {
+    super();
+
+    this.x = x;
+    this.y = y;
+  }
+}
+
+// This system's callback will only be executed if it has collisions in
+// its event queue.
+const collisionSystem = world.addSystem(
+  { collisions: CollisionEvent },
+  ({ collisions }) => {
+    for (const { entityA, entityB } of collisions) {
+      // Do stuff...
+    }
+  }
+);
+
+// Executing the system will do nothing since there are no evenst
+collisionSystem();
+
+// Dispatch some events
+world.dispatchNew(CollisionEvent, 0, 0);
+world.dispatch(CollisionEvent, { x: 42, y: 144 });
+
+// Executing the system will now process the events
+collisionSystem();
+```
+
 ### Commands
 
 Commands allow you to queue operations on the world for execution after
@@ -479,11 +525,12 @@ const CleanupSystem = new Ecs.System(
       // The entity will be removed directly after this system's execution
       command(({ remove }) => {
         remove(entity);
-
-        // Other clean up operations...
-        mesh.dispose();
       });
     }
+
+    command(({ dispatch }) => {
+      dispatch(CleanupDone);
+    });
   }
 );
 ```

@@ -3,6 +3,7 @@ import Entity from "./entity";
 import { ResettableQuery } from "./query";
 import Resource from "./resource";
 import System from "./system";
+import Event from "./event";
 import World, { makeDefaultIDGenerator } from "./world";
 
 class Position extends Component {
@@ -576,5 +577,177 @@ describe("World disposal", () => {
     system();
 
     expect(callback).toHaveBeenCalledOnce();
+  });
+});
+
+describe("System events", () => {
+  class TestEvent extends Event {
+    public value = 0;
+
+    public constructor(value = 0) {
+      super();
+
+      this.value = value;
+    }
+  }
+
+  it("dispatches events to systems", () => {
+    const callback = vi.fn();
+
+    const world = new World();
+    const system = world.addSystem({ events: TestEvent }, ({ events }) => {
+      callback(events.map(({ value }) => value));
+    });
+
+    world.dispatch(TestEvent, { value: 42 });
+    world.dispatchNew(TestEvent, 144);
+
+    system();
+
+    expect(callback).toHaveBeenCalledWith([42, 144]);
+  });
+
+  it("can iterate over the same event queue multiple times", () => {
+    const callback1 = vi.fn();
+    const callback2 = vi.fn();
+
+    const world = new World();
+    const system = world.addSystem(
+      { testEvents: TestEvent },
+      ({ testEvents }) => {
+        callback1(testEvents.map(({ value }) => value));
+        callback2(testEvents.map(({ value }) => value));
+      }
+    );
+
+    world.dispatch(TestEvent, { value: 42 });
+    world.dispatchNew(TestEvent, 144);
+
+    system();
+
+    expect(callback1).toHaveBeenCalledWith([42, 144]);
+    expect(callback2).toHaveBeenCalledWith([42, 144]);
+  });
+
+  it("can retrieve multiple event queues", () => {
+    const callback1 = vi.fn();
+    const callback2 = vi.fn();
+
+    const world = new World();
+    const system = world.addSystem(
+      { testEvents1: TestEvent, testEvents2: TestEvent },
+      ({ testEvents1, testEvents2 }) => {
+        callback1(testEvents1.map(({ value }) => value));
+        callback2(testEvents2.map(({ value }) => value));
+      }
+    );
+
+    world.dispatch(TestEvent, { value: 42 });
+    world.dispatchNew(TestEvent, 144);
+
+    system();
+
+    expect(callback1).toHaveBeenCalledWith([42, 144]);
+    expect(callback2).toHaveBeenCalledWith([42, 144]);
+  });
+
+  it("only dispatches events to systems that listen to them", () => {
+    const callback1 = vi.fn();
+    const callback2 = vi.fn();
+
+    const world = new World();
+
+    world.dispatch(TestEvent, { value: 42 });
+
+    const system1 = world.addSystem({ events: TestEvent }, ({ events }) => {
+      callback1(events.map(({ value }) => value));
+    });
+
+    world.dispatch(TestEvent, { value: 144 });
+
+    const system2 = world.addSystem({ events: TestEvent }, ({ events }) => {
+      callback2(events.map(({ value }) => value));
+    });
+
+    world.dispatch(TestEvent, { value: 256 });
+
+    system1();
+    system2();
+
+    expect(callback1).toHaveBeenCalledWith([144, 256]);
+    expect(callback2).toHaveBeenCalledWith([256]);
+  });
+
+  it("resets events between calls", () => {
+    const callback = vi.fn();
+
+    const world = new World();
+    const system = world.addSystem({ events: TestEvent }, ({ events }) => {
+      callback(events.map(({ value }) => value));
+    });
+
+    world.dispatch(TestEvent, { value: 42 });
+    system();
+    expect(callback).toHaveBeenCalledWith([42]);
+
+    world.dispatch(TestEvent, { value: 144 });
+
+    callback.mockClear();
+    system();
+
+    expect(callback).toHaveBeenCalledWith([144]);
+  });
+
+  it("doesn't affect other systems when resetting events", () => {
+    const callback1 = vi.fn();
+    const callback2 = vi.fn();
+
+    const world = new World();
+    const system1 = world.addSystem({ events: TestEvent }, ({ events }) => {
+      callback1(events.map(({ value }) => value));
+    });
+
+    const system2 = world.addSystem({ events: TestEvent }, ({ events }) => {
+      callback2(events.map(({ value }) => value));
+    });
+
+    world.dispatch(TestEvent, { value: 42 });
+    system1();
+
+    world.dispatch(TestEvent, { value: 144 });
+    system1();
+    system2();
+
+    expect(callback1).toHaveBeenLastCalledWith([144]);
+    expect(callback2).toHaveBeenCalledWith([42, 144]);
+  });
+
+  it("does not call a system if it has no event", () => {
+    const callback = vi.fn();
+
+    const world = new World();
+    const system = world.addSystem({ events: TestEvent }, callback);
+
+    system();
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it("removes garbage collected event queues", () => {
+    const world = new World();
+    world.addSystem({ events: TestEvent }, vi.fn());
+
+    // @ts-expect-error - We need to access the private property
+    const queueSet = world.eventQueues.get(TestEvent);
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const eventQueue = [...queueSet][0]!;
+    vi.spyOn(eventQueue, "deref").mockReturnValue(undefined);
+
+    expect(queueSet.size).toBe(1);
+
+    world.dispatch(TestEvent, { value: 42 });
+
+    expect(queueSet.size).toBe(0);
   });
 });

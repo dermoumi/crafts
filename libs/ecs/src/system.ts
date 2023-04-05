@@ -3,6 +3,7 @@ import type Component from "./component";
 import type { FilterSet, TraitInstances } from "./filter";
 import type { Query } from "./query";
 import type { WorldManager } from "./world";
+import type Event from "./event";
 
 /**
  * A function to be executed at the end of the system's execution.
@@ -15,7 +16,8 @@ export type Command = (world: WorldManager) => void;
 export type SystemQuery = {
   [key in Exclude<string, "command">]:
     | FilterSet<Component>
-    | FilterSet<Resource>;
+    | FilterSet<Resource>
+    | typeof Event;
 } & {
   resources?: FilterSet<Resource>;
   command?: never;
@@ -30,7 +32,11 @@ export type SystemResult<Q extends SystemQuery> = {
   [key in Exclude<
     keyof Q,
     "command" | "resources"
-  >]: Q[key] extends FilterSet<Component> ? Query<Q[key]> : never;
+  >]: Q[key] extends FilterSet<Component>
+    ? Query<Q[key]>
+    : Q[key] extends typeof Event
+    ? Array<InstanceType<Q[key]>>
+    : never;
 } & {
   resources: Q["resources"] extends FilterSet<Resource>
     ? TraitInstances<Resource, Q["resources"]>

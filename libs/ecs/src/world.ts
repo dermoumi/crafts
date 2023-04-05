@@ -11,11 +11,14 @@ import type {
   SystemResult,
 } from "./system";
 import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
+import type { EventConcreteConstructor } from "./event";
 
 import Entity from "./entity";
 import Manager from "./manager";
 import ResourceContainer, { ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
+import { SetMap } from "@crafts/default-map";
+import Event from "./event";
 
 /**
  * A basic ID generator that uses a counter.
@@ -58,7 +61,7 @@ export type WorldManager = {
    * @param initialValue - The initial value of the resource
    */
   addResource: <T extends Resource>(
-    constructor: TraitConcreteConstructor<T>,
+    constructor: TraitConcreteConstructor<T, []>,
     initialValue?: Partial<T>
   ) => T;
 
@@ -74,9 +77,33 @@ export type WorldManager = {
   ) => T;
 
   /**
-   * Remove a resource
+   * Remove a resource.
+   *
+   * @param resource - The resource to remove
    */
   removeResource: (resource: TraitConstructor<Resource>) => void;
+
+  /**
+   * Dispatch an event.
+   *
+   * @param constructor - The event to dispatch
+   * @param value - The value of the event
+   */
+  dispatch: <T extends Event>(
+    constructor: EventConcreteConstructor<T, []>,
+    value?: Partial<T>
+  ) => void;
+
+  /**
+   * Dispatch an event using its constructor.
+   *
+   * @param constructor - The event to dispatch
+   * @param args - The arguments to pass to the constructor
+   */
+  dispatchNew: <T extends Event, TArgs extends unknown[]>(
+    constructor: EventConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ) => void;
 };
 
 /**
@@ -103,6 +130,14 @@ export default class World {
    * @internal
    */
   private readonly nextIDGenerator: EntityIDGenerator;
+
+  /**
+   * @internal
+   */
+  private readonly eventQueues = new SetMap<
+    EventConcreteConstructor<any>,
+    WeakRef<Set<Event>>
+  >();
 
   /**
    * @param nextIDGenerator - A callback to generate a new entity ID
@@ -148,6 +183,56 @@ export default class World {
     const { entityManager } = this;
     entityManager.containers.delete(entity.id);
     entityManager.onContainerRemoved(entity);
+  }
+
+  /**
+   * Dispatch an event.
+   *
+   * @param constructor - The event to dispatch
+   * @param value - The value of the event
+   */
+  public dispatch<T extends Event>(
+    constructor: EventConcreteConstructor<T, []>,
+    value?: Partial<T>
+  ): void {
+    const event = new constructor();
+    Object.assign(event, value);
+
+    return this.dispatchEvent(constructor, event);
+  }
+
+  /**
+   * Dispatch an event.
+   *
+   * @param constructor - The event to dispatch
+   * @param args - The arguments to pass to the constructor
+   */
+  public dispatchNew<T extends Event, TArgs extends unknown[]>(
+    constructor: EventConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ): void {
+    const event = new constructor(...args);
+
+    return this.dispatchEvent(constructor, event);
+  }
+
+  /**
+   * Dispatch an event
+   */
+  private dispatchEvent<T extends Event>(
+    constructor: EventConcreteConstructor<T>,
+    event: T
+  ): void {
+    const queue = this.eventQueues.get(constructor);
+    for (const ref of queue) {
+      const events = ref.deref();
+
+      if (events) {
+        events.add(event);
+      } else {
+        queue.delete(ref);
+      }
+    }
   }
 
   /**
@@ -212,6 +297,8 @@ export default class World {
       callback = systemCallback;
     }
 
+    const eventQueues: Record<string, Set<Event>> = {};
+    const eventSets: Array<Set<Event>> = [];
     const querySets: Record<string, Query<any>> = {};
     const queryBuilders: Array<QueryBuilder<Component, Entity, any>> = [];
     let resourceQueryBuilder:
@@ -220,7 +307,16 @@ export default class World {
 
     // Create queries and query sets for each filter
     for (const [key, filter] of Object.entries(queries)) {
-      if (key === "resources") {
+      if ((filter as any).prototype instanceof Event) {
+        const eventQueue = new Set<Event>();
+        const constructor = filter as EventConcreteConstructor<any>;
+
+        eventQueues[key] = eventQueue;
+        eventSets.push(eventQueue);
+
+        // Register the event queue to receive events
+        this.eventQueues.get(constructor).add(new WeakRef(eventQueue));
+      } else if (key === "resources") {
         resourceQueryBuilder = this.resourceManager.createQuery(
           ...(filter as FilterSet<Resource>)
         );
@@ -248,17 +344,35 @@ export default class World {
       removeResource: (...args) => {
         this.resources.remove(...args);
       },
+      dispatch: this.dispatch.bind(this),
+      dispatchNew: this.dispatchNew.bind(this),
     };
 
     const handle: SystemHandle = () => {
       // Only call the callback if all queries have results
-      if (queryBuilders.every(({ containers }) => containers.size > 0)) {
+      if (
+        queryBuilders.every(({ containers }) => containers.size > 0) &&
+        eventSets.every((set) => set.size > 0)
+      ) {
+        const events = Object.fromEntries(
+          Object.entries(eventQueues).map(([key, queue]) => {
+            const eventArray = [...queue];
+            queue.clear();
+            return [key, eventArray];
+          })
+        );
+
         const resources = resourceQueryBuilder
           ? resourceQueryBuilder.getResources()
           : [];
 
         if (resources) {
-          callback({ ...querySets, resources, command } as SystemResult<Q>);
+          callback({
+            ...querySets,
+            ...events,
+            resources,
+            command,
+          } as SystemResult<Q>);
         }
       }
 
