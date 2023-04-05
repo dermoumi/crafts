@@ -9,7 +9,7 @@ export { default as Event } from "./event";
 
 export { default as Component, unique } from "./component";
 export { default as Resource } from "./resource";
-export { exclusive } from "./trait";
+export { exclusive, Optional } from "./trait";
 
 export type { ResettableQuery } from "./query";
 

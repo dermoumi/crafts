@@ -10,6 +10,7 @@ import Filter, {
   ChangeTrackMap,
   PresentFilter,
 } from "./filter";
+import { Optional } from "./trait";
 
 /**
  * Extracts only the trait constructors from a query filter tuple
@@ -25,6 +26,8 @@ export type TraitConstructorTuple<
   ? []
   : F extends [infer C, ...infer R extends Array<TraitFilter<T>>]
   ? C extends TraitConstructor<T>
+    ? [C, ...TraitConstructorTuple<T, R>]
+    : C extends Optional<T>
     ? [C, ...TraitConstructorTuple<T, R>]
     : TraitConstructorTuple<T, R>
   : never;
@@ -81,14 +84,19 @@ export class QueryBuilder<
    * @param sourceContainers - Iterator over containers
    */
   public constructor(filters: F, sourceContainers: IterableIterator<C>) {
-    const requestedTraits: Array<TraitConstructor<T>> = [];
+    const requestedTraits: Array<TraitConstructor<T> | Optional<T>> = [];
     const relatedTraits = new Set<TraitConstructor<T>>();
 
-    const filterObjs = filters.map((filter) => {
+    const filterObjs = filters.flatMap((filter) => {
+      if (filter instanceof Optional) {
+        requestedTraits.push(filter);
+        return [];
+      }
+
       if (!(filter instanceof Filter)) {
         requestedTraits.push(filter);
         relatedTraits.add(filter);
-        return new PresentFilter(filter);
+        return [new PresentFilter(filter)];
       }
 
       if (filter instanceof AbsentFilter) {
@@ -103,7 +111,7 @@ export class QueryBuilder<
         this.trackingTraits.add(trait);
       }
 
-      return filter;
+      return [filter];
     });
 
     this.filter = AllFilter.wrapIfMany(...filterObjs);
@@ -219,8 +227,11 @@ export class QueryBuilder<
    * @returns The trait instances
    */
   public getTraitInstances(container: C): TraitInstances<T, F> {
-    return this.requestedTraits.map((trait) =>
-      container.get(trait)
+    return this.requestedTraits.map(
+      (trait: TraitConstructor<T> | Optional<T>) =>
+        trait instanceof Optional
+          ? container.tryGet(trait.trait)
+          : container.get(trait)
     ) as TraitInstances<T, F>;
   }
 

@@ -149,15 +149,14 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [Physics],
-        bodies: [RigidBody, RigidBody.addedOrChanged()],
+        bodies: [RigidBody, Position.optional(), RigidBody.addedOrChanged()],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
 
-        for (const [entity, rigidBody] of bodies.withComponents()) {
+        for (const [rigidBody, position] of bodies.asComponents()) {
           rigidBody.__init(world);
 
-          const position = entity.tryGet(Position);
           if (position) {
             rigidBody.body?.setTranslation(position, true);
           }
@@ -170,6 +169,8 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         resources: [Physics],
         colliders: [
           Collider,
+          Position.optional(),
+          RigidBody.optional(),
           new AnyFilter(
             Collider.addedOrChanged(),
             RigidBody.addedOrChanged(),
@@ -180,11 +181,14 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       ({ resources, colliders }) => {
         const [{ world }] = resources;
 
-        for (const [entity, collider] of colliders.withComponents()) {
-          const body = entity.tryGet(RigidBody)?.body;
+        for (const [
+          collider,
+          position,
+          rigidBody,
+        ] of colliders.asComponents()) {
+          const body = rigidBody?.body;
           collider.__init(world, body);
 
-          const position = entity.tryGet(Position);
           if (position) {
             collider.collider?.setTranslation(position);
           }

@@ -242,8 +242,15 @@ You can also use _filters_ to only match specific conditions.
 
 ```ts
 // Note: Passing the component constructor implies the "present" filter.
-const query = world.query(Position, Velocity.present(), Renderable.absent());
-for (const [position] of query.asComponents()) {
+const query = world.query(
+  Position,
+  Rotation.optional(),
+  Velocity.present(),
+  Renderable.absent()
+);
+for (const [position, rotation] of query.asComponents()) {
+  // position is always present
+  // rotation is optional, it may or may not be undefined
   // ...
 }
 

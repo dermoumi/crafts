@@ -6,6 +6,16 @@ import type Resource from "./resource";
  */
 export abstract class BaseTrait {
   /**
+   * Create a modifier to mark the resource as optional
+   */
+  public static optional<T extends Component>(
+    this: TraitConstructor<T>
+  ): Optional<T> {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    return new Optional(this);
+  }
+
+  /**
    * Called when the component is disposed of
    */
   public __dispose(): void {
@@ -39,6 +49,20 @@ export type TraitConcreteConstructor<
   T extends Trait,
   TArgs extends unknown[] = any
 > = new (...args: TArgs) => T;
+
+/**
+ * Marks the containing trait as optional, and this may not be included
+ */
+export class Optional<T extends Trait> {
+  /**
+   * The trait to mark as optional
+   */
+  public trait: TraitConstructor<T>;
+
+  public constructor(trait: TraitConstructor<T>) {
+    this.trait = trait;
+  }
+}
 
 /**
  * A decorator to mark a component/resource as a trait.
