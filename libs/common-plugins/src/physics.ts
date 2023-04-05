@@ -144,13 +144,13 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [Physics],
-        bodies: [Collider, RigidBody.changedOrRemoved()],
+        bodies: [Collider, RigidBody.optional(), RigidBody.changedOrRemoved()],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
 
-        for (const [entity, collider] of bodies.withComponents()) {
-          const body = entity.tryGet(RigidBody)?.body;
+        for (const [collider, rigidBody] of bodies.asComponents()) {
+          const body = rigidBody?.body;
 
           collider.__init(world, body);
         }
@@ -160,15 +160,14 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       {
         resources: [Physics],
-        bodies: [RigidBody, RigidBody.addedOrChanged()],
+        bodies: [RigidBody, Position.optional(), RigidBody.addedOrChanged()],
       },
       ({ resources, bodies }) => {
         const [{ world }] = resources;
 
-        for (const [entity, rigidBody] of bodies.withComponents()) {
+        for (const [rigidBody, position] of bodies.asComponents()) {
           rigidBody.__init(world);
 
-          const position = entity.tryGet(Position);
           if (position) {
             rigidBody.body?.setTranslation(position, true);
           }
@@ -181,17 +180,22 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         resources: [Physics],
         colliders: [
           Collider,
+          Position.optional(),
+          RigidBody.optional(),
           Collider.addedOrChanged().or(RigidBody.addedOrChanged()),
         ],
       },
       ({ resources, colliders }) => {
         const [{ world }] = resources;
 
-        for (const [entity, collider] of colliders.withComponents()) {
-          const body = entity.tryGet(RigidBody)?.body;
+        for (const [
+          collider,
+          position,
+          rigidBody,
+        ] of colliders.asComponents()) {
+          const body = rigidBody?.body;
           collider.__init(world, body);
 
-          const position = entity.tryGet(Position);
           if (position) {
             collider.collider?.setTranslation(position);
           }
