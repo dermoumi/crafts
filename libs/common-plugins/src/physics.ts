@@ -10,7 +10,7 @@ import {
   World,
   init as initRapier,
 } from "@dimforge/rapier3d-compat";
-import { Component, Resource } from "@crafts/ecs";
+import { AnyFilter, Component, Resource } from "@crafts/ecs";
 import { GameConfig } from "./game-config";
 import { Position, Velocity, Rotation } from "./world-entities";
 
@@ -123,6 +123,11 @@ export class RigidBody<T extends RigidBodyType> extends Component {
   }
 }
 
+/**
+ * Whether the entity's rigid body is sleeping
+ */
+export class Sleeping extends Component {}
+
 export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
   onInit(async (world) => {
     await initRapier();
@@ -138,22 +143,6 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         const [physics, config] = resources;
 
         physics.world.timestep = config.fixedUpdateRate;
-      }
-    )
-    // Re-add colliders after their rigid body is removed or changed
-    .add(
-      {
-        resources: [Physics],
-        bodies: [Collider, RigidBody.changedOrRemoved()],
-      },
-      ({ resources, bodies }) => {
-        const [{ world }] = resources;
-
-        for (const [entity, collider] of bodies.withComponents()) {
-          const body = entity.tryGet(RigidBody)?.body;
-
-          collider.__init(world, body);
-        }
       }
     )
     // Create/update rigid bodies
@@ -181,7 +170,11 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         resources: [Physics],
         colliders: [
           Collider,
-          Collider.addedOrChanged().or(RigidBody.addedOrChanged()),
+          new AnyFilter(
+            Collider.addedOrChanged(),
+            RigidBody.addedOrChanged(),
+            RigidBody.removed()
+          ),
         ],
       },
       ({ resources, colliders }) => {
@@ -198,15 +191,6 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
-    // Update the position of the rigid body or collider
-    .add(
-      { bodies: [RigidBody, Position, Position.addedOrChanged()] },
-      ({ bodies }) => {
-        for (const [{ body }, position] of bodies.asComponents()) {
-          body?.setTranslation(position, true);
-        }
-      }
-    )
     // Update the position of colliders
     .add(
       { colliders: [Collider, Position, Position.addedOrChanged()] },
@@ -216,12 +200,12 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
-    // Update the rotation of rigid bodies
+    // Update the position of rigid bodies
     .add(
-      { bodies: [RigidBody, Rotation, Rotation.addedOrChanged()] },
+      { bodies: [RigidBody, Position, Position.addedOrChanged()] },
       ({ bodies }) => {
-        for (const [{ body }, rotation] of bodies.asComponents()) {
-          body?.setRotation(rotation, true);
+        for (const [{ body }, position] of bodies.asComponents()) {
+          body?.setTranslation(position, true);
         }
       }
     )
@@ -234,37 +218,62 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
+    // Update the rotation of rigid bodies
+    .add(
+      { bodies: [RigidBody, Rotation, Rotation.addedOrChanged()] },
+      ({ bodies }) => {
+        for (const [{ body }, rotation] of bodies.asComponents()) {
+          body?.setRotation(rotation, true);
+        }
+      }
+    )
+    // Put rigid bodies asleep
+    .add({ bodies: [RigidBody, Sleeping.addedOrChanged()] }, ({ bodies }) => {
+      for (const [{ body }] of bodies.asComponents()) {
+        body?.sleep();
+      }
+    })
+    // Wake up rigid bodies
+    .add({ bodies: [RigidBody, Sleeping.removed()] }, ({ bodies }) => {
+      for (const [{ body }] of bodies.asComponents()) {
+        body?.wakeUp();
+      }
+    })
     // Step the physics world
     .add({ resources: [Physics] }, ({ resources }) => {
       const [physics] = resources;
 
       physics.world.step();
     })
-    // Update the position of rigid bodies
-    .add({ bodies: [RigidBody, Position] }, ({ bodies }) => {
-      for (const [{ body }, position] of bodies.asComponents()) {
-        if (!body?.isSleeping()) {
-          const newPosition = body?.translation();
-          Object.assign(position, newPosition);
+    // Update the sleeping state
+    .add({ bodies: [RigidBody] }, ({ bodies }) => {
+      for (const [entity, { body }] of bodies.withComponents()) {
+        if (body?.isSleeping()) {
+          entity.add(Sleeping);
+        } else {
+          entity.remove(Sleeping);
         }
+      }
+    })
+    // Update the position of rigid bodies
+    .add({ bodies: [RigidBody, Position, Sleeping.absent()] }, ({ bodies }) => {
+      for (const [{ body }, position] of bodies.asComponents()) {
+        const newPosition = body?.translation();
+        Object.assign(position, newPosition);
       }
     })
     // Update the velocity of rigid bodies
-    .add({ bodies: [RigidBody, Velocity] }, ({ bodies }) => {
+    .add({ bodies: [RigidBody, Velocity, Sleeping.absent()] }, ({ bodies }) => {
       for (const [{ body }, velocity] of bodies.asComponents()) {
-        if (!body?.isSleeping()) {
-          const newVelocity = body?.linvel();
-          Object.assign(velocity, newVelocity);
-        }
+        const newVelocity = body?.linvel();
+        Object.assign(velocity, newVelocity);
       }
     })
     // Update the rotation of rigid bodies
-    .add({ bodies: [RigidBody, Rotation] }, ({ bodies }) => {
+    .add({ bodies: [RigidBody, Rotation, Sleeping.absent()] }, ({ bodies }) => {
       for (const [{ body }, rotation] of bodies.asComponents()) {
-        if (!body?.isSleeping()) {
-          const newRotation = body?.rotation();
-          Object.assign(rotation, newRotation);
-        }
+        const newRotation = body?.rotation();
+        Object.assign(rotation, newRotation);
       }
     });
 };

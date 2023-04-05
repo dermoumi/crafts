@@ -1,7 +1,13 @@
 import type { CommonSystemGroups } from ".";
 
 import { GameApp } from "@crafts/game-app";
-import { Collider, Physics, pluginPhysics, RigidBody } from "./physics";
+import {
+  Collider,
+  Physics,
+  pluginPhysics,
+  RigidBody,
+  Sleeping,
+} from "./physics";
 import { GameConfig, pluginGameConfig } from "./game-config";
 import { Position, Rotation, Velocity } from "./world-entities";
 
@@ -396,7 +402,7 @@ describe("Physics rigid bodies", () => {
     expect(body?.translation()).toEqual({ x: 1, y: 2, z: 3 });
 
     body?.setTranslation({ x: 4, y: 5, z: 6 }, false);
-    body?.sleep();
+    entity.add(Sleeping);
     game.groupsProxy.fixed();
 
     const position = entity.get(Position);
@@ -485,7 +491,7 @@ describe("RigidBody with Velocity", () => {
     expect(body?.linvel()).toEqual({ x: 1, y: 2, z: 3 });
 
     body?.setLinvel({ x: 4, y: 5, z: 6 }, false);
-    body?.sleep();
+    entity.add(Sleeping);
     game.groupsProxy.fixed();
 
     const velocity = entity.get(Velocity);
@@ -615,5 +621,58 @@ describe("RigidBody with Rotation", () => {
     expect(entityRotation?.y).toBeCloseTo(0);
     expect(entityRotation?.z).toBeCloseTo(0);
     expect(entityRotation?.w).toBeCloseTo(1);
+  });
+});
+
+describe("RigidBody sleep state", () => {
+  it("sets the rigid body to sleep when Sleeping is added", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    game.groupsProxy.fixed();
+
+    const { body } = entity.get(RigidBody);
+    expect(body?.isSleeping()).toBe(false);
+
+    entity.add(Sleeping);
+    game.groupsProxy.fixed();
+
+    expect(body?.isSleeping()).toBe(true);
+  });
+
+  it("wakes the rigid body up when Sleeping is removed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .addNew(RigidBody, "dynamic")
+      .add(Sleeping);
+    game.groupsProxy.fixed();
+
+    const { body } = entity.get(RigidBody);
+    expect(body?.isSleeping()).toBe(true);
+
+    entity.remove(Sleeping);
+    game.groupsProxy.fixed();
+
+    expect(body?.isSleeping()).toBe(false);
+  });
+
+  it("add the Sleeping component when the rigid body is put to sleep", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(false);
+
+    const { body } = entity.get(RigidBody);
+    body?.sleep();
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(true);
   });
 });
