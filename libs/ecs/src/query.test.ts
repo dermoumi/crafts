@@ -488,9 +488,11 @@ describe("Optional traits", () => {
     );
     const query = new Query(builder);
 
-    const entities = [...query.asComponents()];
+    const entities = [...query];
+    expect(entities).toEqual([entity]);
     const position = entity.get(Position);
-    expect(entities).toEqual([[position]]);
+    const components = [...query.asComponents()];
+    expect(components).toEqual([[position]]);
   });
 
   it("retrieves optional traits that don't exist", () => {
@@ -505,8 +507,10 @@ describe("Optional traits", () => {
     );
     const query = new Query(builder);
 
-    const entities = [...query.asComponents()];
-    expect(entities).toEqual([[undefined]]);
+    const entities = [...query];
+    expect(entities).toEqual([entity]);
+    const components = [...query.asComponents()];
+    expect(components).toEqual([[undefined]]);
   });
 
   it("retrieves optional traits added after the query is created", () => {
@@ -524,9 +528,11 @@ describe("Optional traits", () => {
 
     entity.add(Position);
 
-    const entities = [...query.asComponents()];
+    const entities = [...query];
+    expect(entities).toEqual([entity]);
     const position = entity.get(Position);
-    expect(entities).toEqual([[position]]);
+    const components = [...query.asComponents()];
+    expect(components).toEqual([[position]]);
   });
 
   it("retrieves optional traits added after the query is reset", () => {
@@ -546,9 +552,11 @@ describe("Optional traits", () => {
 
     query.reset();
 
-    const entities = [...query.asComponents()];
+    const entities = [...query];
+    expect(entities).toEqual([entity]);
     const position = entity.get(Position);
-    expect(entities).toEqual([[position]]);
+    const components = [...query.asComponents()];
+    expect(components).toEqual([[position]]);
   });
 
   it("retrieves optional traits removed after the query is created", () => {
@@ -566,7 +574,10 @@ describe("Optional traits", () => {
 
     entity.remove(Position);
 
-    const entities = [...query.asComponents()];
-    expect(entities).toEqual([[undefined]]);
+    const entities = [...query];
+    expect(entities).toEqual([entity]);
+
+    const components = [...query.asComponents()];
+    expect(components).toEqual([[undefined]]);
   });
 });
