@@ -14,17 +14,24 @@
     "sourceFiles": [
       "{projectRoot}/src/**/*",
       "!{projectRoot}/src/**/*.test.ts",
-      "{projectRoot}/package.json",
-      "{projectRoot}/tsconfig.json",
-      "{projectRoot}/vite.config.ts"
+      "configFiles"
     ],
-    "testFiles": ["{projectRoot}/src/**/*", "{projectRoot}/setup-tests.ts"],
+    "testFiles": [
+      "{projectRoot}/src/**/*",
+      "{projectRoot}/setup-tests.ts",
+      "configFiles"
+    ],
     "miscFiles": ["{projectRoot}/**/*.md"],
     "lintConfig": [
       "{projectRoot}/.eslintrc.cjs",
       "{projectRoot}/.eslintignore",
       "{projectRoot}/.prettierignore",
       "{projectRoot}/tsconfig.*.json"
+    ],
+    "configFiles": [
+      "{projectRoot}/package.json",
+      "{projectRoot}/tsconfig.json",
+      "{projectRoot}/vite.config.ts"
     ],
     "baseLintConfig": ["{projectRoot}/.noop"]
   },
@@ -37,9 +44,8 @@
     "lint": {
       "inputs": [
         "miscFiles",
-        "sourceFiles",
-        "^sourceFiles",
         "testFiles",
+        "^sourceFiles",
         "lintConfig",
         "^baseLintConfig"
       ],
