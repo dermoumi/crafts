@@ -523,7 +523,7 @@ const CleanupSystem = new Ecs.System(
   ({ entities, command }) => {
     for (const [entity, { mesh }] of entities.withComponent()) {
       // The entity will be removed directly after this system's execution
-      command(({ remove, dispatch }) => {
+      command(({ remove }) => {
         remove(entity);
       });
     }

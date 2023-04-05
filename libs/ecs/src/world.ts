@@ -11,7 +11,7 @@ import type {
   SystemResult,
 } from "./system";
 import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
-import type { EventConstructor } from "./event";
+import type { EventConcreteConstructor } from "./event";
 
 import Entity from "./entity";
 import Manager from "./manager";
@@ -61,7 +61,7 @@ export type WorldManager = {
    * @param initialValue - The initial value of the resource
    */
   addResource: <T extends Resource>(
-    constructor: TraitConcreteConstructor<T>,
+    constructor: TraitConcreteConstructor<T, []>,
     initialValue?: Partial<T>
   ) => T;
 
@@ -77,9 +77,33 @@ export type WorldManager = {
   ) => T;
 
   /**
-   * Remove a resource
+   * Remove a resource.
+   *
+   * @param resource - The resource to remove
    */
   removeResource: (resource: TraitConstructor<Resource>) => void;
+
+  /**
+   * Dispatch an event.
+   *
+   * @param constructor - The event to dispatch
+   * @param value - The value of the event
+   */
+  dispatch: <T extends Event>(
+    constructor: EventConcreteConstructor<T, []>,
+    value?: Partial<T>
+  ) => void;
+
+  /**
+   * Dispatch an event using its constructor.
+   *
+   * @param constructor - The event to dispatch
+   * @param args - The arguments to pass to the constructor
+   */
+  dispatchNew: <T extends Event, TArgs extends unknown[]>(
+    constructor: EventConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ) => void;
 };
 
 /**
@@ -111,7 +135,7 @@ export default class World {
    * @internal
    */
   private readonly eventQueues = new SetMap<
-    EventConstructor<any>,
+    EventConcreteConstructor<any>,
     WeakRef<Set<Event>>
   >();
 
@@ -162,23 +186,29 @@ export default class World {
   }
 
   /**
-   * Dispatch an event
+   * Dispatch an event.
+   *
+   * @param constructor - The event to dispatch
+   * @param value - The value of the event
    */
   public dispatch<T extends Event>(
-    constructor: EventConstructor<T, []>,
-    initialValue?: Partial<T>
+    constructor: EventConcreteConstructor<T, []>,
+    value?: Partial<T>
   ): void {
     const event = new constructor();
-    Object.assign(event, initialValue);
+    Object.assign(event, value);
 
     return this.dispatchEvent(constructor, event);
   }
 
   /**
-   * Dispatch an event
+   * Dispatch an event.
+   *
+   * @param constructor - The event to dispatch
+   * @param args - The arguments to pass to the constructor
    */
   public dispatchNew<T extends Event, TArgs extends unknown[]>(
-    constructor: EventConstructor<T, TArgs>,
+    constructor: EventConcreteConstructor<T, TArgs>,
     ...args: TArgs
   ): void {
     const event = new constructor(...args);
@@ -190,7 +220,7 @@ export default class World {
    * Dispatch an event
    */
   private dispatchEvent<T extends Event>(
-    constructor: EventConstructor<T>,
+    constructor: EventConcreteConstructor<T>,
     event: T
   ): void {
     const queue = this.eventQueues.get(constructor);
@@ -279,7 +309,7 @@ export default class World {
     for (const [key, filter] of Object.entries(queries)) {
       if ((filter as any).prototype instanceof Event) {
         const eventQueue = new Set<Event>();
-        const constructor = filter as EventConstructor<any>;
+        const constructor = filter as EventConcreteConstructor<any>;
 
         eventQueues[key] = eventQueue;
         eventSets.push(eventQueue);
@@ -314,6 +344,8 @@ export default class World {
       removeResource: (...args) => {
         this.resources.remove(...args);
       },
+      dispatch: this.dispatch.bind(this),
+      dispatchNew: this.dispatchNew.bind(this),
     };
 
     const handle: SystemHandle = () => {

@@ -12,7 +12,7 @@ export default abstract class Event {
 /**
  * A constructor for an event.
  */
-export type EventConstructor<
+export type EventConcreteConstructor<
   T extends Event,
   TArgs extends unknown[] = any
 > = new (...args: TArgs) => T;
