@@ -4,6 +4,7 @@ import Component from "./component";
 import Entity from "./entity";
 import Manager from "./manager";
 import { Query, QueryBuilder, ResettableQuery } from "./query";
+import { Optional } from "./trait";
 
 class Position extends Component {
   public x = 0;
@@ -471,5 +472,101 @@ describe("ResettableQuery", () => {
     const mockReset = vi.spyOn(builder, "reset");
     query.reset();
     expect(mockReset).toHaveBeenCalled();
+  });
+});
+
+describe("Optional traits", () => {
+  it("retreieves optional traits", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entity = new Entity("a", manager).add(Position);
+    entityPool.set(entity.id, entity);
+
+    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
+      [new Optional(Position)],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    const entities = [...query.asComponents()];
+    const position = entity.get(Position);
+    expect(entities).toEqual([[position]]);
+  });
+
+  it("retrieves optional traits that don't exist", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entity = new Entity("a", manager);
+    entityPool.set(entity.id, entity);
+
+    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
+      [new Optional(Position)],
+      entityPool.values()
+    );
+    const query = new Query(builder);
+
+    const entities = [...query.asComponents()];
+    expect(entities).toEqual([[undefined]]);
+  });
+
+  it("retrieves optional traits added after the query is created", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entity = new Entity("a", manager);
+    entityPool.set(entity.id, entity);
+
+    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
+      [new Optional(Position)],
+      entityPool.values()
+    );
+
+    const query = new Query(builder);
+
+    entity.add(Position);
+
+    const entities = [...query.asComponents()];
+    const position = entity.get(Position);
+    expect(entities).toEqual([[position]]);
+  });
+
+  it("retrieves optional traits added after the query is reset", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entity = new Entity("a", manager);
+    entityPool.set(entity.id, entity);
+
+    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
+      [new Optional(Position)],
+      entityPool.values()
+    );
+
+    const query = new ResettableQuery(builder);
+
+    entity.add(Position);
+
+    query.reset();
+
+    const entities = [...query.asComponents()];
+    const position = entity.get(Position);
+    expect(entities).toEqual([[position]]);
+  });
+
+  it("retrieves optional traits removed after the query is created", () => {
+    const manager = new Manager<Component, Entity>();
+    const entityPool = manager.containers;
+    const entity = new Entity("a", manager).add(Position);
+    entityPool.set(entity.id, entity);
+
+    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
+      [new Optional(Position)],
+      entityPool.values()
+    );
+
+    const query = new Query(builder);
+
+    entity.remove(Position);
+
+    const entities = [...query.asComponents()];
+    expect(entities).toEqual([[undefined]]);
   });
 });

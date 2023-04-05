@@ -1,5 +1,5 @@
 import type Container from "./container";
-import type { Trait, TraitConstructor } from "./trait";
+import type { Optional, Trait, TraitConstructor } from "./trait";
 
 import { DefaultMap, SetMap } from "@crafts/default-map";
 
@@ -109,7 +109,10 @@ export type TupleOf<T> = ({} | [unknown]) & readonly T[];
  *
  * @typeParam T - Lock to a single type of traits (Component, Resource...)
  */
-export type TraitFilter<T extends Trait> = TraitConstructor<T> | Filter<T>;
+export type TraitFilter<T extends Trait> =
+  | TraitConstructor<T>
+  | Filter<T>
+  | Optional<T>;
 
 /**
  * Defines a set of filters to be used in a query.
@@ -132,6 +135,8 @@ export type TraitInstances<
   : F extends [infer C, ...infer R extends ReadonlyArray<TraitFilter<any>>]
   ? C extends TraitConstructor<T>
     ? [InstanceType<C>, ...TraitInstances<T, R>]
+    : C extends Optional<T>
+    ? [InstanceType<C["trait"]> | undefined, ...TraitInstances<T, R>]
     : TraitInstances<T, R>
   : never;
 
