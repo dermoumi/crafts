@@ -14,6 +14,10 @@ import { AnyFilter, Component, Resource, state } from "@crafts/ecs";
 import { GameConfig } from "./game-config";
 import { Position, Velocity, Rotation } from "./world-entities";
 
+function floatsEqual(a: number, b: number, epsilon = 0.000_01): boolean {
+  return Math.abs(a - b) < epsilon;
+}
+
 /**
  * The physics world.
  */
@@ -255,22 +259,44 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     // Update the position of rigid bodies
     .add({ bodies: [RigidBody, Position, Sleeping.absent()] }, ({ bodies }) => {
       for (const [{ body }, position] of bodies.asComponents()) {
-        const newPosition = body?.translation();
-        Object.assign(position, newPosition);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const newPosition = body!.translation();
+        if (
+          !floatsEqual(newPosition.x, position.x) ||
+          !floatsEqual(newPosition.y, position.y) ||
+          !floatsEqual(newPosition.z, position.z)
+        ) {
+          Object.assign(position, newPosition);
+        }
       }
     })
     // Update the velocity of rigid bodies
     .add({ bodies: [RigidBody, Velocity, Sleeping.absent()] }, ({ bodies }) => {
       for (const [{ body }, velocity] of bodies.asComponents()) {
-        const newVelocity = body?.linvel();
-        Object.assign(velocity, newVelocity);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const newVelocity = body!.linvel();
+        if (
+          !floatsEqual(newVelocity.x, velocity.x) ||
+          !floatsEqual(newVelocity.y, velocity.y) ||
+          !floatsEqual(newVelocity.z, velocity.z)
+        ) {
+          Object.assign(velocity, newVelocity);
+        }
       }
     })
     // Update the rotation of rigid bodies
     .add({ bodies: [RigidBody, Rotation, Sleeping.absent()] }, ({ bodies }) => {
       for (const [{ body }, rotation] of bodies.asComponents()) {
-        const newRotation = body?.rotation();
-        Object.assign(rotation, newRotation);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const newRotation = body!.rotation();
+        if (
+          !floatsEqual(newRotation?.x, rotation.x) ||
+          !floatsEqual(newRotation?.y, rotation.y) ||
+          !floatsEqual(newRotation?.z, rotation.z) ||
+          !floatsEqual(newRotation?.w, rotation.w)
+        ) {
+          Object.assign(rotation, newRotation);
+        }
       }
     });
 };

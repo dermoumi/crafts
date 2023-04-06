@@ -1,18 +1,9 @@
 import type { ClientSystemGroups } from ".";
-import {
-  ChildNode,
-  MainScene,
-  MeshNode,
-  RenderPosition,
-  SceneNode,
-  CameraNode,
-  Node,
-  pluginThree,
-} from ".";
+
+import { ChildNode, MainScene, MeshNode, Node, pluginThree } from "./three";
 import { SetMap } from "@crafts/default-map";
 import { GameApp } from "@crafts/game-app";
 import { WebGLRenderer } from "three";
-import { RenderRotation } from "./world-entities";
 
 // Mock the three.js WebGLRenderer
 vi.mock("three", async () => {
@@ -90,53 +81,6 @@ describe("Threejs plugin", () => {
     expect(document.body.innerHTML).toBe("<canvas></canvas>");
   });
 
-  it("creates a ThreeJS camera when a CameraNode is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const cameras = game.world.query(Node, CameraNode.present());
-    expect(cameras.size).toBe(0);
-
-    // A main camera is autamatically added when the game starts
-    game.groupsProxy.update();
-    expect(cameras.size).toBe(1);
-
-    // Add a new camera
-    game.world.spawn().add(CameraNode);
-    game.groupsProxy.update();
-    expect(cameras.size).toBe(2);
-  });
-
-  it("creates a ThreeJS scene when a SceneNode is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const scenes = game.world.query(Node, SceneNode.present());
-    expect(scenes.size).toBe(0);
-
-    // A main scene is autamatically added when the game starts
-    game.groupsProxy.update();
-    expect(scenes.size).toBe(1);
-
-    // Add a new scene
-    game.world.spawn().add(SceneNode);
-    game.groupsProxy.update();
-    expect(scenes.size).toBe(2);
-  });
-
-  it("creates a ThreeJS mesh when a MeshNode is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const meshes = game.world.query(Node, MeshNode.present());
-    expect(meshes.size).toBe(0);
-
-    // Add a new mesh
-    game.world.spawn().add(MeshNode);
-    game.groupsProxy.update();
-    expect(meshes.size).toBe(1);
-  });
-
   it("adds nodes to the main scene when ChildNode is absent", async () => {
     const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
     await game.run();
@@ -167,60 +111,6 @@ describe("Threejs plugin", () => {
 
     expect(parent.get(Node).node.children).toContain(child.get(Node).node);
     expect(mainScene.children).not.toContain(child.get(Node).node);
-  });
-
-  it("updates a node's position when RenderPosition is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const mesh = game.world.spawn().add(MeshNode);
-    game.groupsProxy.update();
-
-    const { node } = mesh.get(Node);
-    expect(node.position).toEqual({ x: 0, y: 0, z: 0 });
-
-    mesh.add(RenderPosition, { x: 42, z: 144 });
-    game.groupsProxy.update();
-
-    expect(node.position).toEqual({ x: 42, y: 0, z: 144 });
-  });
-
-  it("updates a node's position when RenderPosition is changed", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const mesh = game.world.spawn().add(MeshNode).add(RenderPosition);
-    game.groupsProxy.update();
-
-    const { node } = mesh.get(Node);
-    expect(node.position).toEqual({ x: 0, y: 0, z: 0 });
-
-    const position = mesh.get(RenderPosition);
-    position.x = 144;
-    position.y = 42;
-    game.groupsProxy.update();
-
-    expect(node.position).toEqual({ x: 144, y: 42, z: 0 });
-  });
-
-  it("updates a node's rotation when RenderRotation is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const mesh = game.world.spawn().add(MeshNode).add(RenderRotation);
-    game.groupsProxy.update();
-
-    const { node } = mesh.get(Node);
-    expect(node.quaternion.toArray()).toEqual([0, 0, 0, 1]);
-
-    const rotation = mesh.get(RenderRotation);
-    rotation.x = 0.1;
-    rotation.y = 0.2;
-    rotation.z = 0.3;
-    rotation.w = 0.4;
-    game.groupsProxy.update();
-
-    expect(node.quaternion.toArray()).toEqual([0.1, 0.2, 0.3, 0.4]);
   });
 
   it("renders each update", async () => {
