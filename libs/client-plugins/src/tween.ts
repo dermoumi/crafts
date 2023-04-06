@@ -5,26 +5,30 @@ import { Component } from "@crafts/ecs";
 import { Node } from "./three";
 
 /**
- * The position of an entity in the world.
- *
- * This is different from Position,
- * in that it only tracks the position of an object in the current frame.
+ * Tracks the tween animaiton for a Node's position.
  */
 export class TweenPosition extends Component {
-  public x = 0;
-  public y = 0;
-  public z = 0;
+  public fromX = 0;
+  public fromY = 0;
+  public fromZ = 0;
   public progress = 1;
 }
 
+/**
+ * Tracks the tween animaiton for a Node's rotation.
+ */
 export class TweenRotation extends Component {
-  public x = 0;
-  public y = 0;
-  public z = 0;
-  public w = 1;
+  public fromX = 0;
+  public fromY = 0;
+  public fromZ = 0;
+  public fromW = 1;
   public progress = 1;
 }
 
+/**
+ * Handles interpolation of position and rotation components,
+ * to hide the fixed update rate.
+ */
 export const pluginTween: ClientPlugin = (_, { preupdate }) => {
   preupdate
     .add({ positions: [Position, Node, Position.added()] }, ({ positions }) => {
@@ -34,14 +38,24 @@ export const pluginTween: ClientPlugin = (_, { preupdate }) => {
         { node },
       ] of positions.withComponents()) {
         node.position.set(x, y, z);
-        entity.add(TweenPosition, { x, y, z, progress: 1 });
+        entity.add(TweenPosition, {
+          fromX: x,
+          fromY: y,
+          fromZ: z,
+          progress: 1,
+        });
       }
     })
     .add({ positions: [Node, Position.changed()] }, ({ positions }) => {
       for (const [entity, { node }] of positions.withComponents()) {
         const { x, y, z } = node.position;
 
-        entity.add(TweenPosition, { x, y, z, progress: 0 });
+        entity.add(TweenPosition, {
+          fromX: x,
+          fromY: y,
+          fromZ: z,
+          progress: 0,
+        });
       }
     })
     .add(
@@ -60,7 +74,7 @@ export const pluginTween: ClientPlugin = (_, { preupdate }) => {
           tween,
           { node },
         ] of positions.withComponents()) {
-          const { progress, x: fromX, y: fromY, z: fromZ } = tween;
+          const { progress, fromX, fromY, fromZ } = tween;
           const animation = Math.min(1, progress + animationFactor);
           node.position.set(
             fromX + (x - fromX) * animation,
@@ -83,14 +97,26 @@ export const pluginTween: ClientPlugin = (_, { preupdate }) => {
         { node },
       ] of rotations.withComponents()) {
         node.quaternion.set(x, y, z, w);
-        entity.add(TweenRotation, { x, y, z, w, progress: 1 });
+        entity.add(TweenRotation, {
+          fromX: x,
+          fromY: y,
+          fromZ: z,
+          fromW: w,
+          progress: 1,
+        });
       }
     })
     .add({ rotations: [Node, Rotation.changed()] }, ({ rotations }) => {
       for (const [entity, { node }] of rotations.withComponents()) {
         const { x, y, z, w } = node.quaternion;
 
-        entity.add(TweenRotation, { x, y, z, w, progress: 0 });
+        entity.add(TweenRotation, {
+          fromX: x,
+          fromY: y,
+          fromZ: z,
+          fromW: w,
+          progress: 0,
+        });
       }
     })
     .add(
@@ -109,7 +135,7 @@ export const pluginTween: ClientPlugin = (_, { preupdate }) => {
           { x, y, z, w },
           { node },
         ] of rotations.withComponents()) {
-          const { progress, x: fromX, y: fromY, z: fromZ, w: fromW } = tween;
+          const { progress, fromX, fromY, fromZ, fromW } = tween;
           const animation = Math.min(1, progress + animationFactor);
           node.quaternion.set(
             fromX + (x - fromX) * animation,

@@ -57,7 +57,12 @@ describe("RenderPosition animation", () => {
 
     const tween = entity.tryGet(TweenPosition);
     expect(tween).toBeDefined();
-    expect(tween).toEqual({ x: 10, y: 100, z: 1000, progress: 0.5 });
+    expect(tween).toEqual({
+      fromX: 10,
+      fromY: 100,
+      fromZ: 1000,
+      progress: 0.5,
+    });
   });
 
   it("animates position correctly", async () => {
@@ -77,8 +82,8 @@ describe("RenderPosition animation", () => {
 
     const { node } = entity.get(SceneNode);
     const tween = entity.get(TweenPosition);
-    expect(tween).toEqual({ x: 0, y: 0, z: 0, progress: 0.5 });
     expect(node.position).toEqual({ x: 5, y: 50, z: 500 });
+    expect(tween).toEqual({ fromX: 0, fromY: 0, fromZ: 0, progress: 0.5 });
   });
 });
 
@@ -123,7 +128,13 @@ describe("RenderRotation animation", () => {
 
     const tween = entity.get(TweenRotation);
     expect(tween).toBeDefined();
-    expect(tween).toEqual({ x: 1, y: 2, z: 3, w: 4, progress: 0.5 });
+    expect(tween).toEqual({
+      fromX: 1,
+      fromY: 2,
+      fromZ: 3,
+      fromW: 4,
+      progress: 0.5,
+    });
   });
 
   it("animates rotation correctly", async () => {
@@ -143,7 +154,13 @@ describe("RenderRotation animation", () => {
 
     const { node } = entity.get(SceneNode);
     const tween = entity.get(TweenRotation);
-    expect(tween).toEqual({ x: 0, y: 0, z: 0, w: 1, progress: 0.5 });
     expect(node.quaternion.toArray()).toEqual([5, 50, 500, 1.5]);
+    expect(tween).toEqual({
+      fromX: 0,
+      fromY: 0,
+      fromZ: 0,
+      fromW: 1,
+      progress: 0.5,
+    });
   });
 });
