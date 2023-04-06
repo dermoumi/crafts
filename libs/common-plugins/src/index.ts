@@ -19,5 +19,6 @@ export {
   DynamicRigidBody,
   FixedRigidBody,
   Collider,
+  CuboidCollider,
   pluginPhysics,
 } from "./physics";

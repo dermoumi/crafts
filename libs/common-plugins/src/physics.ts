@@ -21,36 +21,18 @@ export class Physics extends Resource {
   public world = new World({ x: 0, y: -9.81, z: 0 });
 }
 
-const ColliderTypeMap = {
-  cuboid: ColliderDesc.cuboid,
-} as const;
-
-/**
- * The type of a collider.
- */
-export type ColliderType = keyof typeof ColliderTypeMap;
-
-/**
- * The parameters for a collider.
- */
-export type ColliderParams<T extends ColliderType> = Parameters<
-  (typeof ColliderTypeMap)[T]
->;
-
 /**
  * Defines the collision shape of a rigid body.
  */
-export class Collider<T extends ColliderType> extends Component {
+export abstract class Collider extends Component {
   private _desc: ColliderDesc;
   private _collider?: RapierCollider;
   private _worldRef?: World;
 
-  public constructor(type: T, ...params: ColliderParams<T>) {
+  public constructor(desc: ColliderDesc) {
     super();
 
-    const colliderFunc = ColliderTypeMap[type];
-    // @ts-expect-error - Typescript refuses to acknowledge params as a tuple
-    this._desc = colliderFunc(...params);
+    this._desc = desc;
   }
 
   public get collider() {
@@ -68,6 +50,16 @@ export class Collider<T extends ColliderType> extends Component {
     if (this._worldRef && this._collider) {
       this._worldRef.removeCollider(this._collider, true);
     }
+  }
+}
+
+/**
+ * A cuboid collider.
+ */
+@state(Collider)
+export class CuboidCollider extends Collider {
+  public constructor(width: number, height: number, depth: number) {
+    super(ColliderDesc.cuboid(width, height, depth));
   }
 }
 
@@ -104,6 +96,9 @@ export abstract class RigidBody extends Component {
   }
 }
 
+/**
+ * A dynamic rigid body.
+ */
 @state(RigidBody)
 export class DynamicRigidBody extends RigidBody {
   public constructor() {
@@ -111,6 +106,9 @@ export class DynamicRigidBody extends RigidBody {
   }
 }
 
+/**
+ * A fixed rigid body.
+ */
 @state(RigidBody)
 export class FixedRigidBody extends RigidBody {
   public constructor() {

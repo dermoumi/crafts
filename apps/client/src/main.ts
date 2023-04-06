@@ -18,10 +18,10 @@ import {
   pluginGameConfig,
   pluginPhysics,
   Position,
-  Collider,
   Velocity,
   Rotation,
   DynamicRigidBody,
+  CuboidCollider,
 } from "@crafts/common-plugins";
 
 class Controllable extends Component {}
@@ -29,7 +29,7 @@ class Controllable extends Component {}
 const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
   onInit((world) => {
     // Ground
-    world.spawn().add(Position).addNew(Collider, "cuboid", 10, 0.1, 10);
+    world.spawn().add(Position).addNew(CuboidCollider, 10, 0.1, 10);
 
     // Main cube
     world
@@ -41,7 +41,7 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .add(RenderRotation)
       .add(Position, { x: 0, y: 10, z: 0 })
       .addNew(Rotation, 0, 0, 1, "xyz")
-      .addNew(Collider, "cuboid", 0.5, 0.5, 0.5)
+      .addNew(CuboidCollider, 0.5, 0.5, 0.5)
       .addNew(DynamicRigidBody);
 
     const [cameraPosition] = world
