@@ -69,7 +69,7 @@ describe("World entities", () => {
 describe("World queries", () => {
   it("creates resettable queries", () => {
     const world = new World();
-    const query = world.query();
+    const query = world.query(Position);
 
     expect(query).toBeInstanceOf(ResettableQuery);
   });
