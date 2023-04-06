@@ -1,7 +1,8 @@
 import type { ClientPlugin } from ".";
 import type { Entity } from "@crafts/ecs";
-import { unique, Component, Resource } from "@crafts/ecs";
 import type { Renderer, Object3D } from "three";
+
+import { state, unique, Component, Resource } from "@crafts/ecs";
 import {
   Scene,
   BoxGeometry,
@@ -10,30 +11,59 @@ import {
   PerspectiveCamera,
   WebGLRenderer,
 } from "three";
-import {
-  CameraNode,
-  MeshNode,
-  RenderPosition,
-  RenderRotation,
-  SceneNode,
-} from "./world-entities";
+import { RenderPosition, RenderRotation } from "./world-entities";
 import { Position } from "@crafts/common-plugins";
 
 /**
  * An abstract node component.
  */
-export class Node extends Component {
+export abstract class Node<T extends Object3D> extends Component {
   /**
    * The three.js node referenced by this component.
    */
-  public readonly node: Object3D;
+  public readonly node: T;
 
   /**
    * @param node - The three.js node referenced by this component.
    */
-  public constructor(node: Object3D) {
+  public constructor(node: T) {
     super();
     this.node = node;
+  }
+}
+
+/**
+ * Represents a ThreeJS scene.
+ */
+@state(Node)
+export class SceneNode extends Node<Scene> {
+  public constructor() {
+    const scene = new Scene();
+    super(scene);
+  }
+}
+
+/**
+ * Represents a ThreeJS camera.
+ */
+@state(Node)
+export class CameraNode extends Node<PerspectiveCamera> {
+  public constructor() {
+    const camera = new PerspectiveCamera();
+    super(camera);
+  }
+}
+
+/**
+ * Represents a ThreeJS mesh.
+ */
+@state(Node)
+export class MeshNode extends Node<Mesh> {
+  public constructor() {
+    const geometry = new BoxGeometry(1, 1, 1);
+    const material = new MeshBasicMaterial({ color: 0xffcc00 });
+    const mesh = new Mesh(geometry, material);
+    super(mesh);
   }
 }
 
@@ -150,6 +180,7 @@ export const pluginThree: ClientPlugin = (
       .add(RenderPosition)
       .add(Position, { z: 5 })
       .add(MainCamera);
+
     world.spawn().add(SceneNode).add(MainScene);
   });
 
@@ -176,47 +207,24 @@ export const pluginThree: ClientPlugin = (
         fitContainer(renderer, element);
       }
     )
-    // When a camera is added, create a new ThreeJS camera
-    .add({ cameras: [CameraNode.added()] }, ({ cameras }) => {
-      for (const entity of cameras) {
-        const camera = new PerspectiveCamera();
-        entity.addNew(Node, camera);
-      }
-    })
     // When a camera is set as main camera, fix its aspect ratio
     .add(
       {
         resources: [MainRenderer],
-        camera: [Node, MainCamera.added()],
+        camera: [CameraNode, MainCamera.added()],
       },
       ({ resources, camera }) => {
         const [{ renderer }] = resources;
         const [{ node: cameraNode }] = camera.getOneAsComponents();
 
-        fixCameraAsepectRatio(renderer, cameraNode as PerspectiveCamera);
+        fixCameraAsepectRatio(renderer, cameraNode);
       }
     )
-    // When a scene is added, create a new ThreeJS scene
-    .add({ scenes: [SceneNode.added()] }, ({ scenes }) => {
-      for (const entity of scenes) {
-        const scene = new Scene();
-        entity.addNew(Node, scene);
-      }
-    })
-    // When a mesh is added, create a new ThreeJS model
-    .add({ meshes: [MeshNode.added()] }, ({ meshes }) => {
-      for (const entity of meshes) {
-        const geometry = new BoxGeometry(1, 1, 1);
-        const material = new MeshBasicMaterial({ color: 0xffcc00 });
-        const mesh = new Mesh(geometry, material);
-        entity.addNew(Node, mesh);
-      }
-    })
     // When a Node is added, nest it to the main scene
     .add(
       {
         nodes: [Node, Node.added(), ChildNode.absent()],
-        scene: [Node, MainScene],
+        scene: [SceneNode, MainScene.present()],
       },
       ({ nodes, scene }) => {
         const [{ node: sceneNode }] = scene.getOneAsComponents();
@@ -260,14 +268,14 @@ export const pluginThree: ClientPlugin = (
     .add(
       {
         resources: [MainRenderer, WindowResized.added()],
-        camera: [Node, MainCamera],
+        camera: [CameraNode, MainCamera.present()],
       },
       ({ resources, camera }) => {
         const [{ renderer, element }] = resources;
         const [{ node: cameraNode }] = camera.getOneAsComponents();
 
         fitContainer(renderer, element);
-        fixCameraAsepectRatio(renderer, cameraNode as PerspectiveCamera);
+        fixCameraAsepectRatio(renderer, cameraNode);
       }
     )
     // Remove the WindowResized Marker
@@ -281,15 +289,15 @@ export const pluginThree: ClientPlugin = (
   postupdate.add(
     {
       resources: [MainRenderer],
-      camera: [Node, MainCamera],
-      scene: [Node, MainScene],
+      camera: [CameraNode, MainCamera.present()],
+      scene: [SceneNode, MainScene.present()],
     },
     ({ resources, camera, scene }) => {
       const [{ renderer }] = resources;
       const [{ node: cameraNode }] = camera.getOneAsComponents();
       const [{ node: sceneNode }] = scene.getOneAsComponents();
 
-      renderer.render(sceneNode, cameraNode as PerspectiveCamera);
+      renderer.render(sceneNode, cameraNode);
     }
   );
 };

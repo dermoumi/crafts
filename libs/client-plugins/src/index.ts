@@ -20,6 +20,9 @@ export { pluginVariableUpdate, FrameInfo } from "./variable-update";
 export {
   pluginThree,
   Node,
+  SceneNode,
+  CameraNode,
+  MeshNode,
   ChildNode,
   MainScene,
   MainCamera,
@@ -29,9 +32,6 @@ export {
 export { Input, pluginInput } from "./input";
 export type { InputAxis, DirectionInputAction, InputAction } from "./input";
 export {
-  SceneNode,
-  CameraNode,
-  MeshNode,
   RenderPosition,
   RenderRotation,
   pluginWorldEntities,

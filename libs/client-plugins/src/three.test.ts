@@ -1,18 +1,10 @@
 import type { ClientSystemGroups } from ".";
-import {
-  ChildNode,
-  MainScene,
-  MeshNode,
-  RenderPosition,
-  SceneNode,
-  CameraNode,
-  Node,
-  pluginThree,
-} from ".";
+
+import { ChildNode, MainScene, MeshNode, Node, pluginThree } from "./three";
+import { RenderPosition, RenderRotation } from "./world-entities";
 import { SetMap } from "@crafts/default-map";
 import { GameApp } from "@crafts/game-app";
 import { WebGLRenderer } from "three";
-import { RenderRotation } from "./world-entities";
 
 // Mock the three.js WebGLRenderer
 vi.mock("three", async () => {
@@ -88,53 +80,6 @@ describe("Threejs plugin", () => {
     game.groupsProxy.update();
 
     expect(document.body.innerHTML).toBe("<canvas></canvas>");
-  });
-
-  it("creates a ThreeJS camera when a CameraNode is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const cameras = game.world.query(Node, CameraNode.present());
-    expect(cameras.size).toBe(0);
-
-    // A main camera is autamatically added when the game starts
-    game.groupsProxy.update();
-    expect(cameras.size).toBe(1);
-
-    // Add a new camera
-    game.world.spawn().add(CameraNode);
-    game.groupsProxy.update();
-    expect(cameras.size).toBe(2);
-  });
-
-  it("creates a ThreeJS scene when a SceneNode is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const scenes = game.world.query(Node, SceneNode.present());
-    expect(scenes.size).toBe(0);
-
-    // A main scene is autamatically added when the game starts
-    game.groupsProxy.update();
-    expect(scenes.size).toBe(1);
-
-    // Add a new scene
-    game.world.spawn().add(SceneNode);
-    game.groupsProxy.update();
-    expect(scenes.size).toBe(2);
-  });
-
-  it("creates a ThreeJS mesh when a MeshNode is added", async () => {
-    const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
-    await game.run();
-
-    const meshes = game.world.query(Node, MeshNode.present());
-    expect(meshes.size).toBe(0);
-
-    // Add a new mesh
-    game.world.spawn().add(MeshNode);
-    game.groupsProxy.update();
-    expect(meshes.size).toBe(1);
   });
 
   it("adds nodes to the main scene when ChildNode is absent", async () => {
