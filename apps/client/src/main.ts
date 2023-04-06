@@ -2,10 +2,8 @@ import type { ClientPlugin, ClientSystemGroups } from "@crafts/client-plugins";
 import type { ServerSystemGroups } from "@crafts/server-plugins";
 import {
   MainCamera,
-  pluginWorldEntities,
+  pluginTween,
   Input,
-  RenderPosition,
-  RenderRotation,
   pluginInput,
   pluginVariableUpdate,
   pluginThree,
@@ -37,8 +35,6 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .add(Controllable)
       .add(MeshNode)
       .add(Velocity)
-      .add(RenderPosition)
-      .add(RenderRotation)
       .add(Position, { x: 0, y: 10, z: 0 })
       .addNew(Rotation, 0, 0, 1, "xyz")
       .addNew(Collider, "cuboid", 0.5, 0.5, 0.5)
@@ -78,7 +74,7 @@ const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginVariableUpdate)
   .addPlugin(pluginInput)
   .addPlugin(pluginGameConfig)
-  .addPlugin(pluginWorldEntities)
+  .addPlugin(pluginTween)
   .addPlugin(pluginPhysics)
   .addPlugin(pluginTestContent);
 

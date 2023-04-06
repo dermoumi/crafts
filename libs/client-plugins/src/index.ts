@@ -31,9 +31,5 @@ export {
 } from "./three";
 export { Input, pluginInput } from "./input";
 export type { InputAxis, DirectionInputAction, InputAction } from "./input";
-export {
-  RenderPosition,
-  RenderRotation,
-  pluginWorldEntities,
-} from "./world-entities";
+export { TweenPosition, TweenRotation, pluginTween } from "./tween";
 export { pluginFixedUpdate } from "./fixed-update";
