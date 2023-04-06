@@ -154,10 +154,10 @@ describe("State trait handling", () => {
   abstract class TestState extends Component {}
 
   @state(TestState)
-  class ExclusiveTraitA extends Component {}
+  class ExclusiveTraitA extends TestState {}
 
   @state(TestState)
-  class ExclusiveTraitB extends Component {
+  class ExclusiveTraitB extends TestState {
     public value = 0;
   }
 

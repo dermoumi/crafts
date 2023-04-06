@@ -71,9 +71,22 @@ export function state<
   P extends TraitConstructor<Trait>,
   T extends new (...args: any) => InstanceType<P>
 >(parentState: P) {
-  return (Base: T, _context: ClassDecoratorContext) =>
+  // Make sure the parent state is not a State trait itself
+  if ("__stateTrait" in parentState.prototype) {
+    throw new TypeError(
+      "The parent of a state trait must not be a state trait"
+    );
+  }
+
+  return (Base: T, _context: ClassDecoratorContext) => {
+    if (!(Base.prototype instanceof parentState)) {
+      throw new TypeError(
+        `State trait "${Base.name}" must inherit from parent state "${parentState.name}"`
+      );
+    }
+
     // @ts-expect-error - We can't satisfy this constraint cleanly
-    class extends Base {
+    return class extends Base {
       /**
        * Get the exclusion group for this trait.
        *
@@ -83,4 +96,5 @@ export function state<
         return parentState;
       }
     };
+  };
 }
