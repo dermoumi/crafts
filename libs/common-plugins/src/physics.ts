@@ -201,6 +201,18 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
+    // Put rigid bodies asleep
+    .add({ bodies: [RigidBody, Sleeping.addedOrChanged()] }, ({ bodies }) => {
+      for (const [{ body }] of bodies.asComponents()) {
+        body?.sleep();
+      }
+    })
+    // Wake up rigid bodies
+    .add({ bodies: [RigidBody, Sleeping.removed()] }, ({ bodies }) => {
+      for (const [{ body }] of bodies.asComponents()) {
+        body?.wakeUp();
+      }
+    })
     // Update the position of rigid bodies
     .add(
       { bodies: [RigidBody, Position, Position.addedOrChanged()] },
@@ -228,18 +240,6 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
         }
       }
     )
-    // Put rigid bodies asleep
-    .add({ bodies: [RigidBody, Sleeping.addedOrChanged()] }, ({ bodies }) => {
-      for (const [{ body }] of bodies.asComponents()) {
-        body?.sleep();
-      }
-    })
-    // Wake up rigid bodies
-    .add({ bodies: [RigidBody, Sleeping.removed()] }, ({ bodies }) => {
-      for (const [{ body }] of bodies.asComponents()) {
-        body?.wakeUp();
-      }
-    })
     // Step the physics world
     .add({ resources: [Physics] }, ({ resources }) => {
       const [physics] = resources;
@@ -247,11 +247,11 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
       physics.world.step();
     })
     // Update the sleeping state
-    .add({ bodies: [RigidBody] }, ({ bodies }) => {
-      for (const [entity, { body }] of bodies.withComponents()) {
+    .add({ bodies: [RigidBody, Sleeping.optional()] }, ({ bodies }) => {
+      for (const [entity, { body }, sleeping] of bodies.withComponents()) {
         if (body?.isSleeping()) {
           entity.add(Sleeping);
-        } else {
+        } else if (sleeping) {
           entity.remove(Sleeping);
         }
       }

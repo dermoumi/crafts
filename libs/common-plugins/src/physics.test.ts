@@ -402,6 +402,25 @@ describe("Physics rigid bodies", () => {
     const position = entity.get(Position);
     expect(position).toEqual({ x: 1, y: 2, z: 3 });
   });
+
+  it("wakes the body up when position is changed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(DynamicRigidBody)
+      .add(Position)
+      .add(Sleeping);
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(true);
+    const position = entity.get(Position);
+    position.x = 1;
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(false);
+  });
 });
 
 describe("RigidBody with Velocity", () => {
@@ -459,7 +478,7 @@ describe("RigidBody with Velocity", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().add(DynamicRigidBody);
+    const entity = game.world.spawn().add(DynamicRigidBody).add(Velocity);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -468,7 +487,8 @@ describe("RigidBody with Velocity", () => {
     body?.setLinvel({ x: 1, y: 2, z: 3 }, true);
     game.groupsProxy.fixed();
 
-    expect(body?.linvel()).toEqual({ x: 1, y: 2, z: 3 });
+    const velocity = entity.get(Velocity);
+    expect(velocity).toEqual({ x: 1, y: 2, z: 3 });
   });
 
   it("does not update Velocity from sleeping rigid bodies", async () => {
@@ -527,6 +547,25 @@ describe("RigidBody with Velocity", () => {
 
     const position = entity.get(Position);
     expect(position).toEqual({ x: 0, y: 0, z: 0 });
+  });
+
+  it("wakes the body up when velocity is changed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(DynamicRigidBody)
+      .add(Velocity)
+      .add(Sleeping);
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(true);
+    const velocity = entity.get(Velocity);
+    velocity.x = 10;
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(false);
   });
 });
 
@@ -606,6 +645,25 @@ describe("RigidBody with Rotation", () => {
     expect(entityRotation?.y).toBeCloseTo(0);
     expect(entityRotation?.z).toBeCloseTo(0);
     expect(entityRotation?.w).toBeCloseTo(1);
+  });
+
+  it("wakes the body up when rotation is changed", async () => {
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+    await game.run();
+
+    const entity = game.world
+      .spawn()
+      .add(DynamicRigidBody)
+      .add(Rotation)
+      .add(Sleeping);
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(true);
+    const rotation = entity.get(Rotation);
+    rotation.x = 1;
+    game.groupsProxy.fixed();
+
+    expect(entity.has(Sleeping)).toBe(false);
   });
 });
 
