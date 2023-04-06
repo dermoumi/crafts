@@ -65,11 +65,12 @@ export class Optional<T extends Trait> {
 }
 
 /**
- * A decorator to mark a component/resource as a trait.
+ * A decorator to mark a component/resource as a state.
  */
-export function exclusive<T extends new (...args: any) => Trait>(
-  exclusionGroup: string
-) {
+export function state<
+  P extends TraitConstructor<Trait>,
+  T extends new (...args: any) => InstanceType<P>
+>(parentState: P) {
   return (Base: T, _context: ClassDecoratorContext) =>
     // @ts-expect-error - We can't satisfy this constraint cleanly
     class extends Base {
@@ -78,8 +79,8 @@ export function exclusive<T extends new (...args: any) => Trait>(
        *
        * @returns The exclusion group's name
        */
-      public __exclusionGroup(): string {
-        return exclusionGroup;
+      public __stateTrait(): TraitConstructor<Trait> {
+        return parentState;
       }
     };
 }

@@ -2,7 +2,7 @@ import type Entity from "./entity";
 
 import Component from "./component";
 import World from "./world";
-import { exclusive } from "./trait";
+import { state } from "./trait";
 
 class TestTrait extends Component {
   public x = 0;
@@ -150,16 +150,18 @@ describe("Trait retrieval", () => {
   });
 });
 
-describe("Exclusive trait handling", () => {
-  @exclusive("TestGroup")
+describe("State trait handling", () => {
+  abstract class TestState extends Component {}
+
+  @state(TestState)
   class ExclusiveTraitA extends Component {}
 
-  @exclusive("TestGroup")
+  @state(TestState)
   class ExclusiveTraitB extends Component {
     public value = 0;
   }
 
-  it("removes other traits of an exclusion group when adding an exclusive trait", () => {
+  it("removes other traits of an state group when adding an state trait", () => {
     const world = new World();
     const entity = world.spawn();
 
@@ -170,6 +172,87 @@ describe("Exclusive trait handling", () => {
     expect(traits).toHaveLength(1);
     expect(traits).toContain(ExclusiveTraitB);
     expect(traits).not.toContain(ExclusiveTraitA);
+  });
+
+  it("can query the entity using a state trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    const query = world.query(ExclusiveTraitA);
+
+    expect([...query]).toEqual([entity]);
+  });
+
+  it("can query the entity using the parent state trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    const query = world.query(TestState);
+
+    expect([...query]).toEqual([entity]);
+  });
+
+  it("removes the state traits when removing the parent state trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    entity.remove(TestState);
+
+    expect([...entity.traits()]).toHaveLength(0);
+    expect(entity.has(ExclusiveTraitA)).toBe(false);
+  });
+
+  it("removes the parent trait when removing the state trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    entity.remove(ExclusiveTraitA);
+
+    expect([...entity.traits()]).toHaveLength(0);
+    expect(entity.has(TestState)).toBe(false);
+  });
+
+  it("only triggers __dispose() once when removing the parent trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    const spy = vi.spyOn(ExclusiveTraitA.prototype, "__dispose");
+
+    entity.remove(TestState);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it("only triggers __dispose() once when removing the state trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    const spy = vi.spyOn(ExclusiveTraitA.prototype, "__dispose");
+
+    entity.remove(ExclusiveTraitA);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it("only triggers __dispose() once when replacing the state trait", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitA);
+
+    const spy = vi.spyOn(ExclusiveTraitA.prototype, "__dispose");
+
+    entity.add(ExclusiveTraitB);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips parent traits when listing traits", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitB);
+
+    const traits = [...entity.traits()];
+
+    expect(traits).toHaveLength(1);
+    expect(traits).toEqual([ExclusiveTraitB]);
   });
 });
 
@@ -217,5 +300,17 @@ describe("Testing for traits", () => {
     const entity = world.spawn();
 
     expect(entity.hasAny(TestTrait, TestConstructibleTrait)).toBe(false);
+  });
+
+  it("lists the container's traits", () => {
+    const world = new World();
+    const entity = world
+      .spawn()
+      .add(TestTrait)
+      .addNew(TestConstructibleTrait, 0, 0);
+
+    const traits = [...entity.traits()];
+
+    expect(traits).toEqual([TestTrait, TestConstructibleTrait]);
   });
 });
