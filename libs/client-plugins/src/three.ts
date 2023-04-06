@@ -2,7 +2,7 @@ import type { ClientPlugin } from ".";
 import type { Entity } from "@crafts/ecs";
 import type { Renderer, Object3D } from "three";
 
-import { state, unique, Component, Resource } from "@crafts/ecs";
+import { state, unique, Component, Resource, Event } from "@crafts/ecs";
 import {
   Scene,
   BoxGeometry,
@@ -122,7 +122,7 @@ export class MainRenderer extends Resource {
 /**
  * Marker for when the window is resized
  */
-export class WindowResized extends Resource {}
+export class WindowResized extends Event {}
 
 /**
  * Fit a renderer inside its container
@@ -159,9 +159,9 @@ export const pluginThree: ClientPlugin = (
   { update, postupdate }
 ) => {
   // Listen for window resize events
-  onInit(({ resources }) => {
+  onInit((world) => {
     const resizeListener = () => {
-      resources.add(WindowResized);
+      world.dispatch(WindowResized);
     };
 
     window.addEventListener("resize", resizeListener, { passive: true });
@@ -243,7 +243,7 @@ export const pluginThree: ClientPlugin = (
     // its container.
     .add(
       {
-        resources: [MainRenderer, WindowResized.added()],
+        resources: [MainRenderer],
         camera: [CameraNode, MainCamera.present()],
       },
       ({ resources, camera }) => {
@@ -253,13 +253,7 @@ export const pluginThree: ClientPlugin = (
         fitContainer(renderer, element);
         fixCameraAsepectRatio(renderer, cameraNode);
       }
-    )
-    // Remove the WindowResized Marker
-    .add({ resources: [WindowResized.added()] }, ({ command }) => {
-      command(({ removeResource }) => {
-        removeResource(WindowResized);
-      });
-    });
+    );
 
   // Render the scene, each frame
   postupdate.add(
