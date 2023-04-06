@@ -19,9 +19,9 @@ import {
   pluginPhysics,
   Position,
   Collider,
-  RigidBody,
   Velocity,
   Rotation,
+  DynamicRigidBody,
 } from "@crafts/common-plugins";
 
 class Controllable extends Component {}
@@ -42,7 +42,7 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .add(Position, { x: 0, y: 10, z: 0 })
       .addNew(Rotation, 0, 0, 1, "xyz")
       .addNew(Collider, "cuboid", 0.5, 0.5, 0.5)
-      .addNew(RigidBody, "dynamic");
+      .addNew(DynamicRigidBody);
 
     const [cameraPosition] = world
       .query(Position, MainCamera.present())
