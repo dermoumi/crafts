@@ -254,6 +254,26 @@ describe("State trait handling", () => {
     expect(traits).toHaveLength(1);
     expect(traits).toEqual([ExclusiveTraitB]);
   });
+
+  it("can retrieve a state trait using its parent", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitB);
+
+    const trait = entity.get(TestState);
+    const exclusiveTraitB = entity.get(ExclusiveTraitB);
+    expect(trait).toBe(exclusiveTraitB);
+  });
+
+  it("can retrieve a state trait using its parent after replacing it", () => {
+    const world = new World();
+    const entity = world.spawn().add(ExclusiveTraitB);
+
+    entity.add(ExclusiveTraitA);
+
+    const trait = entity.get(TestState);
+    const exclusiveTraitA = entity.get(ExclusiveTraitA);
+    expect(trait).toBe(exclusiveTraitA);
+  });
 });
 
 describe("Testing for traits", () => {

@@ -97,23 +97,7 @@ export default abstract class Container<T extends Trait> {
     const trait = this.tryGet(constructor);
 
     if (trait !== undefined) {
-      const parentTrait = trait.constructor;
-      const stateTrait = (trait as any).__stateTrait?.();
-
-      // Dispose of the trait
-      trait.__dispose();
-
-      this.traitMap.delete(constructor);
-      this.manager.onTraitRemoved(this, constructor);
-
-      // Remove any state traits that are children of this trait
-      if (parentTrait !== constructor) {
-        this.traitMap.delete(parentTrait as TraitConstructor<T>);
-        this.manager.onTraitRemoved(this, parentTrait as TraitConstructor<T>);
-      } else if (stateTrait !== undefined) {
-        this.traitMap.delete(stateTrait);
-        this.manager.onTraitRemoved(this, stateTrait);
-      }
+      this.removeTrait(constructor, trait);
     }
 
     return this;
@@ -220,7 +204,11 @@ export default abstract class Container<T extends Trait> {
       const previousStateTrait = this.traitMap.get(stateTrait);
       this.traitMap.set(stateTrait, proxy);
       if (previousStateTrait) {
-        this.remove(previousStateTrait.constructor as TraitConstructor<T>);
+        this.removeTrait(
+          previousStateTrait.constructor as TraitConstructor<T>,
+          previousStateTrait,
+          false
+        );
 
         // Notify the query manager about the change
         this.manager.onTraitChanged(this, stateTrait);
@@ -231,5 +219,31 @@ export default abstract class Container<T extends Trait> {
     }
 
     return this;
+  }
+
+  protected removeTrait(
+    constructor: TraitConstructor<T>,
+    trait: T,
+    removeStateTrait = true
+  ): void {
+    // Dispose of the trait
+    trait.__dispose();
+
+    this.traitMap.delete(constructor);
+    this.manager.onTraitRemoved(this, constructor);
+
+    // Remove any state traits that are children of this trait
+    if (removeStateTrait) {
+      const parentTrait = trait.constructor;
+      const stateTrait = (trait as any).__stateTrait?.();
+
+      if (parentTrait !== constructor) {
+        this.traitMap.delete(parentTrait as TraitConstructor<T>);
+        this.manager.onTraitRemoved(this, parentTrait as TraitConstructor<T>);
+      } else if (stateTrait !== undefined) {
+        this.traitMap.delete(stateTrait);
+        this.manager.onTraitRemoved(this, stateTrait);
+      }
+    }
   }
 }
