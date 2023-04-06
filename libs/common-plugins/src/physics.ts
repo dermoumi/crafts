@@ -10,7 +10,7 @@ import {
   World,
   init as initRapier,
 } from "@dimforge/rapier3d-compat";
-import { AnyFilter, Component, Resource } from "@crafts/ecs";
+import { AnyFilter, Component, Resource, state } from "@crafts/ecs";
 import { GameConfig } from "./game-config";
 import { Position, Velocity, Rotation } from "./world-entities";
 
@@ -25,36 +25,18 @@ export class Physics extends Resource {
   public world = new World({ x: 0, y: -9.81, z: 0 });
 }
 
-const ColliderTypeMap = {
-  cuboid: ColliderDesc.cuboid,
-} as const;
-
-/**
- * The type of a collider.
- */
-export type ColliderType = keyof typeof ColliderTypeMap;
-
-/**
- * The parameters for a collider.
- */
-export type ColliderParams<T extends ColliderType> = Parameters<
-  (typeof ColliderTypeMap)[T]
->;
-
 /**
  * Defines the collision shape of a rigid body.
  */
-export class Collider<T extends ColliderType> extends Component {
+export abstract class Collider extends Component {
   private _desc: ColliderDesc;
   private _collider?: RapierCollider;
   private _worldRef?: World;
 
-  public constructor(type: T, ...params: ColliderParams<T>) {
+  public constructor(desc: ColliderDesc) {
     super();
 
-    const colliderFunc = ColliderTypeMap[type];
-    // @ts-expect-error - Typescript refuses to acknowledge params as a tuple
-    this._desc = colliderFunc(...params);
+    this._desc = desc;
   }
 
   public get collider() {
@@ -75,37 +57,28 @@ export class Collider<T extends ColliderType> extends Component {
   }
 }
 
-const RigidBodyTypeMap = {
-  dynamic: RigidBodyDesc.dynamic,
-  fixed: RigidBodyDesc.fixed,
-} as const;
-
 /**
- * The type of a rigid body.
+ * A cuboid collider.
  */
-export type RigidBodyType = keyof typeof RigidBodyTypeMap;
-
-/**
- * The parameters for a rigid body.
- */
-export type RigidBodyParams<T extends RigidBodyType> = Parameters<
-  (typeof RigidBodyTypeMap)[T]
->;
+@state(Collider)
+export class CuboidCollider extends Collider {
+  public constructor(width: number, height: number, depth: number) {
+    super(ColliderDesc.cuboid(width, height, depth));
+  }
+}
 
 /**
  * Defines the physics properties of a rigid body.
  */
-export class RigidBody<T extends RigidBodyType> extends Component {
-  private _desc: RigidBodyDesc;
-  private _body?: RapierRigidBody;
-  private _worldRef?: World;
+export abstract class RigidBody extends Component {
+  protected _desc: RigidBodyDesc;
+  protected _body?: RapierRigidBody;
+  protected _worldRef?: World;
 
-  public constructor(type: T, ...params: RigidBodyParams<T>) {
+  public constructor(desc: RigidBodyDesc) {
     super();
 
-    const rigidBodyFunc = RigidBodyTypeMap[type];
-    // @ts-expect-error - Typescript refuses to acknowledge params as a tuple
-    this._desc = rigidBodyFunc(...params);
+    this._desc = desc;
   }
 
   public get body() {
@@ -124,6 +97,26 @@ export class RigidBody<T extends RigidBodyType> extends Component {
     if (this._worldRef && this._body) {
       this._worldRef.removeRigidBody(this._body);
     }
+  }
+}
+
+/**
+ * A dynamic rigid body.
+ */
+@state(RigidBody)
+export class DynamicRigidBody extends RigidBody {
+  public constructor() {
+    super(RigidBodyDesc.dynamic());
+  }
+}
+
+/**
+ * A fixed rigid body.
+ */
+@state(RigidBody)
+export class FixedRigidBody extends RigidBody {
+  public constructor() {
+    super(RigidBodyDesc.fixed());
   }
 }
 

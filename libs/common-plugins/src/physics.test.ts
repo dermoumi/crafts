@@ -3,6 +3,9 @@ import type { CommonSystemGroups } from ".";
 import { GameApp } from "@crafts/game-app";
 import {
   Collider,
+  CuboidCollider,
+  DynamicRigidBody,
+  FixedRigidBody,
   Physics,
   pluginPhysics,
   RigidBody,
@@ -49,7 +52,7 @@ describe("Physics colliders", () => {
     const { world } = game.world.resources.get(Physics);
     expect(world.colliders.getAll()).toHaveLength(0);
 
-    entity.addNew(Collider, "cuboid", 1, 1, 1);
+    entity.addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { collider } = entity.get(Collider);
@@ -61,14 +64,14 @@ describe("Physics colliders", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(Collider, "cuboid", 1, 1, 1);
+    const entity = game.world.spawn().addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { collider: oldCollider } = entity.get(Collider);
     const { world } = game.world.resources.get(Physics);
     expect(world.colliders.getAll()).toEqual([oldCollider]);
 
-    entity.addNew(Collider, "cuboid", 2, 2, 2);
+    entity.addNew(CuboidCollider, 2, 2, 2);
     game.groupsProxy.fixed();
 
     const { collider } = entity.get(Collider);
@@ -80,7 +83,7 @@ describe("Physics colliders", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(Collider, "cuboid", 1, 1, 1);
+    const entity = game.world.spawn().addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { world } = game.world.resources.get(Physics);
@@ -97,7 +100,7 @@ describe("Physics colliders", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(Collider, "cuboid", 1, 1, 1);
+    const entity = game.world.spawn().addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { collider } = entity.get(Collider);
@@ -117,7 +120,7 @@ describe("Physics colliders", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(Collider, "cuboid", 1, 1, 1)
+      .addNew(CuboidCollider, 1, 1, 1)
       .add(Position, { x: 1, y: 2, z: 3 });
     game.groupsProxy.fixed();
 
@@ -143,7 +146,7 @@ describe("Physics rigid bodies", () => {
     const { world } = game.world.resources.get(Physics);
     expect(world.bodies.getAll()).toHaveLength(0);
 
-    entity.addNew(RigidBody, "dynamic");
+    entity.add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -155,7 +158,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { world } = game.world.resources.get(Physics);
@@ -163,7 +166,7 @@ describe("Physics rigid bodies", () => {
     expect(oldBody).toBeDefined();
     expect(world.bodies.getAll()).toEqual([oldBody]);
 
-    entity.addNew(RigidBody, "fixed");
+    entity.add(FixedRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -175,14 +178,14 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { world } = game.world.resources.get(Physics);
     const { body: oldBody } = entity.get(RigidBody);
     expect(world.bodies.getAll()).toContain(oldBody);
 
-    entity.addNew(RigidBody, "fixed");
+    entity.add(FixedRigidBody);
     game.groupsProxy.fixed();
 
     expect(world.bodies.getAll()).not.toContain(oldBody);
@@ -192,18 +195,18 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(Collider, "cuboid", 1, 1, 1);
+    const entity = game.world.spawn().addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { collider: oldCollider } = entity.get(Collider);
     expect(oldCollider).toBeDefined();
     expect(oldCollider?.parent()).toBeNull();
 
-    entity.addNew(RigidBody, "dynamic");
+    entity.add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
-    const { collider } = entity.get(Collider);
     const { body } = entity.get(RigidBody);
+    const { collider } = entity.get(Collider);
     expect(collider).toBeDefined();
     expect(collider).not.toBe(oldCollider);
     expect(collider?.parent()).toBe(body);
@@ -215,8 +218,8 @@ describe("Physics rigid bodies", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(Collider, "cuboid", 1, 1, 1)
-      .addNew(RigidBody, "dynamic");
+      .addNew(CuboidCollider, 1, 1, 1)
+      .add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body: oldBody } = entity.get(RigidBody);
@@ -224,7 +227,7 @@ describe("Physics rigid bodies", () => {
     expect(oldCollider).toBeDefined();
     expect(oldCollider?.parent()).toBe(oldBody);
 
-    entity.addNew(RigidBody, "fixed");
+    entity.add(FixedRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -238,7 +241,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { world } = game.world.resources.get(Physics);
@@ -257,8 +260,8 @@ describe("Physics rigid bodies", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(RigidBody, "dynamic")
-      .addNew(Collider, "cuboid", 1, 1, 1);
+      .add(DynamicRigidBody)
+      .addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { body: oldBody } = entity.get(RigidBody);
@@ -277,7 +280,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -293,10 +296,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .add(Position)
-      .addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(Position).add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -315,8 +315,8 @@ describe("Physics rigid bodies", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(RigidBody, "dynamic")
-      .addNew(Collider, "cuboid", 1, 1, 1);
+      .add(DynamicRigidBody)
+      .addNew(CuboidCollider, 1, 1, 1);
     game.groupsProxy.fixed();
 
     const { collider: oldCollider } = entity.get(Collider);
@@ -324,7 +324,7 @@ describe("Physics rigid bodies", () => {
     expect(body?.numColliders()).toBe(1);
     expect(body?.collider(0)).toBe(oldCollider);
 
-    entity.addNew(Collider, "cuboid", 2, 2, 2);
+    entity.addNew(CuboidCollider, 2, 2, 2);
     game.groupsProxy.fixed();
 
     const { collider } = entity.get(Collider);
@@ -336,7 +336,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -352,10 +352,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .add(Position)
-      .addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(Position).add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -372,10 +369,7 @@ describe("Physics rigid bodies", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .add(Position)
-      .addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(Position).add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -394,7 +388,7 @@ describe("Physics rigid bodies", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(RigidBody, "dynamic")
+      .add(DynamicRigidBody)
       .add(Position, { x: 1, y: 2, z: 3 });
     game.groupsProxy.fixed();
 
@@ -417,7 +411,7 @@ describe("RigidBody with Velocity", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(RigidBody, "dynamic")
+      .add(DynamicRigidBody)
       .add(Velocity, { x: 1, y: 2, z: 3 });
     game.groupsProxy.fixed();
 
@@ -429,7 +423,7 @@ describe("RigidBody with Velocity", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -447,7 +441,7 @@ describe("RigidBody with Velocity", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(RigidBody, "dynamic")
+      .add(DynamicRigidBody)
       .add(Velocity, { x: 1, y: 2, z: 3 });
     game.groupsProxy.fixed();
 
@@ -465,7 +459,7 @@ describe("RigidBody with Velocity", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -483,7 +477,7 @@ describe("RigidBody with Velocity", () => {
 
     const entity = game.world
       .spawn()
-      .addNew(RigidBody, "dynamic")
+      .add(DynamicRigidBody)
       .add(Velocity, { x: 1, y: 2, z: 3 });
     game.groupsProxy.fixed();
 
@@ -507,7 +501,7 @@ describe("RigidBody with Velocity", () => {
     const entity = game.world
       .spawn()
       .add(Position)
-      .addNew(RigidBody, "dynamic")
+      .add(DynamicRigidBody)
       .add(Velocity, { x: 1, y: 2, z: 3 });
 
     for (let i = 0; i < 10; i++) {
@@ -541,7 +535,7 @@ describe("RigidBody with Rotation", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const rotation = new Rotation(1, 2, 3, "xyz");
@@ -560,10 +554,7 @@ describe("RigidBody with Rotation", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .addNew(RigidBody, "dynamic")
-      .add(Rotation);
+    const entity = game.world.spawn().add(DynamicRigidBody).add(Rotation);
     game.groupsProxy.fixed();
 
     const rotation = new Rotation(1, 2, 3, "xyz");
@@ -582,10 +573,7 @@ describe("RigidBody with Rotation", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .addNew(RigidBody, "dynamic")
-      .add(Rotation);
+    const entity = game.world.spawn().add(DynamicRigidBody).add(Rotation);
     game.groupsProxy.fixed();
 
     const rotation = new Rotation(1, 2, 3, "xyz");
@@ -604,10 +592,7 @@ describe("RigidBody with Rotation", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .addNew(RigidBody, "dynamic")
-      .add(Rotation);
+    const entity = game.world.spawn().add(DynamicRigidBody).add(Rotation);
     game.groupsProxy.fixed();
 
     const rotation = new Rotation(1, 2, 3, "xyz");
@@ -629,7 +614,7 @@ describe("RigidBody sleep state", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -645,10 +630,7 @@ describe("RigidBody sleep state", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world
-      .spawn()
-      .addNew(RigidBody, "dynamic")
-      .add(Sleeping);
+    const entity = game.world.spawn().add(DynamicRigidBody).add(Sleeping);
     game.groupsProxy.fixed();
 
     const { body } = entity.get(RigidBody);
@@ -664,7 +646,7 @@ describe("RigidBody sleep state", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    const entity = game.world.spawn().addNew(RigidBody, "dynamic");
+    const entity = game.world.spawn().add(DynamicRigidBody);
     game.groupsProxy.fixed();
 
     expect(entity.has(Sleeping)).toBe(false);
