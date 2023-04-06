@@ -35,6 +35,29 @@ describe("Query builder", () => {
     expect(relatedTraits).toContain(Velocity);
   });
 
+  it("fails when a query does not contain any filters", () => {
+    const entityPool = new Map<string, Entity>();
+    expect(() => {
+      // eslint-disable-next-line no-new
+      new QueryBuilder<Component, Entity>([], entityPool.values());
+    }).toThrowError(
+      "Query must contain at least one filter or non-optional trait"
+    );
+  });
+
+  it("fails when a query only has optional filters", () => {
+    const entityPool = new Map<string, Entity>();
+    expect(() => {
+      // eslint-disable-next-line no-new
+      new QueryBuilder<Component, Entity>(
+        [Position.optional(), Velocity.optional()],
+        entityPool.values()
+      );
+    }).toThrowError(
+      "Query must contain at least one filter or non-optional trait"
+    );
+  });
+
   it("initializes the initial container list", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
@@ -479,50 +502,57 @@ describe("Optional traits", () => {
   it("retreieves optional traits", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
+    const entity = new Entity("a", manager).add(Position).add(Velocity);
     entityPool.set(entity.id, entity);
 
-    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
-      [new Optional(Position)],
-      entityPool.values()
-    );
+    const builder = new QueryBuilder<
+      Component,
+      Entity,
+      [typeof Velocity, Optional<Component>]
+    >([Velocity, new Optional(Position)], entityPool.values());
     const query = new Query(builder);
 
     const entities = [...query];
     expect(entities).toEqual([entity]);
+
     const position = entity.get(Position);
+    const velocity = entity.get(Velocity);
     const components = [...query.asComponents()];
-    expect(components).toEqual([[position]]);
+    expect(components).toEqual([[velocity, position]]);
   });
 
   it("retrieves optional traits that don't exist", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
-    const entity = new Entity("a", manager);
+    const entity = new Entity("a", manager).add(Velocity);
     entityPool.set(entity.id, entity);
 
-    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
-      [new Optional(Position)],
-      entityPool.values()
-    );
+    const builder = new QueryBuilder<
+      Component,
+      Entity,
+      [typeof Velocity, Optional<Component>]
+    >([Velocity, new Optional(Position)], entityPool.values());
     const query = new Query(builder);
 
     const entities = [...query];
     expect(entities).toEqual([entity]);
+
+    const velocity = entity.get(Velocity);
     const components = [...query.asComponents()];
-    expect(components).toEqual([[undefined]]);
+    expect(components).toEqual([[velocity, undefined]]);
   });
 
   it("retrieves optional traits added after the query is created", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
-    const entity = new Entity("a", manager);
+    const entity = new Entity("a", manager).add(Velocity);
     entityPool.set(entity.id, entity);
 
-    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
-      [new Optional(Position)],
-      entityPool.values()
-    );
+    const builder = new QueryBuilder<
+      Component,
+      Entity,
+      [typeof Velocity, Optional<Component>]
+    >([Velocity, new Optional(Position)], entityPool.values());
 
     const query = new Query(builder);
 
@@ -530,21 +560,24 @@ describe("Optional traits", () => {
 
     const entities = [...query];
     expect(entities).toEqual([entity]);
+
     const position = entity.get(Position);
+    const velocity = entity.get(Velocity);
     const components = [...query.asComponents()];
-    expect(components).toEqual([[position]]);
+    expect(components).toEqual([[velocity, position]]);
   });
 
   it("retrieves optional traits added after the query is reset", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
-    const entity = new Entity("a", manager);
+    const entity = new Entity("a", manager).add(Velocity);
     entityPool.set(entity.id, entity);
 
-    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
-      [new Optional(Position)],
-      entityPool.values()
-    );
+    const builder = new QueryBuilder<
+      Component,
+      Entity,
+      [typeof Velocity, Optional<Component>]
+    >([Velocity, new Optional(Position)], entityPool.values());
 
     const query = new ResettableQuery(builder);
 
@@ -554,21 +587,24 @@ describe("Optional traits", () => {
 
     const entities = [...query];
     expect(entities).toEqual([entity]);
+
     const position = entity.get(Position);
+    const velocity = entity.get(Velocity);
     const components = [...query.asComponents()];
-    expect(components).toEqual([[position]]);
+    expect(components).toEqual([[velocity, position]]);
   });
 
   it("retrieves optional traits removed after the query is created", () => {
     const manager = new Manager<Component, Entity>();
     const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
+    const entity = new Entity("a", manager).add(Position).add(Velocity);
     entityPool.set(entity.id, entity);
 
-    const builder = new QueryBuilder<Component, Entity, [Optional<Component>]>(
-      [new Optional(Position)],
-      entityPool.values()
-    );
+    const builder = new QueryBuilder<
+      Component,
+      Entity,
+      [typeof Velocity, Optional<Component>]
+    >([Velocity, new Optional(Position)], entityPool.values());
 
     const query = new Query(builder);
 
@@ -577,7 +613,8 @@ describe("Optional traits", () => {
     const entities = [...query];
     expect(entities).toEqual([entity]);
 
+    const velocity = entity.get(Velocity);
     const components = [...query.asComponents()];
-    expect(components).toEqual([[undefined]]);
+    expect(components).toEqual([[velocity, undefined]]);
   });
 });

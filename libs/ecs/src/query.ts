@@ -114,6 +114,12 @@ export class QueryBuilder<
       return [filter];
     });
 
+    if (filterObjs.length === 0) {
+      throw new Error(
+        "Query must contain at least one filter or non-optional trait"
+      );
+    }
+
     this.filter = AllFilter.wrapIfMany(...filterObjs);
     this.requestedTraits = requestedTraits as TraitConstructorTuple<T, F>;
 
