@@ -131,22 +131,24 @@ cameraA.add(MainCamera);
 cameraB.has(MainCamera); // false
 ```
 
-### Exclusive components/resources
+### State components/resources
 
-Exclusive components set an exclusion group, only one component belonging
-to a given group can exist on a entity at a time.
+State components inherit from a common (usually abstract) Component class,
+and there can only be one state of that component in an entity at a time.
 
-Exclusive resources are similar, in there can only be one resource
-belonging to an exclusion group at a time.
+State resources are the same, in there can only be one resource
+of a given state at a time.
 
 ```ts
 import * as Ecs from "@crafts/ecs";
 
-@Ecs.exclusive("NpcState")
-class NpcIdle extends Ecs.Component {}
+abstract class NpcState extends Ecs.Component {}
 
-@Ecs.exclusive("NpcState")
-class NpcWalking extends Ecs.Component {
+@Ecs.state(NpcState)
+class NpcIdle extends NpcState {}
+
+@Ecs.state(NpcState)
+class NpcWalking extends NpcState {
   public targetX = 0;
   public targetY = 0;
 }
@@ -155,7 +157,24 @@ const npc = world.spawn().add(NpcIdle);
 npc.add(NpcWalking, { targetX: 1, targetY: 1 });
 
 npc.has(NpcIdle); // false
-npw.has(NpcWalking); // true
+npc.has(NpcWalking); // true
+npc.has(NpcState); // true
+
+// You can for a specific state
+const idleNpcs = world.query(NpcIdle);
+for (const [idle] of idleNpcs.asComponents()) {
+  // ...
+}
+
+// Or for any state of a given state component
+const npcs = world.query(NpcState);
+for (const [state] of npcs.asComponents()) {
+  if (state instanceof NpcIdle) {
+    // ...
+  } else if (state instanceof NpcWalking) {
+    // ...
+  }
+}
 ```
 
 ### Bundles

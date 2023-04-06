@@ -21,11 +21,6 @@ export default abstract class Container<T extends Trait> {
 
   /**
    * @internal
-   */
-  protected readonly exclusionGroups = new Map<string, TraitConstructor<T>>();
-
-  /**
-   * @internal
    * @param manager - The container manager to use
    */
   public constructor(manager: Manager<T, Container<T>>) {
@@ -36,7 +31,13 @@ export default abstract class Container<T extends Trait> {
    * Enumerate trait types and their values.
    */
   public *traits(): IterableIterator<TraitConstructor<T>> {
-    yield* this.traitMap.keys();
+    for (const [constructor, trait] of this.traitMap) {
+      // Skip state traits,
+      // they usually don't have the same constructor as their parent state
+      if (trait.constructor === constructor) {
+        yield constructor;
+      }
+    }
   }
 
   /**
@@ -96,17 +97,7 @@ export default abstract class Container<T extends Trait> {
     const trait = this.tryGet(constructor);
 
     if (trait !== undefined) {
-      // Dispose of the trait
-      trait.__dispose();
-
-      this.traitMap.delete(constructor);
-      this.manager.onTraitRemoved(this, constructor);
-
-      // Remove from exclusion groups
-      const exclusionGroup = (trait as any).__exclusionGroup?.();
-      if (exclusionGroup !== undefined) {
-        this.exclusionGroups.delete(exclusionGroup);
-      }
+      this.removeTrait(constructor, trait);
     }
 
     return this;
@@ -180,17 +171,6 @@ export default abstract class Container<T extends Trait> {
    * @returns This object
    */
   protected addTrait(constructor: TraitConstructor<T>, trait: T): this {
-    // Handle exclusive traits
-    const exclusiveGroup = (trait as any).__exclusionGroup?.();
-    if (exclusiveGroup !== undefined) {
-      const currentExclusiveTrait = this.exclusionGroups.get(exclusiveGroup);
-      if (currentExclusiveTrait !== undefined) {
-        this.remove(currentExclusiveTrait);
-      }
-
-      this.exclusionGroups.set(exclusiveGroup, constructor);
-    }
-
     // Wrap the trait with a proxy to monitor changes
     const proxy = new Proxy(trait, {
       set: (target, key, value): boolean => {
@@ -218,6 +198,52 @@ export default abstract class Container<T extends Trait> {
       this.manager.onTraitAdded(this, constructor);
     }
 
+    // Handle state traits if any
+    const stateTrait = (trait as any).__stateTrait?.();
+    if (stateTrait) {
+      const previousStateTrait = this.traitMap.get(stateTrait);
+      this.traitMap.set(stateTrait, proxy);
+      if (previousStateTrait) {
+        this.removeTrait(
+          previousStateTrait.constructor as TraitConstructor<T>,
+          previousStateTrait,
+          false
+        );
+
+        // Notify the query manager about the change
+        this.manager.onTraitChanged(this, stateTrait);
+      } else {
+        // Notify the query manager about the addition
+        this.manager.onTraitAdded(this, stateTrait);
+      }
+    }
+
     return this;
+  }
+
+  protected removeTrait(
+    constructor: TraitConstructor<T>,
+    trait: T,
+    removeStateTrait = true
+  ): void {
+    // Dispose of the trait
+    trait.__dispose();
+
+    this.traitMap.delete(constructor);
+    this.manager.onTraitRemoved(this, constructor);
+
+    // Remove any state traits that are children of this trait
+    if (removeStateTrait) {
+      const parentTrait = trait.constructor;
+      const stateTrait = (trait as any).__stateTrait?.();
+
+      if (parentTrait !== constructor) {
+        this.traitMap.delete(parentTrait as TraitConstructor<T>);
+        this.manager.onTraitRemoved(this, parentTrait as TraitConstructor<T>);
+      } else if (stateTrait !== undefined) {
+        this.traitMap.delete(stateTrait);
+        this.manager.onTraitRemoved(this, stateTrait);
+      }
+    }
   }
 }
