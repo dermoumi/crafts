@@ -15,9 +15,11 @@ export const pluginVariableUpdate: ClientPlugin = (
   { onInit },
   { preupdate, update, postupdate }
 ) => {
+  let frameInfo: FrameInfo;
+
   onInit(({ resources }) => {
     resources.add(FrameInfo);
-    const frameInfo = resources.get(FrameInfo);
+    frameInfo = resources.get(FrameInfo);
 
     const now = performance.now();
     let lastFrameTime = now;
@@ -40,4 +42,11 @@ export const pluginVariableUpdate: ClientPlugin = (
       cancelAnimationFrame(rafID);
     };
   });
+
+  update.add(
+    { resources: [FrameInfo, FrameInfo.changed()] },
+    ({ resources }) => {
+      frameInfo = resources[0];
+    }
+  );
 };

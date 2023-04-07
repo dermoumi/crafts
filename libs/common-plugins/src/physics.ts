@@ -125,10 +125,10 @@ export class FixedRigidBody extends RigidBody {
  */
 export class Sleeping extends Component {}
 
-export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
-  onInit(async (world) => {
-    await initRapier();
+export const pluginPhysics: CommonPlugin = async ({ onInit }, { fixed }) => {
+  await initRapier();
 
+  onInit((world) => {
     world.resources.add(Physics);
   });
 
@@ -137,9 +137,9 @@ export const pluginPhysics: CommonPlugin = ({ onInit }, { fixed }) => {
     .add(
       { resources: [Physics, GameConfig, GameConfig.addedOrChanged()] },
       ({ resources }) => {
-        const [physics, config] = resources;
+        const [{ world }, config] = resources;
 
-        physics.world.timestep = config.fixedUpdateRate;
+        world.timestep = config.fixedUpdateRate;
       }
     )
     // Create/update rigid bodies
