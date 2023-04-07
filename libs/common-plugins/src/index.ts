@@ -22,3 +22,4 @@ export {
   CuboidCollider,
   pluginPhysics,
 } from "./physics";
+export { pluginFixedUpdate } from "./fixed-update";

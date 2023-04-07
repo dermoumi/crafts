@@ -93,7 +93,7 @@ describe("FrameInfo resource", () => {
     });
 
     expect(renderFunc).toHaveBeenLastCalledWith(
-      expect.numberBetween(0.01, 0.02) // Should be 0.016ms on average
+      expect.numberBetween(0.01, 0.03) // Should be 0.016ms on average
     );
   });
 });

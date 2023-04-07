@@ -16,7 +16,10 @@ export class GameConfig extends Resource {
  * Manages the game config.
  */
 export const pluginGameConfig: CommonPlugin = ({ onInit }) => {
-  onInit(({ resources }) => {
-    resources.add(GameConfig);
-  });
+  onInit(
+    ({ resources }) => {
+      resources.add(GameConfig);
+    },
+    { name: "GameConfig" }
+  );
 };

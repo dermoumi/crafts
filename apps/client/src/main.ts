@@ -8,7 +8,6 @@ import {
   pluginVariableUpdate,
   pluginThree,
   MeshNode,
-  pluginFixedUpdate,
 } from "@crafts/client-plugins";
 import { GameApp } from "@crafts/game-app";
 import { Component } from "@crafts/ecs";
@@ -20,6 +19,7 @@ import {
   Rotation,
   DynamicRigidBody,
   CuboidCollider,
+  pluginFixedUpdate,
 } from "@crafts/common-plugins";
 
 class Controllable extends Component {}

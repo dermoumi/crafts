@@ -32,4 +32,3 @@ export {
 export { Input, pluginInput } from "./input";
 export type { InputAxis, DirectionInputAction, InputAction } from "./input";
 export { TweenPosition, TweenRotation, pluginTween } from "./tween";
-export { pluginFixedUpdate } from "./fixed-update";
