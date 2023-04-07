@@ -8,7 +8,11 @@ import {
   MainScene,
   Node,
   SceneNode,
+  TweenPosition,
+  TweenRotation,
 } from "./components";
+import { GameConfig, Position, Rotation } from "@crafts/common-plugins";
+import { FrameInfo } from "../variable-update";
 
 /**
  * Fit a renderer inside its container.
@@ -131,5 +135,141 @@ export const renderScene = new System(
     const [{ node: sceneNode }] = scene.getOneAsComponents();
 
     renderer.render(sceneNode, cameraNode);
+  }
+);
+
+/**
+ * Set node position when the position is first added.
+ */
+export const addInitialPosition = new System(
+  { positions: [Node, Position, Position.added()] },
+  ({ positions }) => {
+    for (const [{ node }, { x, y, z }] of positions.asComponents()) {
+      node.position.set(x, y, z);
+    }
+  }
+);
+
+/**
+ * Add position tweening when position changes.
+ */
+export const updatePositionTween = new System(
+  { positions: [Node, Position.changed()] },
+  ({ positions }) => {
+    for (const [entity, { node }] of positions.withComponents()) {
+      const { x, y, z } = node.position;
+
+      entity.add(TweenPosition, {
+        fromX: x,
+        fromY: y,
+        fromZ: z,
+        progress: 0,
+      });
+    }
+  }
+);
+
+/**
+ * Tween position.
+ */
+export const tweenPosition = new System(
+  {
+    positions: [Position, TweenPosition, Node],
+    resources: [FrameInfo, GameConfig],
+  },
+  ({ positions, resources }) => {
+    const [frameInfo, gameConfig] = resources;
+    const animationFactor =
+      (1000 * frameInfo.delta) / gameConfig.fixedUpdateRateMs;
+
+    for (const [
+      entity,
+      { x, y, z },
+      tween,
+      { node },
+    ] of positions.withComponents()) {
+      const { progress, fromX, fromY, fromZ } = tween;
+      const animation = Math.min(1, progress + animationFactor);
+      node.position.set(
+        fromX + (x - fromX) * animation,
+        fromY + (y - fromY) * animation,
+        fromZ + (z - fromZ) * animation
+      );
+
+      if (animation >= 1) {
+        entity.remove(TweenPosition);
+      } else {
+        tween.progress = animation;
+      }
+    }
+  }
+);
+
+/**
+ * Add initial rotation when rotation is first added.
+ */
+export const addInitialRotation = new System(
+  { rotations: [Node, Rotation, Rotation.added()] },
+  ({ rotations }) => {
+    for (const [{ node }, { x, y, z, w }] of rotations.asComponents()) {
+      node.quaternion.set(x, y, z, w);
+    }
+  }
+);
+
+/**
+ * Add rotation tweening when rotation changes.
+ */
+export const updateRotationTween = new System(
+  { rotations: [Node, Rotation.changed()] },
+  ({ rotations }) => {
+    for (const [entity, { node }] of rotations.withComponents()) {
+      const { x, y, z, w } = node.quaternion;
+
+      entity.add(TweenRotation, {
+        fromX: x,
+        fromY: y,
+        fromZ: z,
+        fromW: w,
+        progress: 0,
+      });
+    }
+  }
+);
+
+/**
+ * Tween rotation.
+ */
+export const tweenRotation = new System(
+  {
+    rotations: [TweenRotation, Rotation, Node],
+    resources: [FrameInfo, GameConfig],
+  },
+  ({ rotations, resources }) => {
+    const [frameInfo, gameConfig] = resources;
+    const animationFactor =
+      (1000 * frameInfo.delta) / gameConfig.fixedUpdateRateMs;
+
+    for (const [
+      entity,
+      tween,
+      { x, y, z, w },
+      { node },
+    ] of rotations.withComponents()) {
+      const { progress, fromX, fromY, fromZ, fromW } = tween;
+      const animation = Math.min(1, progress + animationFactor);
+      node.quaternion.set(
+        fromX + (x - fromX) * animation,
+        fromY + (y - fromY) * animation,
+        fromZ + (z - fromZ) * animation,
+        fromW + (w - fromW) * animation
+      );
+
+      if (animation >= 1) {
+        entity.remove(TweenRotation);
+      } else {
+        tween.progress = animation;
+      }
+    }
   }
 );

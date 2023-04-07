@@ -91,3 +91,24 @@ export class MainCamera extends Component {}
  */
 @unique
 export class MainScene extends Component {}
+
+/**
+ * Tracks the tween animaiton for a Node's position.
+ */
+export class TweenPosition extends Component {
+  public fromX = 0;
+  public fromY = 0;
+  public fromZ = 0;
+  public progress = 1;
+}
+
+/**
+ * Tracks the tween animaiton for a Node's rotation.
+ */
+export class TweenRotation extends Component {
+  public fromX = 0;
+  public fromY = 0;
+  public fromZ = 0;
+  public fromW = 1;
+  public progress = 1;
+}

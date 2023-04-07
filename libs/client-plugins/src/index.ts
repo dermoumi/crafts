@@ -20,4 +20,3 @@ export { pluginVariableUpdate, FrameInfo } from "./variable-update";
 export * from "./three";
 export { Input, pluginInput } from "./input";
 export type { InputAxis, DirectionInputAction, InputAction } from "./input";
-export { TweenPosition, TweenRotation, pluginTween } from "./tween";

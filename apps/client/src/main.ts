@@ -2,7 +2,6 @@ import type { ClientPlugin, ClientSystemGroups } from "@crafts/client-plugins";
 import type { ServerSystemGroups } from "@crafts/server-plugins";
 import {
   MainCamera,
-  pluginTween,
   Input,
   pluginInput,
   pluginVariableUpdate,
@@ -74,7 +73,6 @@ const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginVariableUpdate)
   .addPlugin(pluginInput)
   .addPlugin(pluginGameConfig)
-  .addPlugin(pluginTween)
   .addPlugin(pluginPhysics)
   .addPlugin(pluginTestContent);
 

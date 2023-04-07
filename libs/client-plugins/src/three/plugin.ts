@@ -4,12 +4,18 @@ import { CameraNode, MainCamera, MainScene, SceneNode } from "./components";
 import { WindowResized } from "./events";
 import { Renderer } from "./resources";
 import {
+  addInitialPosition,
+  addInitialRotation,
   mountRenderer,
   nestNodeToMainScene,
   nestNodeToParent,
   renderScene,
   resizeRenderer,
+  tweenPosition,
+  tweenRotation,
   updateCameraAsepectRatio,
+  updatePositionTween,
+  updateRotationTween,
 } from "./systems";
 
 /**
@@ -55,7 +61,13 @@ export const pluginThree: ClientPlugin = (
     .addSystem(updateCameraAsepectRatio)
     .addSystem(nestNodeToMainScene)
     .addSystem(nestNodeToParent)
-    .addSystem(resizeRenderer);
+    .addSystem(resizeRenderer)
+    .addSystem(addInitialPosition)
+    .addSystem(updatePositionTween)
+    .addSystem(tweenPosition)
+    .addSystem(addInitialRotation)
+    .addSystem(updateRotationTween)
+    .addSystem(tweenRotation);
 
   postupdate.addSystem(renderScene);
 };
