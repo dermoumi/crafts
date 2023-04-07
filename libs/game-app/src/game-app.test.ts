@@ -1,6 +1,7 @@
 import type { Plugin } from "./plugin-manager";
 import GameApp from "./game-app";
 import { createSystemGroup } from "./system-group";
+import { System } from "@crafts/ecs";
 
 describe("GameApp", () => {
   it("invokes the init handlers on run()", async () => {
@@ -48,6 +49,21 @@ describe("GameApp plugins", () => {
     await game.run();
 
     expect(startupAddMock).toHaveBeenCalledOnce();
+  });
+
+  it("can add system instances to groups", async () => {
+    const callback = vi.fn();
+    const system = new System({}, callback);
+    const testPlugin: Plugin<"startup"> = (_, { startup }) => {
+      startup.addSystem(system);
+    };
+
+    const game = new GameApp().addPlugin(testPlugin);
+    await game.run();
+
+    game.groupsProxy.startup?.();
+
+    expect(callback).toHaveBeenCalled();
   });
 
   it("cannot reassign system groups", () => {
