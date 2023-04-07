@@ -18,5 +18,4 @@ export type ClientPlugin = Plugin<ClientSystemGroups>;
 // All the plugins go here
 export { pluginVariableUpdate, FrameInfo } from "./variable-update";
 export * from "./three";
-export { Input, pluginInput } from "./input";
-export type { InputAxis, DirectionInputAction, InputAction } from "./input";
+export * from "./input";
