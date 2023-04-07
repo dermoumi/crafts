@@ -1,6 +1,7 @@
-import type { ClientSystemGroups } from ".";
+import type { ClientSystemGroups } from "..";
 
-import { ChildNode, MainScene, MeshNode, Node, pluginThree } from "./three";
+import { ChildNode, MainScene, MeshNode, Node } from "./components";
+import { pluginThree } from "./plugin";
 import { SetMap } from "@crafts/default-map";
 import { GameApp } from "@crafts/game-app";
 import { WebGLRenderer } from "three";

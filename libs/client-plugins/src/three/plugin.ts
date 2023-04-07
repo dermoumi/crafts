@@ -1,0 +1,61 @@
+import type { ClientPlugin } from "..";
+import { Position } from "@crafts/common-plugins";
+import { CameraNode, MainCamera, MainScene, SceneNode } from "./components";
+import { WindowResized } from "./events";
+import { Renderer } from "./resources";
+import {
+  mountRenderer,
+  nestNodeToMainScene,
+  nestNodeToParent,
+  renderScene,
+  resizeRenderer,
+  updateCameraAsepectRatio,
+} from "./systems";
+
+/**
+ * Plugin to manage ThreeJS scenes.
+ */
+export const pluginThree: ClientPlugin = (
+  { onInit },
+  { update, postupdate }
+) => {
+  // Listen for window resize events
+  onInit((world) => {
+    const resizeListener = () => {
+      world.dispatch(WindowResized);
+    };
+
+    window.addEventListener("resize", resizeListener, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", resizeListener);
+    };
+  });
+
+  // Spawn the initial scene and camera
+  onInit((world) => {
+    world.spawn().add(CameraNode).add(Position, { z: 5 }).add(MainCamera);
+
+    world.spawn().add(SceneNode).add(MainScene);
+  });
+
+  // Add the main renderer
+  onInit(({ resources }) => {
+    resources.addNew(Renderer, document.body);
+
+    return () => {
+      const { renderer } = resources.get(Renderer);
+      renderer.domElement.remove();
+      renderer.dispose();
+    };
+  });
+
+  update
+    .addSystem(mountRenderer)
+    .addSystem(updateCameraAsepectRatio)
+    .addSystem(nestNodeToMainScene)
+    .addSystem(nestNodeToParent)
+    .addSystem(resizeRenderer);
+
+  postupdate.addSystem(renderScene);
+};

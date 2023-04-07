@@ -17,18 +17,7 @@ export type ClientPlugin = Plugin<ClientSystemGroups>;
 
 // All the plugins go here
 export { pluginVariableUpdate, FrameInfo } from "./variable-update";
-export {
-  pluginThree,
-  Node,
-  SceneNode,
-  CameraNode,
-  MeshNode,
-  ChildNode,
-  MainScene,
-  MainCamera,
-  MainRenderer,
-  WindowResized,
-} from "./three";
+export * from "./three";
 export { Input, pluginInput } from "./input";
 export type { InputAxis, DirectionInputAction, InputAction } from "./input";
 export { TweenPosition, TweenRotation, pluginTween } from "./tween";

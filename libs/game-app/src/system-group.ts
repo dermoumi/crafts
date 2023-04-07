@@ -18,6 +18,8 @@ export type SystemGroup<A extends unknown[] = []> = {
     queries: Q,
     callback: Ecs.SystemCallback<Q>
   ) => SystemGroup;
+
+  addSystem: <Q extends Ecs.SystemQuery>(system: Ecs.System<Q>) => SystemGroup;
 };
 
 /**
@@ -40,6 +42,16 @@ export function createSystemGroup(world: Ecs.World): SystemGroup {
     callback: Ecs.SystemCallback<Q>
   ) => {
     const handle = world.addSystem(queries, callback);
+    handles.add(handle);
+
+    // Return the group itself
+    return systemGroup;
+  };
+
+  systemGroup.addSystem = <Q extends Ecs.SystemQuery>(
+    system: Ecs.System<Q>
+  ) => {
+    const handle = world.addSystem(system);
     handles.add(handle);
 
     // Return the group itself
