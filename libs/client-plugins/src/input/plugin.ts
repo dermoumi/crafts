@@ -10,5 +10,5 @@ export const pluginInput: ClientPlugin = ({ onInit }, { update }) => {
     resources.add(Input);
   });
 
-  update.addSystem(updateInput);
+  update.add(updateInput);
 };

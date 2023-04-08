@@ -1,6 +1,6 @@
-import type { SystemGroup } from "./system-group";
+import type { SystemGroup } from "./system";
 import type { Plugin } from "./plugin-manager";
-import { createSystemGroup } from "./system-group";
+import { createSystemGroup } from "./system";
 import PluginManager from "./plugin-manager";
 import * as Ecs from "@crafts/ecs";
 

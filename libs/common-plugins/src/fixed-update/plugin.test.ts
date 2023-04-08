@@ -20,7 +20,7 @@ describe("Fixed update plugin", () => {
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.addSystem(testSystem);
+        fixed.add(testSystem);
       });
 
     await game.run();
@@ -40,7 +40,7 @@ describe("Fixed update plugin", () => {
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.addSystem(testSystem);
+        fixed.add(testSystem);
       });
 
     await game.run();
@@ -59,7 +59,7 @@ describe("Fixed update plugin", () => {
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.addSystem(testSystem);
+        fixed.add(testSystem);
       });
 
     await game.run();
@@ -81,7 +81,7 @@ describe("Fixed update plugin", () => {
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.addSystem(testSystem);
+        fixed.add(testSystem);
       });
 
     await game.run();

@@ -14,7 +14,7 @@ export type SystemGroup<A extends unknown[] = []> = {
    * @param callback - The callback to run when the system is invoked
    * @returns - The group itself
    */
-  addSystem: <Q extends Ecs.SystemQuery>(system: Ecs.System<Q>) => SystemGroup;
+  add: <Q extends Ecs.SystemQuery>(system: Ecs.System<Q>) => SystemGroup;
 };
 
 /**
@@ -32,9 +32,7 @@ export function createSystemGroup(world: Ecs.World): SystemGroup {
   };
 
   // The function to add a system to the system group
-  systemGroup.addSystem = <Q extends Ecs.SystemQuery>(
-    system: Ecs.System<Q>
-  ) => {
+  systemGroup.add = <Q extends Ecs.SystemQuery>(system: Ecs.System<Q>) => {
     const handle = world.addSystem(system);
     handles.add(handle);
 

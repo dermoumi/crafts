@@ -1,6 +1,6 @@
 import { SetMap } from "@crafts/default-map";
 import type { World } from "@crafts/ecs";
-import type { SystemGroup } from "./system-group";
+import type { SystemGroup } from "./system";
 
 /**
  * A handler to cleanup a plugin.

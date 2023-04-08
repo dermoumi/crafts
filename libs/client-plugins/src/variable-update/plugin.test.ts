@@ -23,7 +23,7 @@ describe("Variable update plugin", () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.addSystem(testSystem);
+        update.add(testSystem);
       });
 
     await game.run();
@@ -43,7 +43,7 @@ describe("Variable update plugin", () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.addSystem(testSystem);
+        update.add(testSystem);
       });
 
     await game.run();
@@ -84,7 +84,7 @@ describe("FrameInfo resource", () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.addSystem(testSystem);
+        update.add(testSystem);
       });
 
     await game.run();

@@ -66,7 +66,7 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
     cameraPosition.z = 20;
   });
 
-  update.addSystem(moveControllable);
+  update.add(moveControllable);
 };
 
 const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()

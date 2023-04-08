@@ -27,18 +27,18 @@ export const pluginPhysics: CommonPlugin = async ({ onInit }, { fixed }) => {
   });
 
   fixed
-    .addSystem(syncTimestep)
-    .addSystem(createRigidBodies)
-    .addSystem(createColliders)
-    .addSystem(updateUserColliderPositions)
-    .addSystem(updateUserRigidBodySleeping)
-    .addSystem(updateUserRigidBodyAwake)
-    .addSystem(updateUserRigidBodyPositions)
-    .addSystem(updateUserRigidBodyVelocities)
-    .addSystem(updateUserRigidBodyRotations)
-    .addSystem(doPhysicsStep)
-    .addSystem(updateRigidBodySleeping)
-    .addSystem(updateRigidBodyPositions)
-    .addSystem(updateRigidBodyVelocities)
-    .addSystem(updateRigidBodyRotations);
+    .add(syncTimestep)
+    .add(createRigidBodies)
+    .add(createColliders)
+    .add(updateUserColliderPositions)
+    .add(updateUserRigidBodySleeping)
+    .add(updateUserRigidBodyAwake)
+    .add(updateUserRigidBodyPositions)
+    .add(updateUserRigidBodyVelocities)
+    .add(updateUserRigidBodyRotations)
+    .add(doPhysicsStep)
+    .add(updateRigidBodySleeping)
+    .add(updateRigidBodyPositions)
+    .add(updateRigidBodyVelocities)
+    .add(updateRigidBodyRotations);
 };

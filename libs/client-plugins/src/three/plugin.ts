@@ -57,17 +57,17 @@ export const pluginThree: ClientPlugin = (
   });
 
   update
-    .addSystem(mountRenderer)
-    .addSystem(updateCameraAsepectRatio)
-    .addSystem(nestNodeToMainScene)
-    .addSystem(nestNodeToParent)
-    .addSystem(resizeRenderer)
-    .addSystem(addInitialPosition)
-    .addSystem(updatePositionTween)
-    .addSystem(tweenPosition)
-    .addSystem(addInitialRotation)
-    .addSystem(updateRotationTween)
-    .addSystem(tweenRotation);
+    .add(mountRenderer)
+    .add(updateCameraAsepectRatio)
+    .add(nestNodeToMainScene)
+    .add(nestNodeToParent)
+    .add(resizeRenderer)
+    .add(addInitialPosition)
+    .add(updatePositionTween)
+    .add(tweenPosition)
+    .add(addInitialRotation)
+    .add(updateRotationTween)
+    .add(tweenRotation);
 
-  postupdate.addSystem(renderScene);
+  postupdate.add(renderScene);
 };

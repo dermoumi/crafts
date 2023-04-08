@@ -1,6 +1,6 @@
 import type { Plugin } from "./plugin-manager";
 import GameApp from "./game-app";
-import { createSystemGroup } from "./system-group";
+import { createSystemGroup } from "./system";
 import { System } from "@crafts/ecs";
 
 describe("GameApp", () => {
@@ -38,12 +38,12 @@ describe("GameApp plugins", () => {
   it("can retrieve existing groups", async () => {
     const testSystem = new System({}, vi.fn());
     const testPlugin: Plugin<"startup"> = (_, { startup }) => {
-      startup.addSystem(testSystem);
+      startup.add(testSystem);
     };
 
     const game = new GameApp();
     const startupGroup = createSystemGroup(game.world);
-    const startupAddMock = vi.spyOn(startupGroup, "addSystem");
+    const startupAddMock = vi.spyOn(startupGroup, "add");
     game.groups.startup = startupGroup;
 
     game.addPlugin(testPlugin);
@@ -87,7 +87,7 @@ describe("GameApp plugins", () => {
 
       expect(newGroup).toBeDefined();
       expect(newGroup).toBeInstanceOf(Function);
-      expect(newGroup).toHaveProperty("addSystem");
+      expect(newGroup).toHaveProperty("add");
     };
 
     const game = new GameApp().addPlugin(testPlugin);

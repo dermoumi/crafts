@@ -1,6 +1,6 @@
 import type { Plugin } from "./plugin-manager";
 import PluginManager from "./plugin-manager";
-import { createSystemGroup } from "./system-group";
+import { createSystemGroup } from "./system";
 import * as Ecs from "@crafts/ecs";
 
 describe("Plugin manager", () => {
@@ -127,7 +127,7 @@ describe("Plugin manager", () => {
 
     const pluginManager = new PluginManager(groups, world).add(
       (_, { update }) => {
-        update.addSystem(testSystem);
+        update.add(testSystem);
       }
     );
     await pluginManager.init();
