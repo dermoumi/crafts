@@ -11,8 +11,19 @@ import {
   RigidBody,
   Sleeping,
 } from "./physics";
-import { GameConfig, pluginGameConfig } from "./game-config";
 import { Position, Rotation, Velocity } from "./world-entities";
+import { FixedUpdate } from "./fixed-update";
+
+vi.mock("../fixed-update", async () => {
+  const fixedUpdate = await import("./fixed-update");
+
+  return {
+    ...fixedUpdate,
+    FixedUpdate: class {
+      public rate = 1 / 60;
+    },
+  };
+});
 
 describe("Physics plugin", () => {
   it("adds a Physics resource", async () => {
@@ -26,15 +37,14 @@ describe("Physics plugin", () => {
   });
 
   it("updates the physics' timestep when the fixed update rate changes", async () => {
-    const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginGameConfig)
-      .addPlugin(pluginPhysics);
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
     const physicsWorld = game.world.resources.get(Physics);
     expect(physicsWorld.world.timestep).toBeCloseTo(1 / 60);
 
-    game.world.resources.get(GameConfig).fixedUpdateRateMs = 1000 / 30;
+    game.world.resources.addNew(FixedUpdate, vi.fn());
+    game.world.resources.get(FixedUpdate).rateMs = 1000 / 30;
     game.groupsProxy.fixed();
 
     expect(physicsWorld.world.timestep).toBeCloseTo(1 / 30);
@@ -516,7 +526,8 @@ describe("RigidBody with Velocity", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    game.world.resources.add(GameConfig, { fixedUpdateRateMs: 1000 / 10 });
+    game.world.resources.addNew(FixedUpdate, vi.fn());
+    game.world.resources.get(FixedUpdate).rateMs = 1000 / 10;
 
     const entity = game.world
       .spawn()

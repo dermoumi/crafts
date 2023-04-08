@@ -1,18 +1,9 @@
-import type { CommonSystemGroups, CommonPlugin } from ".";
+import type { CommonSystemGroups } from "..";
+import { FixedUpdate } from "./resources";
 import { GameApp } from "@crafts/game-app";
-import { pluginFixedUpdate } from "./fixed-update";
-import { GameConfig } from "./game-config";
+import { pluginFixedUpdate } from "./plugin";
 
 const UPDATE_RATE = 1000 / 30;
-
-const pluginTestConfig: CommonPlugin = ({ onInit }) => {
-  onInit(
-    ({ resources }) => {
-      resources.add(GameConfig, { fixedUpdateRateMs: UPDATE_RATE });
-    },
-    { name: "GameConfig" }
-  );
-};
 
 async function nextUpdate(times = 1, deviation = 0.25) {
   await new Promise((resolve) => {
@@ -25,7 +16,6 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginTestConfig)
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
         fixed.add({}, updateFunc);
@@ -45,7 +35,6 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginTestConfig)
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
         fixed.add({}, updateFunc);
@@ -64,7 +53,6 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginTestConfig)
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
         fixed.add({}, updateFunc);
@@ -82,11 +70,10 @@ describe("Fixed update plugin", () => {
     expect(updateFunc).toHaveBeenCalledTimes(1);
   });
 
-  it("updates update rate when the GameConfig is replaced", async () => {
+  it("updates depending on the update rate", async () => {
     const updateFunc = vi.fn();
 
     const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginTestConfig)
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
         fixed.add({}, updateFunc);
@@ -95,40 +82,11 @@ describe("Fixed update plugin", () => {
     await game.run();
     await nextUpdate();
 
-    game.world.resources.add(GameConfig, {
-      fixedUpdateRateMs: UPDATE_RATE * 2,
-    });
+    const fixedUpdate = game.world.resources.get(FixedUpdate);
+    fixedUpdate.rateMs *= 2;
     updateFunc.mockClear();
 
-    // The update rate should be updated after the next update
-    await nextUpdate();
-    expect(updateFunc).toHaveBeenCalledTimes(1);
-
     await nextUpdate(2); // It takes twice as long to trigger one update
-    expect(updateFunc).toHaveBeenCalledTimes(2);
-  });
-
-  it("updates update rate when the GameConfig is changed", async () => {
-    const updateFunc = vi.fn();
-
-    const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginTestConfig)
-      .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
-      });
-
-    await game.run();
-    await nextUpdate();
-
-    game.world.resources.get(GameConfig).fixedUpdateRateMs = UPDATE_RATE * 2;
-    updateFunc.mockClear();
-
-    // The update rate should be updated after the next update
-    await nextUpdate();
     expect(updateFunc).toHaveBeenCalledTimes(1);
-
-    await nextUpdate(2); // It takes twice as long to trigger one update
-    expect(updateFunc).toHaveBeenCalledTimes(2);
   });
 });

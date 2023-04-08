@@ -11,7 +11,6 @@ import {
 import { GameApp } from "@crafts/game-app";
 import { Component } from "@crafts/ecs";
 import {
-  pluginGameConfig,
   pluginPhysics,
   Position,
   Velocity,
@@ -72,7 +71,6 @@ const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
   .addPlugin(pluginFixedUpdate)
   .addPlugin(pluginVariableUpdate)
   .addPlugin(pluginInput)
-  .addPlugin(pluginGameConfig)
   .addPlugin(pluginPhysics)
   .addPlugin(pluginTestContent);
 

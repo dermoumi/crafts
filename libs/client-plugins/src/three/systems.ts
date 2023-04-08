@@ -11,7 +11,7 @@ import {
   TweenPosition,
   TweenRotation,
 } from "./components";
-import { GameConfig, Position, Rotation } from "@crafts/common-plugins";
+import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
 import { VariableUpdate } from "../variable-update";
 
 /**
@@ -175,12 +175,11 @@ export const updatePositionTween = new System(
 export const tweenPosition = new System(
   {
     positions: [Position, TweenPosition, Node],
-    resources: [VariableUpdate, GameConfig],
+    resources: [VariableUpdate, FixedUpdate],
   },
   ({ positions, resources }) => {
-    const [frameInfo, gameConfig] = resources;
-    const animationFactor =
-      (1000 * frameInfo.delta) / gameConfig.fixedUpdateRateMs;
+    const [frameInfo, fixedUpdate] = resources;
+    const animationFactor = frameInfo.delta / fixedUpdate.rate;
 
     for (const [
       entity,
@@ -243,12 +242,11 @@ export const updateRotationTween = new System(
 export const tweenRotation = new System(
   {
     rotations: [TweenRotation, Rotation, Node],
-    resources: [VariableUpdate, GameConfig],
+    resources: [VariableUpdate, FixedUpdate],
   },
   ({ rotations, resources }) => {
-    const [frameInfo, gameConfig] = resources;
-    const animationFactor =
-      (1000 * frameInfo.delta) / gameConfig.fixedUpdateRateMs;
+    const [frameInfo, fixedUpdate] = resources;
+    const animationFactor = frameInfo.delta / fixedUpdate.rate;
 
     for (const [
       entity,

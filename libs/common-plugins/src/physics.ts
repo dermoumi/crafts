@@ -11,7 +11,7 @@ import {
   init as initRapier,
 } from "@dimforge/rapier3d-compat";
 import { AnyFilter, Component, Resource, state } from "@crafts/ecs";
-import { GameConfig } from "./game-config";
+import { FixedUpdate } from "./fixed-update";
 import { Position, Velocity, Rotation } from "./world-entities";
 
 function floatsEqual(a: number, b: number, epsilon = 0.000_01): boolean {
@@ -135,11 +135,11 @@ export const pluginPhysics: CommonPlugin = async ({ onInit }, { fixed }) => {
   fixed
     // Update the timestep of the world if the fixed update rate changes
     .add(
-      { resources: [Physics, GameConfig, GameConfig.addedOrChanged()] },
+      { resources: [Physics, FixedUpdate, FixedUpdate.addedOrChanged()] },
       ({ resources }) => {
-        const [{ world }, config] = resources;
+        const [{ world }, fixedUpdate] = resources;
 
-        world.timestep = config.fixedUpdateRate;
+        world.timestep = fixedUpdate.rate;
       }
     )
     // Create/update rigid bodies

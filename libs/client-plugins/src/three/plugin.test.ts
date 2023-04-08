@@ -1,6 +1,6 @@
 import type { ClientPlugin, ClientSystemGroups } from "..";
 
-import { GameConfig, Position, Rotation } from "@crafts/common-plugins";
+import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
 import { VariableUpdate } from "../variable-update";
 import {
   ChildNode,
@@ -31,11 +31,24 @@ vi.mock("../variable-update", async () => {
   };
 });
 
+vi.mock("@crafts/common-plugins", async () => {
+  const commonPlugins = await import("@crafts/common-plugins");
+
+  return {
+    ...commonPlugins,
+    FixedUpdate: class {
+      public rateMs = UPDATE_RATE;
+
+      public get rate() {
+        return this.rateMs / 1000;
+      }
+    },
+  };
+});
+
 const pluginTestConfig: ClientPlugin = ({ onInit }) => {
   onInit(({ resources }) => {
-    resources
-      .add(GameConfig, { fixedUpdateRateMs: UPDATE_RATE })
-      .addNew(VariableUpdate, vi.fn());
+    resources.addNew(FixedUpdate, vi.fn()).addNew(VariableUpdate, vi.fn());
   });
 };
 
