@@ -12,13 +12,5 @@ export type CommonPlugin = Plugin<CommonSystemGroups>;
 
 // All the plugins go here:
 export * from "./world-entities";
-export {
-  Physics,
-  RigidBody,
-  DynamicRigidBody,
-  FixedRigidBody,
-  Collider,
-  CuboidCollider,
-  pluginPhysics,
-} from "./physics";
+export * from "./physics";
 export * from "./fixed-update";

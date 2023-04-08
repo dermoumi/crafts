@@ -1,26 +1,31 @@
-import type { CommonSystemGroups } from ".";
+import type { CommonSystemGroups } from "..";
 
 import { GameApp } from "@crafts/game-app";
+import { Physics } from "./resources";
 import {
   Collider,
   CuboidCollider,
   DynamicRigidBody,
   FixedRigidBody,
-  Physics,
-  pluginPhysics,
   RigidBody,
   Sleeping,
-} from "./physics";
-import { Position, Rotation, Velocity } from "./world-entities";
-import { FixedUpdate } from "./fixed-update";
+} from "./components";
+import { pluginPhysics } from "./plugin";
+import { Position, Rotation, Velocity } from "../world-entities";
+import { FixedUpdate } from "../fixed-update";
 
 vi.mock("../fixed-update", async () => {
-  const fixedUpdate = await import("./fixed-update");
+  const { Resource } = await import("@crafts/ecs");
+  const fixedUpdate = await import("../fixed-update");
 
   return {
     ...fixedUpdate,
-    FixedUpdate: class {
-      public rate = 1 / 60;
+    FixedUpdate: class extends Resource {
+      public rateMs = 1000 / 60;
+
+      public get rate() {
+        return this.rateMs / 1000;
+      }
     },
   };
 });
