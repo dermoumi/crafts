@@ -1,6 +1,7 @@
-import type { CommonSystemGroups } from ".";
+import type { CommonSystemGroups } from "..";
 import { GameApp } from "@crafts/game-app";
-import { GameConfig, pluginGameConfig } from "./game-config";
+import { pluginGameConfig } from "./plugin";
+import { GameConfig } from "./resources";
 
 describe("GameConfig plugin", () => {
   it("adds a GameConfig resource", async () => {
