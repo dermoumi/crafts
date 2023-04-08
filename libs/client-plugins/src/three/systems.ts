@@ -13,6 +13,7 @@ import {
 } from "./components";
 import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
 import { VariableUpdate } from "../variable-update";
+import { WindowResized } from "./events";
 
 /**
  * Fit a renderer inside its container.
@@ -63,6 +64,7 @@ export const resizeRenderer = new System(
   {
     resources: [Renderer],
     camera: [CameraNode, MainCamera.present()],
+    event: WindowResized,
   },
   ({ resources, camera }) => {
     const [{ renderer, element }] = resources;
@@ -202,7 +204,7 @@ export const tweenPosition = new System(
       }
     }
   }
-);
+).runAfter(updatePositionTween);
 
 /**
  * Add initial rotation when rotation is first added.
@@ -270,4 +272,4 @@ export const tweenRotation = new System(
       }
     }
   }
-);
+).runAfter(updateRotationTween);
