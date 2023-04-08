@@ -1,6 +1,12 @@
 import { SetMap } from "@crafts/default-map";
 import * as Ecs from "@crafts/ecs";
 
+/**
+ * Utility function to generate the label for a system.
+ *
+ * @internal
+ * @returns - A random label
+ */
 function generateLabel(): string {
   return Math.random().toString(36).slice(7) + Date.now().toString(36);
 }
@@ -14,9 +20,84 @@ export interface SystemLike {
   after: Set<string>;
   before: Set<string>;
 
+  /**
+   * Set the label of the system.
+   *
+   * @param label - The label to set
+   * @returns - The system itself
+   */
   setLabel: (label: string) => this;
+
+  /**
+   * Systems that should run before this system.
+   *
+   * @param systems - The systems to run before this system
+   * @returns - The system itself
+   */
   runAfter: (...systems: Array<string | SystemLike>) => this;
+
+  /**
+   * Run this system before the given systems.
+   *
+   * @param systems - The systems to run after this system
+   * @returns - The system itself
+   */
+  runBefore: (...systems: Array<string | SystemLike>) => this;
+
+  /**
+   * Clone the system.
+   *
+   * @returns - A clone of the system
+   */
   clone: () => SystemLike;
+}
+
+/**
+ * A decorator to implement a SystemLike interface onto a class.
+ */
+function makeSystemLike<T extends new (...args: any) => any>(
+  Base: T,
+  _: ClassDecoratorContext
+) {
+  return class extends Base {
+    public label = generateLabel();
+    public readonly after = new Set<string>();
+    public readonly before = new Set<string>();
+
+    public setLabel(label: string): this {
+      this.label = label;
+      return this;
+    }
+
+    public runAfter(...systems: Array<string | SystemLike>): this {
+      for (const system of systems) {
+        const label = typeof system === "string" ? system : system.label;
+        this.after.add(label);
+      }
+
+      return this;
+    }
+
+    public runBefore(...systems: Array<string | SystemLike>): this {
+      for (const system of systems) {
+        const label = typeof system === "string" ? system : system.label;
+        this.before.add(label);
+      }
+
+      return this;
+    }
+
+    public clone(): any {
+      const cloned = super.clone();
+
+      cloned.label = this.label;
+      for (const system of this.after) {
+        cloned.after.add(system);
+      }
+
+      return cloned;
+    }
+  };
 }
 
 /**
@@ -24,60 +105,17 @@ export interface SystemLike {
  *
  * With the added ability to add properties to the system.
  */
-export class System<Q extends Ecs.SystemQuery>
-  extends Ecs.System<Q>
-  implements SystemLike
-{
-  public label = generateLabel();
-  public readonly after = new Set<string>();
-  public readonly before = new Set<string>();
-
-  /**
-   * Set the label of the system.
-   *
-   * @param label - The label to set
-   * @returns - The system itself
-   */
-  public setLabel(label: string): this {
-    this.label = label;
-    return this;
-  }
-
-  /**
-   * Systems that should run before this system.
-   */
-  public runAfter(...systems: Array<string | SystemLike>): this {
-    for (const system of systems) {
-      const label = typeof system === "string" ? system : system.label;
-      this.after.add(label);
-    }
-
-    return this;
-  }
-
-  /**
-   * Run this system before the given systems.
-   */
-  public runBefore(...systems: Array<string | SystemLike>): this {
-    for (const system of systems) {
-      const label = typeof system === "string" ? system : system.label;
-      this.before.add(label);
-    }
-
-    return this;
-  }
-
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+export interface System<Q extends Ecs.SystemQuery>
+  extends SystemLike,
+    Ecs.System<Q> {}
+@makeSystemLike
+export class System<Q extends Ecs.SystemQuery> extends Ecs.System<Q> {
   /**
    * Clone the system.
    */
   public clone(): System<Q> {
-    const cloned = new System(this.queries, this.callback);
-    cloned.label = this.label;
-    for (const system of this.after) {
-      cloned.after.add(system);
-    }
-
-    return cloned;
+    return new System<Q>(this.queries, this.callback);
   }
 }
 
