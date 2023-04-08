@@ -27,6 +27,24 @@ describe("Systems", () => {
     ]);
   });
 
+  it("adds reverse depenedencies", () => {
+    const testSystem = new System({}, vi.fn());
+    testSystem.runBefore("test", "dependency");
+
+    expect([...testSystem.before]).toEqual(["test", "dependency"]);
+  });
+
+  it("appends to existing reverse dependencies", () => {
+    const testSystem = new System({}, vi.fn()).runBefore("test", "dependency");
+    testSystem.runBefore("dependency2");
+
+    expect([...testSystem.before]).toEqual([
+      "test",
+      "dependency",
+      "dependency2",
+    ]);
+  });
+
   it("clones systems", () => {
     const testSystem = new System({}, vi.fn())
       .setLabel("test")
@@ -71,12 +89,24 @@ describe("System ordering", () => {
     expect(orderArray).toEqual(["A", "B", "C"]);
   });
 
-  it("reorders systems as necessary", () => {
+  it("reorders systems such as one runs after the other", () => {
     const world = new Ecs.World();
     const systemGroup = createSystemGroup(world)
       .add(testSystemA.clone().runAfter(testSystemC))
       .add(testSystemB)
       .add(testSystemC);
+
+    systemGroup();
+
+    expect(orderArray).toEqual(["B", "C", "A"]);
+  });
+
+  it("reorders systems such as one runs before the other", () => {
+    const world = new Ecs.World();
+    const systemGroup = createSystemGroup(world)
+      .add(testSystemA)
+      .add(testSystemB)
+      .add(testSystemC.clone().runBefore(testSystemA));
 
     systemGroup();
 

@@ -1,3 +1,4 @@
+import { SetMap } from "@crafts/default-map";
 import * as Ecs from "@crafts/ecs";
 
 function generateLabel(): string {
@@ -11,6 +12,7 @@ function generateLabel(): string {
 export interface SystemLike {
   label: string;
   after: Set<string>;
+  before: Set<string>;
 
   setLabel: (label: string) => this;
   runAfter: (...systems: Array<string | SystemLike>) => this;
@@ -28,6 +30,7 @@ export class System<Q extends Ecs.SystemQuery>
 {
   public label = generateLabel();
   public readonly after = new Set<string>();
+  public readonly before = new Set<string>();
 
   /**
    * Set the label of the system.
@@ -47,6 +50,18 @@ export class System<Q extends Ecs.SystemQuery>
     for (const system of systems) {
       const label = typeof system === "string" ? system : system.label;
       this.after.add(label);
+    }
+
+    return this;
+  }
+
+  /**
+   * Run this system before the given systems.
+   */
+  public runBefore(...systems: Array<string | SystemLike>): this {
+    for (const system of systems) {
+      const label = typeof system === "string" ? system : system.label;
+      this.before.add(label);
     }
 
     return this;
@@ -95,13 +110,22 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, System<any>>) {
   const processedSystems = new Set<string>();
   const pendingHandles = new Map(handles.entries());
 
+  const globalRunAfter = new SetMap<string, string>();
+  for (const system of handles.values()) {
+    for (const label of system.before) {
+      globalRunAfter.get(label).add(system.label);
+    }
+  }
+
   while (pendingHandles.size > 0) {
     const currentLevel = new Map<Ecs.SystemHandle, System<any>>();
     const missingDependencies = new Map<string, Set<string>>();
 
     for (const [handle, system] of pendingHandles.entries()) {
       const missingSystems = new Set<string>();
-      for (const label of system.after) {
+      const globalAfter = globalRunAfter.get(system.label);
+
+      for (const label of [...system.after, ...globalAfter]) {
         if (!processedSystems.has(label)) {
           missingSystems.add(label);
         }
