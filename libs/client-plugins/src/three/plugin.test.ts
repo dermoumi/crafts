@@ -1,7 +1,7 @@
 import type { ClientPlugin, ClientSystemGroups } from "..";
 
 import { GameConfig, Position, Rotation } from "@crafts/common-plugins";
-import { FrameInfo } from "../variable-update";
+import { VariableUpdate } from "../variable-update";
 import {
   ChildNode,
   MainScene,
@@ -20,11 +20,22 @@ import { WebGLRenderer } from "three";
 const REFRESH_RATE = 1000 / 60;
 const UPDATE_RATE = 1000 / 30; // Less false positives than the default 20tps
 
+vi.mock("../variable-update", async () => {
+  const variableUpdateModule = await import("../variable-update");
+
+  return {
+    ...variableUpdateModule,
+    VariableUpdate: class {
+      public delta = REFRESH_RATE / 1000;
+    },
+  };
+});
+
 const pluginTestConfig: ClientPlugin = ({ onInit }) => {
   onInit(({ resources }) => {
     resources
       .add(GameConfig, { fixedUpdateRateMs: UPDATE_RATE })
-      .add(FrameInfo, { delta: REFRESH_RATE / 1000 });
+      .addNew(VariableUpdate, vi.fn());
   });
 };
 

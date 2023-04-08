@@ -12,7 +12,7 @@ import {
   TweenRotation,
 } from "./components";
 import { GameConfig, Position, Rotation } from "@crafts/common-plugins";
-import { FrameInfo } from "../variable-update";
+import { VariableUpdate } from "../variable-update";
 
 /**
  * Fit a renderer inside its container.
@@ -175,7 +175,7 @@ export const updatePositionTween = new System(
 export const tweenPosition = new System(
   {
     positions: [Position, TweenPosition, Node],
-    resources: [FrameInfo, GameConfig],
+    resources: [VariableUpdate, GameConfig],
   },
   ({ positions, resources }) => {
     const [frameInfo, gameConfig] = resources;
@@ -243,7 +243,7 @@ export const updateRotationTween = new System(
 export const tweenRotation = new System(
   {
     rotations: [TweenRotation, Rotation, Node],
-    resources: [FrameInfo, GameConfig],
+    resources: [VariableUpdate, GameConfig],
   },
   ({ rotations, resources }) => {
     const [frameInfo, gameConfig] = resources;
