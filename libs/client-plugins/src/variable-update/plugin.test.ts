@@ -1,8 +1,7 @@
 import type { ClientSystemGroups } from "..";
-import { GameApp } from "@crafts/game-app";
+import { GameApp, System } from "@crafts/game-app";
 import { pluginVariableUpdate } from "./plugin";
 import { VariableUpdate } from "./resources";
-import { System } from "@crafts/ecs";
 
 // Vitest's fake timers emulate requestAnimationFrame at 60fps
 const REFRESH_RATE = 1000 / 60;

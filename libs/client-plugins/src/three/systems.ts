@@ -1,5 +1,5 @@
 import type { PerspectiveCamera, Renderer as ThreeJsRenderer } from "three";
-import { System } from "@crafts/ecs";
+import { System } from "@crafts/game-app";
 import { Renderer } from "./resources";
 import {
   CameraNode,

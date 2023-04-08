@@ -8,8 +8,8 @@ import {
   pluginThree,
   MeshNode,
 } from "@crafts/client-plugins";
-import { GameApp } from "@crafts/game-app";
-import { Component, System, unique } from "@crafts/ecs";
+import { GameApp, System } from "@crafts/game-app";
+import { Component, unique } from "@crafts/ecs";
 import {
   pluginPhysics,
   Position,

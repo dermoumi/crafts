@@ -1,4 +1,5 @@
-import { AnyFilter, System } from "@crafts/ecs";
+import { AnyFilter } from "@crafts/ecs";
+import { System } from "@crafts/game-app";
 import { Physics } from "./resources";
 import { FixedUpdate } from "../fixed-update";
 import { Collider, RigidBody, Sleeping } from "./components";

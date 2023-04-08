@@ -1,6 +1,6 @@
 import type { Plugin } from "./plugin-manager";
 import PluginManager from "./plugin-manager";
-import { createSystemGroup } from "./system";
+import { System, createSystemGroup } from "./system";
 import * as Ecs from "@crafts/ecs";
 
 describe("Plugin manager", () => {
@@ -120,7 +120,7 @@ describe("Plugin manager", () => {
 
   it("runs systems", async () => {
     const callback = vi.fn();
-    const testSystem = new Ecs.System({}, callback);
+    const testSystem = new System({}, callback);
 
     const world = new Ecs.World();
     const groups = { update: createSystemGroup(world) };

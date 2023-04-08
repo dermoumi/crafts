@@ -1,7 +1,6 @@
 import type { Plugin } from "./plugin-manager";
 import GameApp from "./game-app";
-import { createSystemGroup } from "./system";
-import { System } from "@crafts/ecs";
+import { System, createSystemGroup } from "./system";
 
 describe("GameApp", () => {
   it("invokes the init handlers on run()", async () => {

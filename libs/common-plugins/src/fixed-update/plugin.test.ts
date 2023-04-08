@@ -1,8 +1,7 @@
 import type { CommonSystemGroups } from "..";
 import { FixedUpdate } from "./resources";
-import { GameApp } from "@crafts/game-app";
+import { GameApp, System } from "@crafts/game-app";
 import { pluginFixedUpdate } from "./plugin";
-import { System } from "@crafts/ecs";
 
 const UPDATE_RATE = 1000 / 30;
 
