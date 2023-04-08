@@ -111,11 +111,94 @@ export interface System<Q extends Ecs.SystemQuery>
     Ecs.System<Q> {}
 @makeSystemLike
 export class System<Q extends Ecs.SystemQuery> extends Ecs.System<Q> {
-  /**
-   * Clone the system.
-   */
   public clone(): System<Q> {
     return new System<Q>(this.queries, this.callback);
+  }
+}
+
+/**
+ * A set of ECS systems.
+ */
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions, @typescript-eslint/no-empty-interface
+export interface SystemSet extends SystemLike {}
+@makeSystemLike
+export class SystemSet implements SystemLike {
+  public readonly systems = new Set<SystemLike>();
+  private dirty = false;
+  private handles: Ecs.SystemHandle[] = [];
+
+  public clone(): SystemSet {
+    const systemSet = new SystemSet();
+    systemSet.dirty = true;
+    for (const system of this.systems) {
+      systemSet.add(system.clone());
+    }
+
+    return systemSet;
+  }
+
+  /**
+   * Add a new system-like object to the system set.
+   * @returns - The system itself
+   */
+  public add(system: SystemLike): this {
+    this.systems.add(system);
+    this.dirty = true;
+    return this;
+  }
+
+  /**
+   * Makes a callable handle for this system set.
+   *
+   * @param world - The world to run the systems on
+   * @returns - A callable handle to execute this system set
+   */
+  public getHandle(world: Ecs.World, initialize = false): Ecs.SystemHandle {
+    if (initialize) {
+      this.ensureNotDirty(world);
+    }
+
+    return () => {
+      this.ensureNotDirty(world);
+
+      for (const handle of this.handles) {
+        handle();
+      }
+    };
+  }
+
+  /**
+   * Ensures that the system set is not dirty.
+   */
+  private ensureNotDirty(world: Ecs.World): void {
+    if (!this.dirty) {
+      return;
+    }
+
+    const handleMap = new Map(
+      [...this.systems].map((system) => [
+        this.createHandle(world, system),
+        system,
+      ])
+    );
+
+    this.handles = [...reorderHandles(handleMap).keys()];
+    this.dirty = false;
+  }
+
+  /**
+   * Utility function to create a handle for a system-like object.
+   */
+  private createHandle(world: Ecs.World, system: SystemLike): Ecs.SystemHandle {
+    if (system instanceof System) {
+      return world.addSystem(system);
+    }
+
+    if (system instanceof SystemSet) {
+      return system.getHandle(world);
+    }
+
+    throw new TypeError("Unsupported system-like object");
   }
 }
 
@@ -143,8 +226,8 @@ export type SystemGroup<A extends unknown[] = []> = {
  * @param handles - The handles' map to reorder
  * @returns A new handles' map with the systems reordered
  */
-function reorderHandles(handles: Map<Ecs.SystemHandle, System<any>>) {
-  const dependencyLevels: Array<Array<[Ecs.SystemHandle, System<any>]>> = [];
+function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
+  const dependencyLevels: Array<Array<[Ecs.SystemHandle, SystemLike]>> = [];
   const processedSystems = new Set<string>();
   const pendingHandles = new Map(handles.entries());
 
@@ -156,7 +239,7 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, System<any>>) {
   }
 
   while (pendingHandles.size > 0) {
-    const currentLevel = new Map<Ecs.SystemHandle, System<any>>();
+    const currentLevel = new Map<Ecs.SystemHandle, SystemLike>();
     const missingDependencies = new Map<string, Set<string>>();
 
     for (const [handle, system] of pendingHandles.entries()) {
@@ -201,29 +284,17 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, System<any>>) {
  * Creates a normal system group.
  */
 export function createSystemGroup(world: Ecs.World): SystemGroup {
-  let dirty = false;
-  let handles = new Map<Ecs.SystemHandle, System<any>>();
+  const systemSet = new SystemSet();
+  const handle = systemSet.getHandle(world, true);
 
   // The function to invoke the system group
   const systemGroup = () => {
-    if (dirty) {
-      handles = reorderHandles(handles);
-      dirty = false;
-    }
-
-    for (const [handle] of handles) {
-      handle();
-    }
+    handle();
   };
 
   // The function to add a system to the system group
-  systemGroup.add = <Q extends Ecs.SystemQuery>(system: System<Q>) => {
-    const handle = world.addSystem(system);
-
-    dirty = true;
-    handles.set(handle, system);
-
-    // Return the group itself
+  systemGroup.add = (system: SystemLike) => {
+    systemSet.add(system);
     return systemGroup;
   };
 

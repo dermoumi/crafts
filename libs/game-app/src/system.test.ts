@@ -1,5 +1,5 @@
 import * as Ecs from "@crafts/ecs";
-import { System, createSystemGroup } from "./system";
+import { System, SystemSet, createSystemGroup } from "./system";
 
 describe("Systems", () => {
   it("sets a label", () => {
@@ -59,7 +59,7 @@ describe("Systems", () => {
   });
 });
 
-describe("System ordering", () => {
+describe("System sets", () => {
   const orderArray: string[] = [];
 
   beforeEach(() => {
@@ -76,6 +76,74 @@ describe("System ordering", () => {
 
   const testSystemC = new System({}, () => {
     orderArray.push("C");
+  });
+
+  it("adds systems", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const world = new Ecs.World();
+    const systemSet = new SystemSet().add(testSystem);
+    const handle = systemSet.getHandle(world);
+
+    handle();
+
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it("adds other system sets", () => {
+    const world = new Ecs.World();
+    const subSystemSet = new SystemSet().add(testSystemB).add(testSystemC);
+    const systemSet = new SystemSet().add(testSystemA).add(subSystemSet);
+    const handle = systemSet.getHandle(world);
+
+    handle();
+
+    expect(orderArray).toEqual(["A", "B", "C"]);
+  });
+
+  it("fails when adding a non-supported system-like object", () => {
+    class TestClass {
+      public label = "test";
+      public after = new Set<string>();
+      public before = new Set<string>();
+
+      public setLabel(label: string) {
+        this.label = label;
+        return this;
+      }
+
+      public runAfter() {
+        return this;
+      }
+
+      public runBefore() {
+        return this;
+      }
+
+      public clone() {
+        return new TestClass();
+      }
+    }
+
+    const world = new Ecs.World();
+    const systemSet = new SystemSet().add(new TestClass());
+    const handle = systemSet.getHandle(world);
+
+    expect(() => {
+      handle();
+    }).toThrow("Unsupported system-like object");
+  });
+
+  it("clones correctly", () => {
+    const world = new Ecs.World();
+    const systemSet = new SystemSet().add(testSystemA);
+    const clone = systemSet.clone();
+    const handle = clone.getHandle(world);
+
+    handle();
+
+    expect(orderArray).toEqual(["A"]);
   });
 
   it("runs systems in the order they were added", () => {
@@ -120,7 +188,8 @@ describe("System ordering", () => {
     );
 
     expect(() => systemGroup()).toThrowError(
-      'The following systems have missing dependencies:\n - "A" needs: missingSystem'
+      "The following systems have missing dependencies:\n" +
+        ' - "A" needs: missingSystem'
     );
   });
 

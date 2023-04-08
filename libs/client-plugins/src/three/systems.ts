@@ -236,7 +236,7 @@ export const updateRotationTween = new System(
       });
     }
   }
-);
+).runAfter(addInitialRotation);
 
 /**
  * Tween rotation.

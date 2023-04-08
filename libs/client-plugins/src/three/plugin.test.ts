@@ -97,26 +97,15 @@ describe("Threejs plugin", () => {
   });
 
   it("resizes the renderer when the window is resized", async () => {
-    const eventListeners = new SetMap<string, any>();
-    const addEventListener = vi
-      .spyOn(window, "addEventListener")
-      .mockImplementation((type, listener) => {
-        eventListeners.get(type).add(listener);
-      });
-    const spySetSize = vi.spyOn(WebGLRenderer.prototype, "setSize");
-
     const game = new GameApp<ClientSystemGroups>().addPlugin(pluginThree);
     await game.run();
+    game.groupsProxy.update();
 
-    expect(addEventListener).toHaveBeenCalled();
-    for (const listener of eventListeners.get("resize")) {
-      listener();
-    }
-
-    expect(spySetSize).not.toHaveBeenCalled();
+    const spySetSize = vi.spyOn(WebGLRenderer.prototype, "setSize");
+    window.dispatchEvent(new Event("resize"));
 
     game.groupsProxy.update();
-    expect(spySetSize).toHaveBeenCalled();
+    expect(spySetSize).toHaveBeenCalledOnce();
   });
 
   it("mounts the renderer to the DOM", async () => {
@@ -214,6 +203,7 @@ describe("RenderPosition animation", () => {
       .addPlugin(pluginThree);
 
     await game.run();
+    game.groupsProxy.update();
 
     const entity = game.world
       .spawn()
@@ -263,6 +253,7 @@ describe("RenderPosition animation", () => {
     const entity = game.world.spawn().add(Position).add(SceneNode);
 
     await game.run();
+    game.groupsProxy.update();
 
     // We need to set the value after the initialization
     const position = entity.get(Position);
@@ -305,6 +296,7 @@ describe("RenderRotation animation", () => {
       .addPlugin(pluginThree);
 
     await game.run();
+    game.groupsProxy.update();
 
     const entity = game.world
       .spawn()
@@ -356,6 +348,7 @@ describe("RenderRotation animation", () => {
     const entity = game.world.spawn().add(Rotation).add(SceneNode);
 
     await game.run();
+    game.groupsProxy.update();
 
     // We need to set the value after the initialization
     const rotation = entity.get(Rotation);
