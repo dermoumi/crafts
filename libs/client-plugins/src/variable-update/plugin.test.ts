@@ -1,6 +1,7 @@
-import type { ClientSystemGroups } from ".";
+import type { ClientSystemGroups } from "..";
 import { GameApp } from "@crafts/game-app";
-import { pluginVariableUpdate, FrameInfo } from "./variable-update";
+import { pluginVariableUpdate } from "./plugin";
+import { VariableUpdate } from "./resources";
 
 // Vitest's fake timers emulate requestAnimationFrame at 60fps
 const REFRESH_RATE = 1000 / 60;
@@ -73,7 +74,7 @@ describe("FrameInfo resource", () => {
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.add({ resources: [FrameInfo] }, ({ resources }) => {
+        update.add({ resources: [VariableUpdate] }, ({ resources }) => {
           const [frameInfo] = resources;
 
           renderFunc(frameInfo.delta);

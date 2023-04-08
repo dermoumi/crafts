@@ -1,4 +1,4 @@
-import { Rotation } from "./world-entities";
+import { Rotation } from "./components";
 
 describe("Rotation component", () => {
   const rotationTestSet = [

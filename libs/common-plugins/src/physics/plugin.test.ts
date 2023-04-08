@@ -1,18 +1,34 @@
-import type { CommonSystemGroups } from ".";
+import type { CommonSystemGroups } from "..";
 
 import { GameApp } from "@crafts/game-app";
+import { Physics } from "./resources";
 import {
   Collider,
   CuboidCollider,
   DynamicRigidBody,
   FixedRigidBody,
-  Physics,
-  pluginPhysics,
   RigidBody,
   Sleeping,
-} from "./physics";
-import { GameConfig, pluginGameConfig } from "./game-config";
-import { Position, Rotation, Velocity } from "./world-entities";
+} from "./components";
+import { pluginPhysics } from "./plugin";
+import { Position, Rotation, Velocity } from "../world-entities";
+import { FixedUpdate } from "../fixed-update";
+
+vi.mock("../fixed-update", async () => {
+  const { Resource } = await import("@crafts/ecs");
+  const fixedUpdate = await import("../fixed-update");
+
+  return {
+    ...fixedUpdate,
+    FixedUpdate: class extends Resource {
+      public rateMs = 1000 / 60;
+
+      public get rate() {
+        return this.rateMs / 1000;
+      }
+    },
+  };
+});
 
 describe("Physics plugin", () => {
   it("adds a Physics resource", async () => {
@@ -26,15 +42,14 @@ describe("Physics plugin", () => {
   });
 
   it("updates the physics' timestep when the fixed update rate changes", async () => {
-    const game = new GameApp<CommonSystemGroups>()
-      .addPlugin(pluginGameConfig)
-      .addPlugin(pluginPhysics);
+    const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
     const physicsWorld = game.world.resources.get(Physics);
     expect(physicsWorld.world.timestep).toBeCloseTo(1 / 60);
 
-    game.world.resources.get(GameConfig).fixedUpdateRateMs = 1000 / 30;
+    game.world.resources.addNew(FixedUpdate, vi.fn());
+    game.world.resources.get(FixedUpdate).rateMs = 1000 / 30;
     game.groupsProxy.fixed();
 
     expect(physicsWorld.world.timestep).toBeCloseTo(1 / 30);
@@ -516,7 +531,8 @@ describe("RigidBody with Velocity", () => {
     const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
     await game.run();
 
-    game.world.resources.add(GameConfig, { fixedUpdateRateMs: 1000 / 10 });
+    game.world.resources.addNew(FixedUpdate, vi.fn());
+    game.world.resources.get(FixedUpdate).rateMs = 1000 / 10;
 
     const entity = game.world
       .spawn()

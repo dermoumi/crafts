@@ -1,6 +1,7 @@
-import type { ClientSystemGroups } from ".";
+import type { ClientSystemGroups } from "..";
 import { GameApp } from "@crafts/game-app";
-import { Input, pluginInput } from "./input";
+import { Input } from "./resources";
+import { pluginInput } from "./plugin";
 
 describe("KeyboardInput resource", () => {
   it("checks if an action is down", () => {

@@ -47,5 +47,7 @@ export default class GameApp<T extends string> {
 
   public async stop() {
     await this.plugins.cleanup();
+
+    this.world.clear();
   }
 }

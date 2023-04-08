@@ -11,15 +11,6 @@ export type CommonSystemGroups = "fixed";
 export type CommonPlugin = Plugin<CommonSystemGroups>;
 
 // All the plugins go here:
-export { GameConfig, pluginGameConfig } from "./game-config";
-export { Position, Velocity, Rotation } from "./world-entities";
-export {
-  Physics,
-  RigidBody,
-  DynamicRigidBody,
-  FixedRigidBody,
-  Collider,
-  CuboidCollider,
-  pluginPhysics,
-} from "./physics";
-export { pluginFixedUpdate } from "./fixed-update";
+export * from "./world-entities";
+export * from "./physics";
+export * from "./fixed-update";
