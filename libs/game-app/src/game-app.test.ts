@@ -36,34 +36,20 @@ describe("GameApp", () => {
 
 describe("GameApp plugins", () => {
   it("can retrieve existing groups", async () => {
+    const testSystem = new System({}, vi.fn());
     const testPlugin: Plugin<"startup"> = (_, { startup }) => {
-      startup.add({}, vi.fn());
+      startup.addSystem(testSystem);
     };
 
     const game = new GameApp();
     const startupGroup = createSystemGroup(game.world);
-    const startupAddMock = vi.spyOn(startupGroup, "add");
+    const startupAddMock = vi.spyOn(startupGroup, "addSystem");
     game.groups.startup = startupGroup;
 
     game.addPlugin(testPlugin);
     await game.run();
 
     expect(startupAddMock).toHaveBeenCalledOnce();
-  });
-
-  it("can add system instances to groups", async () => {
-    const callback = vi.fn();
-    const system = new System({}, callback);
-    const testPlugin: Plugin<"startup"> = (_, { startup }) => {
-      startup.addSystem(system);
-    };
-
-    const game = new GameApp().addPlugin(testPlugin);
-    await game.run();
-
-    game.groupsProxy.startup?.();
-
-    expect(callback).toHaveBeenCalled();
   });
 
   it("cannot reassign system groups", () => {
@@ -101,7 +87,7 @@ describe("GameApp plugins", () => {
 
       expect(newGroup).toBeDefined();
       expect(newGroup).toBeInstanceOf(Function);
-      expect(newGroup).toHaveProperty("add");
+      expect(newGroup).toHaveProperty("addSystem");
     };
 
     const game = new GameApp().addPlugin(testPlugin);

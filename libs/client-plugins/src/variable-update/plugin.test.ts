@@ -2,6 +2,7 @@ import type { ClientSystemGroups } from "..";
 import { GameApp } from "@crafts/game-app";
 import { pluginVariableUpdate } from "./plugin";
 import { VariableUpdate } from "./resources";
+import { System } from "@crafts/ecs";
 
 // Vitest's fake timers emulate requestAnimationFrame at 60fps
 const REFRESH_RATE = 1000 / 60;
@@ -17,11 +18,12 @@ describe("Variable update plugin", () => {
 
   it("runs updates periodically", async () => {
     const renderFunc = vi.fn();
+    const testSystem = new System({}, renderFunc);
 
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.add({}, renderFunc);
+        update.addSystem(testSystem);
       });
 
     await game.run();
@@ -36,11 +38,12 @@ describe("Variable update plugin", () => {
 
   it("stops updates whon the game stops", async () => {
     const renderFunc = vi.fn();
+    const testSystem = new System({}, renderFunc);
 
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.add({}, renderFunc);
+        update.addSystem(testSystem);
       });
 
     await game.run();
@@ -70,15 +73,18 @@ describe("FrameInfo resource", () => {
 
   it("caluclates the delta correctly", async () => {
     const renderFunc = vi.fn();
+    const testSystem = new System(
+      { resources: [VariableUpdate] },
+      ({ resources }) => {
+        const [update] = resources;
+        renderFunc(update.delta);
+      }
+    );
 
     const game = new GameApp<ClientSystemGroups>()
       .addPlugin(pluginVariableUpdate)
       .addPlugin((_, { update }) => {
-        update.add({ resources: [VariableUpdate] }, ({ resources }) => {
-          const [frameInfo] = resources;
-
-          renderFunc(frameInfo.delta);
-        });
+        update.addSystem(testSystem);
       });
 
     await game.run();

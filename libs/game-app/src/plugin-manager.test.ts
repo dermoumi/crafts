@@ -119,22 +119,23 @@ describe("Plugin manager", () => {
   });
 
   it("runs systems", async () => {
-    const mySystem = vi.fn();
+    const callback = vi.fn();
+    const testSystem = new Ecs.System({}, callback);
 
     const world = new Ecs.World();
     const groups = { update: createSystemGroup(world) };
 
     const pluginManager = new PluginManager(groups, world).add(
       (_, { update }) => {
-        update.add({}, mySystem);
+        update.addSystem(testSystem);
       }
     );
     await pluginManager.init();
 
-    expect(mySystem).not.toHaveBeenCalled();
+    expect(callback).not.toHaveBeenCalled();
 
     groups.update();
-    expect(mySystem).toHaveBeenCalledTimes(1);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 });
 

@@ -9,7 +9,7 @@ import {
   MeshNode,
 } from "@crafts/client-plugins";
 import { GameApp } from "@crafts/game-app";
-import { Component } from "@crafts/ecs";
+import { Component, System, unique } from "@crafts/ecs";
 import {
   pluginPhysics,
   Position,
@@ -20,7 +20,28 @@ import {
   pluginFixedUpdate,
 } from "@crafts/common-plugins";
 
+@unique
 class Controllable extends Component {}
+
+const moveControllable = new System(
+  {
+    players: [Velocity, Controllable.present()],
+    resources: [Input],
+  },
+  ({ players, resources }) => {
+    const [input] = resources;
+
+    const { lx, ly } = input.axes;
+
+    for (const [velocity] of players.asComponents()) {
+      velocity.x = lx * 5;
+
+      if (Math.abs(ly) > 0.1) {
+        velocity.y = -ly * 5;
+      }
+    }
+  }
+);
 
 const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
   onInit((world) => {
@@ -45,25 +66,7 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
     cameraPosition.z = 20;
   });
 
-  update.add(
-    {
-      players: [Velocity, Controllable.present()],
-      resources: [Input],
-    },
-    ({ players, resources }) => {
-      const [input] = resources;
-
-      const { lx, ly } = input.axes;
-
-      for (const [velocity] of players.asComponents()) {
-        velocity.x = lx * 5;
-
-        if (Math.abs(ly) > 0.1) {
-          velocity.y = -ly * 5;
-        }
-      }
-    }
-  );
+  update.addSystem(moveControllable);
 };
 
 const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()

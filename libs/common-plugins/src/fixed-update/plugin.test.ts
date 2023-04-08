@@ -2,6 +2,7 @@ import type { CommonSystemGroups } from "..";
 import { FixedUpdate } from "./resources";
 import { GameApp } from "@crafts/game-app";
 import { pluginFixedUpdate } from "./plugin";
+import { System } from "@crafts/ecs";
 
 const UPDATE_RATE = 1000 / 30;
 
@@ -14,11 +15,12 @@ async function nextUpdate(times = 1, deviation = 0.25) {
 describe("Fixed update plugin", () => {
   it("runs updates periodically", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
+        fixed.addSystem(testSystem);
       });
 
     await game.run();
@@ -33,11 +35,12 @@ describe("Fixed update plugin", () => {
 
   it("runs updates as many times as needed", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
+        fixed.addSystem(testSystem);
       });
 
     await game.run();
@@ -51,11 +54,12 @@ describe("Fixed update plugin", () => {
 
   it("stops updates whon the game stops", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
+        fixed.addSystem(testSystem);
       });
 
     await game.run();
@@ -72,11 +76,12 @@ describe("Fixed update plugin", () => {
 
   it("updates depending on the update rate", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
     const game = new GameApp<CommonSystemGroups>()
       .addPlugin(pluginFixedUpdate)
       .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
+        fixed.addSystem(testSystem);
       });
 
     await game.run();
