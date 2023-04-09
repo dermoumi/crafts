@@ -160,7 +160,20 @@ describe("System sets", () => {
     expect(orderArray).toEqual(["B", "C", "A"]);
   });
 
-  it("throws an error when a runAfter system is not found", () => {
+  it("reorders systems based on priority", () => {
+    const world = new Ecs.World();
+    const systemSet = new SystemSet()
+      .add(testSystemA.clone().after(testSystemB))
+      .add(testSystemB)
+      .add(testSystemC.clone().priority(2))
+      .makeHandle(world);
+
+    systemSet();
+
+    expect(orderArray).toEqual(["C", "B", "A"]);
+  });
+
+  it("throws an error when a .after() system is not found", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
       .add(testSystemA.clone().label("A").after("missingSystem"))

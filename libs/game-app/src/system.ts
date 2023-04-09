@@ -17,6 +17,7 @@ function generateLabel(): string {
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export interface SystemLike {
   _label: string;
+  _priority: number;
   _after: Set<string>;
   _before: Set<string>;
 
@@ -27,6 +28,15 @@ export interface SystemLike {
    * @returns - The system itself
    */
   label: (label: string) => this;
+
+  /**
+   * Set the priority of the system.
+   * Systems with a higher priority will run first.
+   *
+   * @param priority - The priority to set
+   * @returns - The system itself
+   */
+  priority: (priority: number) => this;
 
   /**
    * Systems that should run before this system.
@@ -69,11 +79,17 @@ function makeSystemLike<T extends new (...args: any) => any>(
 ) {
   return class extends Base {
     public _label = generateLabel();
+    public _priority = 0;
     public readonly _after = new Set<string>();
     public readonly _before = new Set<string>();
 
     public label(label: string): this {
       this._label = label;
+      return this;
+    }
+
+    public priority(priority: number): this {
+      this._priority = priority;
       return this;
     }
 
@@ -200,7 +216,9 @@ export class SystemSet implements SystemLike {
 function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
   const dependencyLevels: Array<Array<[Ecs.SystemHandle, SystemLike]>> = [];
   const processedSystems = new Set<string>();
-  const pendingHandles = new Map(handles.entries());
+  const pendingHandles = new Map(
+    [...handles.entries()].sort(([, a], [, b]) => b._priority - a._priority)
+  );
 
   const globalRunAfter = new SetMap<string, string>();
   for (const system of handles.values()) {
