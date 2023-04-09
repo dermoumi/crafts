@@ -50,6 +50,14 @@ export interface SystemLike {
    * @returns - A clone of the system
    */
   clone: () => SystemLike;
+
+  /**
+   * Make a callable handle.
+   *
+   * @param world - The world to run the system on
+   * @returns - A callable handle
+   */
+  makeHandle: (world: Ecs.World) => Ecs.SystemHandle;
 }
 
 /**
@@ -114,6 +122,10 @@ export class System<Q extends Ecs.SystemQuery> extends Ecs.System<Q> {
   public clone(): System<Q> {
     return new System<Q>(this.queries, this.callback);
   }
+
+  public makeHandle(world: Ecs.World): Ecs.SystemHandle {
+    return world.addSystem(this);
+  }
 }
 
 /**
@@ -137,6 +149,16 @@ export class SystemSet implements SystemLike {
     return systemSet;
   }
 
+  public makeHandle(world: Ecs.World): Ecs.SystemHandle {
+    return () => {
+      this.ensureNotDirty(world);
+
+      for (const handle of this.handles) {
+        handle();
+      }
+    };
+  }
+
   /**
    * Add a new system-like object to the system set.
    * @returns - The system itself
@@ -148,26 +170,6 @@ export class SystemSet implements SystemLike {
   }
 
   /**
-   * Makes a callable handle for this system set.
-   *
-   * @param world - The world to run the systems on
-   * @returns - A callable handle to execute this system set
-   */
-  public getHandle(world: Ecs.World, initialize = false): Ecs.SystemHandle {
-    if (initialize) {
-      this.ensureNotDirty(world);
-    }
-
-    return () => {
-      this.ensureNotDirty(world);
-
-      for (const handle of this.handles) {
-        handle();
-      }
-    };
-  }
-
-  /**
    * Ensures that the system set is not dirty.
    */
   private ensureNotDirty(world: Ecs.World): void {
@@ -176,29 +178,11 @@ export class SystemSet implements SystemLike {
     }
 
     const handleMap = new Map(
-      [...this.systems].map((system) => [
-        this.createHandle(world, system),
-        system,
-      ])
+      [...this.systems].map((system) => [system.makeHandle(world), system])
     );
 
     this.handles = [...reorderHandles(handleMap).keys()];
     this.dirty = false;
-  }
-
-  /**
-   * Utility function to create a handle for a system-like object.
-   */
-  private createHandle(world: Ecs.World, system: SystemLike): Ecs.SystemHandle {
-    if (system instanceof System) {
-      return world.addSystem(system);
-    }
-
-    if (system instanceof SystemSet) {
-      return system.getHandle(world);
-    }
-
-    throw new TypeError("Unsupported system-like object");
   }
 }
 
@@ -285,7 +269,7 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
  */
 export function createSystemGroup(world: Ecs.World): SystemGroup {
   const systemSet = new SystemSet();
-  const handle = systemSet.getHandle(world, true);
+  const handle = systemSet.makeHandle(world);
 
   // The function to invoke the system group
   const systemGroup = () => {

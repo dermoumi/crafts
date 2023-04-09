@@ -84,7 +84,7 @@ describe("System sets", () => {
 
     const world = new Ecs.World();
     const systemSet = new SystemSet().add(testSystem);
-    const handle = systemSet.getHandle(world);
+    const handle = systemSet.makeHandle(world);
 
     handle();
 
@@ -95,50 +95,18 @@ describe("System sets", () => {
     const world = new Ecs.World();
     const subSystemSet = new SystemSet().add(testSystemB).add(testSystemC);
     const systemSet = new SystemSet().add(testSystemA).add(subSystemSet);
-    const handle = systemSet.getHandle(world);
+    const handle = systemSet.makeHandle(world);
 
     handle();
 
     expect(orderArray).toEqual(["A", "B", "C"]);
   });
 
-  it("fails when adding a non-supported system-like object", () => {
-    class TestClass {
-      public _label = "test";
-      public _after = new Set<string>();
-      public _before = new Set<string>();
-
-      public label() {
-        return this;
-      }
-
-      public after() {
-        return this;
-      }
-
-      public before() {
-        return this;
-      }
-
-      public clone() {
-        return new TestClass();
-      }
-    }
-
-    const world = new Ecs.World();
-    const systemSet = new SystemSet().add(new TestClass());
-    const handle = systemSet.getHandle(world);
-
-    expect(() => {
-      handle();
-    }).toThrow("Unsupported system-like object");
-  });
-
   it("clones correctly", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet().add(testSystemA);
     const clone = systemSet.clone();
-    const handle = clone.getHandle(world);
+    const handle = clone.makeHandle(world);
 
     handle();
 
