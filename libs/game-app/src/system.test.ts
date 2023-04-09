@@ -208,6 +208,41 @@ describe("System sets", () => {
     handle();
     expect(mockAfterAccess).not.toHaveBeenCalled();
   });
+
+  it("keeps the same handles when adding new systems", () => {
+    class TestComponent extends Ecs.Component {}
+
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const testSystem = new System(
+      { query: [TestComponent.removed()] },
+      callback
+    );
+    const dummySystem = new System({}, vi.fn());
+    const systemSet = new SystemSet().add(testSystem);
+    const handle = systemSet.makeHandle(world);
+    const entity = world.spawn().add(TestComponent);
+    handle();
+
+    callback.mockClear();
+    entity.remove(TestComponent);
+
+    handle();
+    expect(callback).toHaveBeenCalledOnce();
+
+    callback.mockClear();
+    entity.add(TestComponent);
+    handle();
+    expect(callback).not.toHaveBeenCalled();
+
+    callback.mockClear();
+    console.log("aaa");
+    entity.remove(TestComponent);
+    systemSet.add(dummySystem);
+
+    handle();
+    expect(callback).toHaveBeenCalledOnce();
+  });
 });
 
 describe("System schedules", () => {

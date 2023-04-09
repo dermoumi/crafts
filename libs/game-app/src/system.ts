@@ -157,7 +157,7 @@ export interface SystemSet extends SystemLike {}
 export class SystemSet implements SystemLike {
   public readonly systems = new Set<SystemLike>();
   private dirty = false;
-  private handles: Ecs.SystemHandle[] = [];
+  private handles = new Map<SystemLike, Ecs.SystemHandle>();
 
   public clone(): SystemSet {
     const systemSet = new SystemSet();
@@ -173,7 +173,7 @@ export class SystemSet implements SystemLike {
     return () => {
       this.ensureNotDirty(world);
 
-      for (const handle of this.handles) {
+      for (const handle of this.handles.values()) {
         handle();
       }
     };
@@ -191,6 +191,8 @@ export class SystemSet implements SystemLike {
 
   /**
    * Ensures that the system set is not dirty.
+   *
+   * @param world - The world to run the systems on
    */
   private ensureNotDirty(world: Ecs.World): void {
     if (!this.dirty) {
@@ -198,75 +200,78 @@ export class SystemSet implements SystemLike {
     }
 
     const handleMap = new Map(
-      [...this.systems].map((system) => [system.makeHandle(world), system])
+      [...this.systems].map((system) => {
+        const handle = this.handles.get(system) ?? system.makeHandle(world);
+        return [system, handle];
+      })
     );
 
-    this.handles = [...reorderHandles(handleMap).keys()];
+    this.handles = this.reorderHandles(handleMap);
     this.dirty = false;
   }
-}
 
-/**
- * Utility function to reorder a map of systems based on their dependencies.
- *
- * @internal
- * @param handles - The handles' map to reorder
- * @returns A new handles' map with the systems reordered
- */
-function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
-  const dependencyLevels: Array<Array<[Ecs.SystemHandle, SystemLike]>> = [];
-  const processedSystems = new Set<string>();
-  const pendingHandles = new Map(
-    [...handles.entries()].sort(([, a], [, b]) => b._priority - a._priority)
-  );
+  /**
+   * Utility function to reorder a map of systems based on their dependencies.
+   *
+   * @internal
+   * @param handles - The handles' map to reorder
+   * @returns A new handles' map with the systems reordered
+   */
+  private reorderHandles(handles: Map<SystemLike, Ecs.SystemHandle>) {
+    const dependencyLevels: Array<[SystemLike, Ecs.SystemHandle]> = [];
+    const processedSystems = new Set<string>();
+    const pendingSystems = new Map(
+      [...handles.entries()].sort(([a], [b]) => b._priority - a._priority)
+    );
 
-  const globalRunAfter = new SetMap<string, string>();
-  for (const system of handles.values()) {
-    for (const label of system._before) {
-      globalRunAfter.get(label).add(system._label);
+    const globalRunAfter = new SetMap<string, string>();
+    for (const system of handles.keys()) {
+      for (const label of system._before) {
+        globalRunAfter.get(label).add(system._label);
+      }
     }
-  }
 
-  while (pendingHandles.size > 0) {
-    const currentLevel = new Map<Ecs.SystemHandle, SystemLike>();
-    const missingDependencies = new Map<string, Set<string>>();
+    while (pendingSystems.size > 0) {
+      const currentLevel = new Map<SystemLike, Ecs.SystemHandle>();
+      const missingDependencies = new Map<string, Set<string>>();
 
-    for (const [handle, system] of pendingHandles.entries()) {
-      const missingSystems = new Set<string>();
-      const globalAfter = globalRunAfter.get(system._label);
+      for (const [system, handle] of pendingSystems.entries()) {
+        const missingSystems = new Set<string>();
+        const globalAfter = globalRunAfter.get(system._label);
 
-      for (const label of [...system._after, ...globalAfter]) {
-        if (!processedSystems.has(label)) {
-          missingSystems.add(label);
+        for (const label of [...system._after, ...globalAfter]) {
+          if (!processedSystems.has(label)) {
+            missingSystems.add(label);
+          }
+        }
+
+        if (missingSystems.size > 0) {
+          missingDependencies.set(system._label, missingSystems);
+        } else {
+          pendingSystems.delete(system);
+          currentLevel.set(system, handle);
+          processedSystems.add(system._label);
         }
       }
 
-      if (missingSystems.size > 0) {
-        missingDependencies.set(system._label, missingSystems);
-      } else {
-        pendingHandles.delete(handle);
-        currentLevel.set(handle, system);
-        processedSystems.add(system._label);
+      if (currentLevel.size === 0) {
+        const errorLines = [...missingDependencies.entries()]
+          .map(
+            ([system, dependencies]) =>
+              ` - "${system}" needs: ${[...dependencies].join(", ")}`
+          )
+          .join("\n");
+
+        throw new Error(
+          `The following systems have missing dependencies:\n${errorLines}`
+        );
       }
+
+      dependencyLevels.push(...currentLevel.entries());
     }
 
-    if (currentLevel.size === 0) {
-      const errorLines = [...missingDependencies.entries()]
-        .map(
-          ([system, dependencies]) =>
-            ` - "${system}" needs: ${[...dependencies].join(", ")}`
-        )
-        .join("\n");
-
-      throw new Error(
-        `The following systems have missing dependencies:\n${errorLines}`
-      );
-    }
-
-    dependencyLevels.push([...currentLevel.entries()]);
+    return new Map(dependencyLevels);
   }
-
-  return new Map(dependencyLevels.flat());
 }
 
 /**
