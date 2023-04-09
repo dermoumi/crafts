@@ -31,6 +31,34 @@ describe("GameApp", () => {
     await game.stop();
     expect(cleanupFunc).toHaveBeenCalled();
   });
+
+  it("can create and run a scheduler", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const game = new GameApp();
+    const schedulerHandle = game.getScheduler("testScheduler");
+
+    game.addSystem(testSystem, "testScheduler");
+    expect(callback).not.toHaveBeenCalled();
+
+    schedulerHandle();
+    expect(callback).toHaveBeenCalled();
+  });
+
+  it("adds to the 'update' scheduler by default", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const game = new GameApp();
+    const schedulerHandle = game.getScheduler("update");
+
+    game.addSystem(testSystem);
+    expect(callback).not.toHaveBeenCalled();
+
+    schedulerHandle();
+    expect(callback).toHaveBeenCalled();
+  });
 });
 
 describe("GameApp plugins", () => {

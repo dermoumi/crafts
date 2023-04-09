@@ -288,3 +288,33 @@ export function createSystemGroup(world: Ecs.World): SystemGroup {
 
   return systemGroup;
 }
+
+/**
+ * A scheduler that runs systems in a specific order.
+ *
+ * @internal
+ */
+export class Scheduler {
+  private readonly systemSet = new SystemSet();
+
+  /**
+   * Add a new system to the scheduler.
+   *
+   * @param system - The system to add
+   * @returns The scheduler itself
+   */
+  public add(system: SystemLike): this {
+    this.systemSet.add(system);
+    return this;
+  }
+
+  /**
+   * Get a handle to run the scheduler.
+   *
+   * @param world - The world to run the scheduler in
+   * @returns A handle to run the scheduler
+   */
+  public makeHandle(world: Ecs.World): Ecs.SystemHandle {
+    return this.systemSet.makeHandle(world);
+  }
+}

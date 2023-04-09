@@ -1,5 +1,5 @@
 import * as Ecs from "@crafts/ecs";
-import { System, SystemSet, createSystemGroup } from "./system";
+import { Scheduler, System, SystemSet, createSystemGroup } from "./system";
 
 describe("Systems", () => {
   it("sets a label", () => {
@@ -190,5 +190,23 @@ describe("System sets", () => {
     mockAfterAccess.mockClear();
     systemGroup();
     expect(mockAfterAccess).not.toHaveBeenCalled();
+  });
+});
+
+describe("System schedules", () => {
+  it("adds systems", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const world = new Ecs.World();
+    const schedule = new Scheduler();
+    const handle = schedule.makeHandle(world);
+
+    handle();
+    expect(callback).not.toHaveBeenCalled();
+
+    schedule.add(testSystem);
+    handle();
+    expect(callback).toHaveBeenCalledOnce();
   });
 });
