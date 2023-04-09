@@ -19,7 +19,7 @@
     "@crafts/server-plugins": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/git-rev": "^0.2.0",
-    "@vitest/coverage-istanbul": "^0.29.8",
+    "@vitest/coverage-istanbul": "^0.30.0",
     "eslint": "^8.38.0",
     "git-rev": "^0.2.1",
     "jsdom": "^21.1.1",
