@@ -17,6 +17,15 @@ function floatsEqual(a: number, b: number, epsilon = 0.000_01): boolean {
 }
 
 /**
+ * Sets up the plugin.
+ */
+export const setup = new System({}, ({ command }) => {
+  command(({ addResource }) => {
+    addResource(Physics);
+  });
+});
+
+/**
  * Update the timestep of the world if the fixed update rate changes.
  */
 export const syncTimestep = new System(

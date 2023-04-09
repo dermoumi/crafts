@@ -9,7 +9,7 @@ import { DefaultMap } from "@crafts/default-map";
 export class Schedulers extends Resource {
   private readonly handlers: DefaultMap<string, SystemHandle>;
 
-  public constructor(gameApp: GameApp<any>) {
+  public constructor(gameApp: GameApp) {
     super();
 
     this.handlers = new DefaultMap((key) => gameApp.getScheduler(key));

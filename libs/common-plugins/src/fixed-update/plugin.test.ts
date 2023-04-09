@@ -1,4 +1,3 @@
-import type { CommonSystemGroups } from "..";
 import { FixedUpdate } from "./resources";
 import { GameApp, System } from "@crafts/game-app";
 import { pluginFixedUpdate } from "./plugin";
@@ -16,13 +15,11 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
     const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add(testSystem);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     await nextUpdate();
@@ -36,13 +33,11 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
     const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add(testSystem);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     // Even if the setTimeout triggered once (e.g. tab was inactive),
@@ -55,13 +50,11 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
     const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add(testSystem);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     await nextUpdate();
@@ -77,13 +70,11 @@ describe("Fixed update plugin", () => {
     const updateFunc = vi.fn();
     const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add(testSystem);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     await nextUpdate();
 
     const fixedUpdate = game.world.resources.get(FixedUpdate);

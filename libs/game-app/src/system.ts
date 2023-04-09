@@ -191,23 +191,6 @@ export class SystemSet implements SystemLike {
 }
 
 /**
- * A group of ECS systems.
- * Invoking it will run all the systems in the group.
- */
-export type SystemGroup<A extends unknown[] = []> = {
-  (...args: A): void;
-
-  /**
-   * Add a new system to the system group.
-   *
-   * @param queries - The queries of the system to add
-   * @param callback - The callback to run when the system is invoked
-   * @returns - The group itself
-   */
-  add: <Q extends Ecs.SystemQuery>(system: System<Q>) => SystemGroup;
-};
-
-/**
  * Utility function to reorder a map of systems based on their dependencies.
  *
  * @internal
@@ -266,27 +249,6 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
   }
 
   return new Map(dependencyLevels.flat());
-}
-
-/**
- * Creates a normal system group.
- */
-export function createSystemGroup(world: Ecs.World): SystemGroup {
-  const systemSet = new SystemSet();
-  const handle = systemSet.makeHandle(world);
-
-  // The function to invoke the system group
-  const systemGroup = () => {
-    handle();
-  };
-
-  // The function to add a system to the system group
-  systemGroup.add = (system: SystemLike) => {
-    systemSet.add(system);
-    return systemGroup;
-  };
-
-  return systemGroup;
 }
 
 /**

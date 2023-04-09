@@ -1,5 +1,5 @@
 import * as Ecs from "@crafts/ecs";
-import { Scheduler, System, SystemSet, createSystemGroup } from "./system";
+import { Scheduler, System, SystemSet } from "./system";
 
 describe("Systems", () => {
   it("sets a label", () => {
@@ -124,46 +124,49 @@ describe("System sets", () => {
 
   it("runs systems in the order they were added", () => {
     const world = new Ecs.World();
-    const systemGroup = createSystemGroup(world)
+    const systemSet = new SystemSet()
       .add(testSystemA)
       .add(testSystemB)
-      .add(testSystemC);
+      .add(testSystemC)
+      .makeHandle(world);
 
-    systemGroup();
+    systemSet();
     expect(orderArray).toEqual(["A", "B", "C"]);
   });
 
   it("reorders systems such as one runs after the other", () => {
     const world = new Ecs.World();
-    const systemGroup = createSystemGroup(world)
+    const systemSet = new SystemSet()
       .add(testSystemA.clone().after(testSystemC))
       .add(testSystemB)
-      .add(testSystemC);
+      .add(testSystemC)
+      .makeHandle(world);
 
-    systemGroup();
+    systemSet();
 
     expect(orderArray).toEqual(["B", "C", "A"]);
   });
 
   it("reorders systems such as one runs before the other", () => {
     const world = new Ecs.World();
-    const systemGroup = createSystemGroup(world)
+    const systemSet = new SystemSet()
       .add(testSystemA)
       .add(testSystemB)
-      .add(testSystemC.clone().before(testSystemA));
+      .add(testSystemC.clone().before(testSystemA))
+      .makeHandle(world);
 
-    systemGroup();
+    systemSet();
 
     expect(orderArray).toEqual(["B", "C", "A"]);
   });
 
   it("throws an error when a runAfter system is not found", () => {
     const world = new Ecs.World();
-    const systemGroup = createSystemGroup(world).add(
-      testSystemA.clone().label("A").after("missingSystem")
-    );
+    const systemSet = new SystemSet()
+      .add(testSystemA.clone().label("A").after("missingSystem"))
+      .makeHandle(world);
 
-    expect(() => systemGroup()).toThrowError(
+    expect(() => systemSet()).toThrowError(
       "The following systems have missing dependencies:\n" +
         ' - "A" needs: missingSystem'
     );
@@ -171,24 +174,25 @@ describe("System sets", () => {
 
   it("caches results when reordering handles", () => {
     const world = new Ecs.World();
-    const systemGroup = createSystemGroup(world);
+    const systemSet = new SystemSet();
+    const handle = systemSet.makeHandle(world);
 
     const testSystem = testSystemA.clone();
     const mockAfterAccess = vi
       .spyOn(testSystem, "_after", "get")
       .mockReturnValue(new Set());
 
-    systemGroup();
+    handle();
     expect(mockAfterAccess).not.toHaveBeenCalled();
 
-    systemGroup.add(testSystem);
+    systemSet.add(testSystem);
     expect(mockAfterAccess).not.toHaveBeenCalled();
 
-    systemGroup();
+    handle();
     expect(mockAfterAccess).toHaveBeenCalled();
 
     mockAfterAccess.mockClear();
-    systemGroup();
+    handle();
     expect(mockAfterAccess).not.toHaveBeenCalled();
   });
 });

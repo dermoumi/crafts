@@ -1,11 +1,10 @@
-import type { CommonPlugin } from "..";
-
+import type { Plugin } from "@crafts/game-app";
 import { init as initRapier } from "@dimforge/rapier3d-compat";
-import { Physics } from "./resources";
 import {
   createColliders,
   createRigidBodies,
   doPhysicsStep,
+  setup,
   syncTimestep,
   updateRigidBodyPositions,
   updateRigidBodyRotations,
@@ -18,27 +17,29 @@ import {
   updateUserRigidBodySleeping,
   updateUserRigidBodyVelocities,
 } from "./systems";
+import { SystemSet } from "@crafts/game-app";
 
-export const pluginPhysics: CommonPlugin = async ({ onInit }, { fixed }) => {
-  await initRapier();
+await initRapier();
 
-  onInit((world) => {
-    world.resources.add(Physics);
-  });
-
-  fixed
-    .add(syncTimestep)
-    .add(createRigidBodies)
-    .add(createColliders)
-    .add(updateUserColliderPositions)
-    .add(updateUserRigidBodySleeping)
-    .add(updateUserRigidBodyAwake)
-    .add(updateUserRigidBodyPositions)
-    .add(updateUserRigidBodyVelocities)
-    .add(updateUserRigidBodyRotations)
-    .add(doPhysicsStep)
-    .add(updateRigidBodySleeping)
-    .add(updateRigidBodyPositions)
-    .add(updateRigidBodyVelocities)
-    .add(updateRigidBodyRotations);
+export const pluginPhysics: Plugin = (app) => {
+  app
+    .addStartupSystem(setup)
+    .addSystem(
+      new SystemSet()
+        .add(syncTimestep)
+        .add(createRigidBodies)
+        .add(createColliders)
+        .add(updateUserColliderPositions)
+        .add(updateUserRigidBodySleeping)
+        .add(updateUserRigidBodyAwake)
+        .add(updateUserRigidBodyPositions)
+        .add(updateUserRigidBodyVelocities)
+        .add(updateUserRigidBodyRotations)
+        .add(doPhysicsStep)
+        .add(updateRigidBodySleeping)
+        .add(updateRigidBodyPositions)
+        .add(updateRigidBodyVelocities)
+        .add(updateRigidBodyRotations),
+      "fixed"
+    );
 };

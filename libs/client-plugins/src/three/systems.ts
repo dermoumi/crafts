@@ -1,6 +1,6 @@
 import type { PerspectiveCamera, Renderer as ThreeJsRenderer } from "three";
 import { System } from "@crafts/game-app";
-import { Renderer } from "./resources";
+import { Renderer, WindowResizeHandler } from "./resources";
 import {
   CameraNode,
   ChildNode,
@@ -14,6 +14,16 @@ import {
 import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
 import { VariableUpdate } from "../variable-update";
 import { WindowResized } from "./events";
+
+/**
+ * Sets up the plugin.
+ */
+export const setup = new System({}, ({ command }) => {
+  command(({ addNewResource, dispatch }) => {
+    addNewResource(Renderer, document.body);
+    addNewResource(WindowResizeHandler, () => dispatch(WindowResized));
+  });
+});
 
 /**
  * Fit a renderer inside its container.
