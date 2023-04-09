@@ -236,7 +236,6 @@ describe("System sets", () => {
     expect(callback).not.toHaveBeenCalled();
 
     callback.mockClear();
-    console.log("aaa");
     entity.remove(TestComponent);
     systemSet.add(dummySystem);
 
