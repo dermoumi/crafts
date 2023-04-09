@@ -47,15 +47,17 @@ describe("Systems", () => {
 
   it("clones systems", () => {
     const testSystem = new System({}, vi.fn())
-      .label("test")
-      .after("dependency");
+      .label("testSystem")
+      .after("B")
+      .before("C");
 
     const clonedSystem = testSystem.clone();
 
     expect(clonedSystem.queries).toEqual(testSystem.queries);
     expect(clonedSystem.callback).toEqual(testSystem.callback);
-    expect(clonedSystem._label).toEqual("test");
-    expect([...clonedSystem._after]).toEqual(["dependency"]);
+    expect(clonedSystem._label).toEqual("testSystem");
+    expect([...clonedSystem._after]).toEqual(["B"]);
+    expect([...clonedSystem._before]).toEqual(["C"]);
   });
 });
 
@@ -104,13 +106,20 @@ describe("System sets", () => {
 
   it("clones correctly", () => {
     const world = new Ecs.World();
-    const systemSet = new SystemSet().add(testSystemA);
+    const systemSet = new SystemSet()
+      .add(testSystemA)
+      .label("testSystemSet")
+      .after("B")
+      .before("C");
     const clone = systemSet.clone();
     const handle = clone.makeHandle(world);
 
     handle();
 
     expect(orderArray).toEqual(["A"]);
+    expect(clone._label).toEqual("testSystemSet");
+    expect([...clone._after]).toEqual(["B"]);
+    expect([...clone._before]).toEqual(["C"]);
   });
 
   it("runs systems in the order they were added", () => {

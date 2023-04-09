@@ -103,6 +103,10 @@ function makeSystemLike<T extends new (...args: any) => any>(
         cloned._after.add(system);
       }
 
+      for (const system of this._before) {
+        cloned._before.add(system);
+      }
+
       return cloned;
     }
   };
