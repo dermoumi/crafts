@@ -4,6 +4,7 @@ import type { Plugin } from "./plugin-manager";
 import PluginManager from "./plugin-manager";
 import * as Ecs from "@crafts/ecs";
 import { DefaultMap } from "@crafts/default-map";
+import { Schedulers } from "./resources";
 
 export default class GameApp<T extends string> {
   private plugins: PluginManager<T>;
@@ -16,6 +17,8 @@ export default class GameApp<T extends string> {
   public schedulers = new DefaultMap((_key: string) => new Scheduler());
 
   public constructor() {
+    this.world.resources.addNew(Schedulers, this);
+
     this.groups = {};
 
     // This proxy will create new system groups on demand.

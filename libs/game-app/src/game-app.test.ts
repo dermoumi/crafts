@@ -1,6 +1,7 @@
 import type { Plugin } from "./plugin-manager";
 import GameApp from "./game-app";
 import { System, createSystemGroup } from "./system";
+import { Schedulers } from "./resources";
 
 describe("GameApp", () => {
   it("invokes the init handlers on run()", async () => {
@@ -57,6 +58,21 @@ describe("GameApp", () => {
     expect(callback).not.toHaveBeenCalled();
 
     schedulerHandle();
+    expect(callback).toHaveBeenCalled();
+  });
+
+  it("exposes schedulers as a resource", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const game = new GameApp();
+    const resource = game.world.resources.get(Schedulers);
+    const scheduler = resource.get("update");
+
+    game.addSystem(testSystem, "update");
+    expect(callback).not.toHaveBeenCalled();
+
+    scheduler();
     expect(callback).toHaveBeenCalled();
   });
 });

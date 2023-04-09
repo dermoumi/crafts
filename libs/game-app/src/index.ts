@@ -5,3 +5,4 @@ export type { SystemGroup } from "./system";
 export { System, createSystemGroup } from "./system";
 
 export { default as GameApp } from "./game-app";
+export { Schedulers } from "./resources";
