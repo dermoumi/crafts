@@ -16,9 +16,9 @@ function generateLabel(): string {
  */
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export interface SystemLike {
-  label: string;
-  after: Set<string>;
-  before: Set<string>;
+  _label: string;
+  _after: Set<string>;
+  _before: Set<string>;
 
   /**
    * Set the label of the system.
@@ -26,7 +26,7 @@ export interface SystemLike {
    * @param label - The label to set
    * @returns - The system itself
    */
-  setLabel: (label: string) => this;
+  label: (label: string) => this;
 
   /**
    * Systems that should run before this system.
@@ -34,7 +34,7 @@ export interface SystemLike {
    * @param systems - The systems to run before this system
    * @returns - The system itself
    */
-  runAfter: (...systems: Array<string | SystemLike>) => this;
+  after: (...systems: Array<string | SystemLike>) => this;
 
   /**
    * Run this system before the given systems.
@@ -42,7 +42,7 @@ export interface SystemLike {
    * @param systems - The systems to run after this system
    * @returns - The system itself
    */
-  runBefore: (...systems: Array<string | SystemLike>) => this;
+  before: (...systems: Array<string | SystemLike>) => this;
 
   /**
    * Clone the system.
@@ -60,39 +60,39 @@ function makeSystemLike<T extends new (...args: any) => any>(
   _: ClassDecoratorContext
 ) {
   return class extends Base {
-    public label = generateLabel();
-    public readonly after = new Set<string>();
-    public readonly before = new Set<string>();
+    public _label = generateLabel();
+    public readonly _after = new Set<string>();
+    public readonly _before = new Set<string>();
 
-    public setLabel(label: string): this {
-      this.label = label;
+    public label(label: string): this {
+      this._label = label;
       return this;
     }
 
-    public runAfter(...systems: Array<string | SystemLike>): this {
+    public after(...systems: Array<string | SystemLike>): this {
       for (const system of systems) {
-        const label = typeof system === "string" ? system : system.label;
-        this.after.add(label);
+        const label = typeof system === "string" ? system : system._label;
+        this._after.add(label);
       }
 
       return this;
     }
 
-    public runBefore(...systems: Array<string | SystemLike>): this {
+    public before(...systems: Array<string | SystemLike>): this {
       for (const system of systems) {
-        const label = typeof system === "string" ? system : system.label;
-        this.before.add(label);
+        const label = typeof system === "string" ? system : system._label;
+        this._before.add(label);
       }
 
       return this;
     }
 
-    public clone(): any {
+    public clone(): unknown {
       const cloned = super.clone();
 
-      cloned.label = this.label;
-      for (const system of this.after) {
-        cloned.after.add(system);
+      cloned._label = this._label;
+      for (const system of this._after) {
+        cloned._after.add(system);
       }
 
       return cloned;
@@ -233,8 +233,8 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
 
   const globalRunAfter = new SetMap<string, string>();
   for (const system of handles.values()) {
-    for (const label of system.before) {
-      globalRunAfter.get(label).add(system.label);
+    for (const label of system._before) {
+      globalRunAfter.get(label).add(system._label);
     }
   }
 
@@ -244,20 +244,20 @@ function reorderHandles(handles: Map<Ecs.SystemHandle, SystemLike>) {
 
     for (const [handle, system] of pendingHandles.entries()) {
       const missingSystems = new Set<string>();
-      const globalAfter = globalRunAfter.get(system.label);
+      const globalAfter = globalRunAfter.get(system._label);
 
-      for (const label of [...system.after, ...globalAfter]) {
+      for (const label of [...system._after, ...globalAfter]) {
         if (!processedSystems.has(label)) {
           missingSystems.add(label);
         }
       }
 
       if (missingSystems.size > 0) {
-        missingDependencies.set(system.label, missingSystems);
+        missingDependencies.set(system._label, missingSystems);
       } else {
         pendingHandles.delete(handle);
         currentLevel.set(handle, system);
-        processedSystems.add(system.label);
+        processedSystems.add(system._label);
       }
     }
 

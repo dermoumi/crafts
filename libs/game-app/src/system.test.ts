@@ -4,23 +4,23 @@ import { System, SystemSet, createSystemGroup } from "./system";
 describe("Systems", () => {
   it("sets a label", () => {
     const testSystem = new System({}, vi.fn());
-    testSystem.setLabel("test");
+    testSystem.label("test");
 
-    expect(testSystem.label).toEqual("test");
+    expect(testSystem._label).toEqual("test");
   });
 
   it("adds dependencies", () => {
     const testSystem = new System({}, vi.fn());
-    testSystem.runAfter("test", "dependency");
+    testSystem.after("test", "dependency");
 
-    expect([...testSystem.after]).toEqual(["test", "dependency"]);
+    expect([...testSystem._after]).toEqual(["test", "dependency"]);
   });
 
   it("appends to existing dependencies", () => {
-    const testSystem = new System({}, vi.fn()).runAfter("test", "dependency");
-    testSystem.runAfter("dependency2");
+    const testSystem = new System({}, vi.fn()).after("test", "dependency");
+    testSystem.after("dependency2");
 
-    expect([...testSystem.after]).toEqual([
+    expect([...testSystem._after]).toEqual([
       "test",
       "dependency",
       "dependency2",
@@ -29,16 +29,16 @@ describe("Systems", () => {
 
   it("adds reverse depenedencies", () => {
     const testSystem = new System({}, vi.fn());
-    testSystem.runBefore("test", "dependency");
+    testSystem.before("test", "dependency");
 
-    expect([...testSystem.before]).toEqual(["test", "dependency"]);
+    expect([...testSystem._before]).toEqual(["test", "dependency"]);
   });
 
   it("appends to existing reverse dependencies", () => {
-    const testSystem = new System({}, vi.fn()).runBefore("test", "dependency");
-    testSystem.runBefore("dependency2");
+    const testSystem = new System({}, vi.fn()).before("test", "dependency");
+    testSystem.before("dependency2");
 
-    expect([...testSystem.before]).toEqual([
+    expect([...testSystem._before]).toEqual([
       "test",
       "dependency",
       "dependency2",
@@ -47,15 +47,15 @@ describe("Systems", () => {
 
   it("clones systems", () => {
     const testSystem = new System({}, vi.fn())
-      .setLabel("test")
-      .runAfter("dependency");
+      .label("test")
+      .after("dependency");
 
     const clonedSystem = testSystem.clone();
 
     expect(clonedSystem.queries).toEqual(testSystem.queries);
     expect(clonedSystem.callback).toEqual(testSystem.callback);
-    expect(clonedSystem.label).toEqual("test");
-    expect([...clonedSystem.after]).toEqual(["dependency"]);
+    expect(clonedSystem._label).toEqual("test");
+    expect([...clonedSystem._after]).toEqual(["dependency"]);
   });
 });
 
@@ -104,20 +104,19 @@ describe("System sets", () => {
 
   it("fails when adding a non-supported system-like object", () => {
     class TestClass {
-      public label = "test";
-      public after = new Set<string>();
-      public before = new Set<string>();
+      public _label = "test";
+      public _after = new Set<string>();
+      public _before = new Set<string>();
 
-      public setLabel(label: string) {
-        this.label = label;
+      public label() {
         return this;
       }
 
-      public runAfter() {
+      public after() {
         return this;
       }
 
-      public runBefore() {
+      public before() {
         return this;
       }
 
@@ -160,7 +159,7 @@ describe("System sets", () => {
   it("reorders systems such as one runs after the other", () => {
     const world = new Ecs.World();
     const systemGroup = createSystemGroup(world)
-      .add(testSystemA.clone().runAfter(testSystemC))
+      .add(testSystemA.clone().after(testSystemC))
       .add(testSystemB)
       .add(testSystemC);
 
@@ -174,7 +173,7 @@ describe("System sets", () => {
     const systemGroup = createSystemGroup(world)
       .add(testSystemA)
       .add(testSystemB)
-      .add(testSystemC.clone().runBefore(testSystemA));
+      .add(testSystemC.clone().before(testSystemA));
 
     systemGroup();
 
@@ -184,7 +183,7 @@ describe("System sets", () => {
   it("throws an error when a runAfter system is not found", () => {
     const world = new Ecs.World();
     const systemGroup = createSystemGroup(world).add(
-      testSystemA.clone().setLabel("A").runAfter("missingSystem")
+      testSystemA.clone().label("A").after("missingSystem")
     );
 
     expect(() => systemGroup()).toThrowError(
@@ -199,7 +198,7 @@ describe("System sets", () => {
 
     const testSystem = testSystemA.clone();
     const mockAfterAccess = vi
-      .spyOn(testSystem, "after", "get")
+      .spyOn(testSystem, "_after", "get")
       .mockReturnValue(new Set());
 
     systemGroup();

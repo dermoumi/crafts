@@ -78,7 +78,7 @@ export const createColliders = new System(
       }
     }
   }
-).runAfter(createRigidBodies);
+).after(createRigidBodies);
 
 /**
  * Update user-set positions of colliders.
@@ -90,7 +90,7 @@ export const updateUserColliderPositions = new System(
       collider?.setTranslation(position);
     }
   }
-).runAfter(createColliders);
+).after(createColliders);
 
 /**
  * Update user-set sleeping state of rigid bodies.
@@ -102,7 +102,7 @@ export const updateUserRigidBodySleeping = new System(
       body?.sleep();
     }
   }
-).runAfter(createRigidBodies);
+).after(createRigidBodies);
 
 /**
  * Update user-set waking state of rigid bodies.
@@ -114,7 +114,7 @@ export const updateUserRigidBodyAwake = new System(
       body?.wakeUp();
     }
   }
-).runAfter(createRigidBodies);
+).after(createRigidBodies);
 
 /**
  * Update user-set positions of rigid bodies.
@@ -126,7 +126,7 @@ export const updateUserRigidBodyPositions = new System(
       body?.setTranslation(position, true);
     }
   }
-).runAfter(
+).after(
   createRigidBodies,
   updateUserRigidBodySleeping,
   updateUserRigidBodyAwake
@@ -142,7 +142,7 @@ export const updateUserRigidBodyVelocities = new System(
       body?.setLinvel(velocity, true);
     }
   }
-).runAfter(
+).after(
   createRigidBodies,
   updateUserRigidBodySleeping,
   updateUserRigidBodyAwake
@@ -158,7 +158,7 @@ export const updateUserRigidBodyRotations = new System(
       body?.setRotation(rotation, true);
     }
   }
-).runAfter(
+).after(
   createRigidBodies,
   updateUserRigidBodySleeping,
   updateUserRigidBodyAwake
@@ -174,7 +174,7 @@ export const doPhysicsStep = new System(
 
     physics.world.step();
   }
-).runAfter(
+).after(
   syncTimestep,
   createRigidBodies,
   createColliders,
@@ -200,7 +200,7 @@ export const updateRigidBodySleeping = new System(
       }
     }
   }
-).runAfter(doPhysicsStep);
+).after(doPhysicsStep);
 
 /**
  * Update the positions of rigid bodies.
@@ -220,7 +220,7 @@ export const updateRigidBodyPositions = new System(
       }
     }
   }
-).runAfter(updateRigidBodySleeping);
+).after(updateRigidBodySleeping);
 
 /**
  * Update the velocties of rigid bodies.
@@ -240,7 +240,7 @@ export const updateRigidBodyVelocities = new System(
       }
     }
   }
-).runAfter(updateRigidBodySleeping);
+).after(updateRigidBodySleeping);
 
 /**
  * Update the rotations of rigid bodies.
@@ -261,4 +261,4 @@ export const updateRigidBodyRotations = new System(
       }
     }
   }
-).runAfter(updateRigidBodySleeping);
+).after(updateRigidBodySleeping);

@@ -204,7 +204,7 @@ export const tweenPosition = new System(
       }
     }
   }
-).runAfter(updatePositionTween);
+).after(updatePositionTween);
 
 /**
  * Add initial rotation when rotation is first added.
@@ -236,7 +236,7 @@ export const updateRotationTween = new System(
       });
     }
   }
-).runAfter(addInitialRotation);
+).after(addInitialRotation);
 
 /**
  * Tween rotation.
@@ -272,4 +272,4 @@ export const tweenRotation = new System(
       }
     }
   }
-).runAfter(updateRotationTween);
+).after(updateRotationTween);
