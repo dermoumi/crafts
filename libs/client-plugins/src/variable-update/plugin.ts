@@ -1,18 +1,9 @@
-import type { ClientPlugin } from "..";
-import { VariableUpdate } from "./resources";
+import type { Plugin } from "@crafts/game-app";
+import { setup } from "./systems";
 
 /**
  * Plugin to run updates at a variable, framerate.
  */
-export const pluginVariableUpdate: ClientPlugin = (
-  { onInit },
-  { preupdate, update, postupdate }
-) => {
-  onInit(({ resources }) => {
-    resources.addNew(VariableUpdate, () => {
-      preupdate();
-      update();
-      postupdate();
-    });
-  });
+export const pluginVariableUpdate: Plugin = (gameApp) => {
+  gameApp.addStartupSystem(setup);
 };

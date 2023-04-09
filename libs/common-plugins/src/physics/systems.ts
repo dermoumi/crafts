@@ -1,4 +1,5 @@
-import { AnyFilter, System } from "@crafts/ecs";
+import { AnyFilter } from "@crafts/ecs";
+import { System } from "@crafts/game-app";
 import { Physics } from "./resources";
 import { FixedUpdate } from "../fixed-update";
 import { Collider, RigidBody, Sleeping } from "./components";
@@ -14,6 +15,15 @@ import { Position, Rotation, Velocity } from "../world-entities";
 function floatsEqual(a: number, b: number, epsilon = 0.000_01): boolean {
   return Math.abs(a - b) < epsilon;
 }
+
+/**
+ * Sets up the plugin.
+ */
+export const setup = new System({}, ({ command }) => {
+  command(({ addResource }) => {
+    addResource(Physics);
+  });
+});
 
 /**
  * Update the timestep of the world if the fixed update rate changes.
@@ -72,12 +82,12 @@ export const createColliders = new System(
       const body = rigidBody?.body;
       collider.__init(world, body);
 
-      if (position) {
+      if (position && !body) {
         collider.collider?.setTranslation(position);
       }
     }
   }
-);
+).after(createRigidBodies);
 
 /**
  * Update user-set positions of colliders.
@@ -89,7 +99,7 @@ export const updateUserColliderPositions = new System(
       collider?.setTranslation(position);
     }
   }
-);
+).after(createColliders);
 
 /**
  * Update user-set sleeping state of rigid bodies.
@@ -101,7 +111,7 @@ export const updateUserRigidBodySleeping = new System(
       body?.sleep();
     }
   }
-);
+).after(createRigidBodies);
 
 /**
  * Update user-set waking state of rigid bodies.
@@ -113,7 +123,7 @@ export const updateUserRigidBodyAwake = new System(
       body?.wakeUp();
     }
   }
-);
+).after(createRigidBodies);
 
 /**
  * Update user-set positions of rigid bodies.
@@ -125,6 +135,10 @@ export const updateUserRigidBodyPositions = new System(
       body?.setTranslation(position, true);
     }
   }
+).after(
+  createRigidBodies,
+  updateUserRigidBodySleeping,
+  updateUserRigidBodyAwake
 );
 
 /**
@@ -137,6 +151,10 @@ export const updateUserRigidBodyVelocities = new System(
       body?.setLinvel(velocity, true);
     }
   }
+).after(
+  createRigidBodies,
+  updateUserRigidBodySleeping,
+  updateUserRigidBodyAwake
 );
 
 /**
@@ -149,6 +167,10 @@ export const updateUserRigidBodyRotations = new System(
       body?.setRotation(rotation, true);
     }
   }
+).after(
+  createRigidBodies,
+  updateUserRigidBodySleeping,
+  updateUserRigidBodyAwake
 );
 
 /**
@@ -161,6 +183,16 @@ export const doPhysicsStep = new System(
 
     physics.world.step();
   }
+).after(
+  syncTimestep,
+  createRigidBodies,
+  createColliders,
+  updateUserColliderPositions,
+  updateUserRigidBodyPositions,
+  updateUserRigidBodyVelocities,
+  updateUserRigidBodyRotations,
+  updateUserRigidBodySleeping,
+  updateUserRigidBodyAwake
 );
 
 /**
@@ -177,7 +209,7 @@ export const updateRigidBodySleeping = new System(
       }
     }
   }
-);
+).after(doPhysicsStep);
 
 /**
  * Update the positions of rigid bodies.
@@ -197,7 +229,7 @@ export const updateRigidBodyPositions = new System(
       }
     }
   }
-);
+).after(updateRigidBodySleeping);
 
 /**
  * Update the velocties of rigid bodies.
@@ -217,7 +249,7 @@ export const updateRigidBodyVelocities = new System(
       }
     }
   }
-);
+).after(updateRigidBodySleeping);
 
 /**
  * Update the rotations of rigid bodies.
@@ -238,4 +270,4 @@ export const updateRigidBodyRotations = new System(
       }
     }
   }
-);
+).after(updateRigidBodySleeping);

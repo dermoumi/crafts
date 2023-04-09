@@ -1,6 +1,5 @@
-import type { CommonSystemGroups } from "..";
 import { FixedUpdate } from "./resources";
-import { GameApp } from "@crafts/game-app";
+import { GameApp, System } from "@crafts/game-app";
 import { pluginFixedUpdate } from "./plugin";
 
 const UPDATE_RATE = 1000 / 30;
@@ -14,14 +13,13 @@ async function nextUpdate(times = 1, deviation = 0.25) {
 describe("Fixed update plugin", () => {
   it("runs updates periodically", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     await nextUpdate();
@@ -33,14 +31,13 @@ describe("Fixed update plugin", () => {
 
   it("runs updates as many times as needed", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     // Even if the setTimeout triggered once (e.g. tab was inactive),
@@ -51,14 +48,13 @@ describe("Fixed update plugin", () => {
 
   it("stops updates whon the game stops", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     expect(updateFunc).not.toHaveBeenCalled();
 
     await nextUpdate();
@@ -72,14 +68,13 @@ describe("Fixed update plugin", () => {
 
   it("updates depending on the update rate", async () => {
     const updateFunc = vi.fn();
+    const testSystem = new System({}, updateFunc);
 
-    const game = new GameApp<CommonSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginFixedUpdate)
-      .addPlugin((_, { fixed }) => {
-        fixed.add({}, updateFunc);
-      });
+      .addSystem(testSystem, "fixed");
 
-    await game.run();
+    game.run();
     await nextUpdate();
 
     const fixedUpdate = game.world.resources.get(FixedUpdate);
