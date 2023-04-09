@@ -1,6 +1,7 @@
-import type { ClientPlugin, ClientSystemGroups } from "@crafts/client-plugins";
-import type { ServerSystemGroups } from "@crafts/server-plugins";
 import {
+  CameraNode,
+  MainScene,
+  SceneNode,
   MainCamera,
   Input,
   pluginInput,
@@ -8,8 +9,9 @@ import {
   pluginThree,
   MeshNode,
 } from "@crafts/client-plugins";
-import { GameApp } from "@crafts/game-app";
-import { Component } from "@crafts/ecs";
+import type { Plugin } from "@crafts/game-app";
+import { GameApp, System } from "@crafts/game-app";
+import { Component, unique } from "@crafts/ecs";
 import {
   pluginPhysics,
   Position,
@@ -20,16 +22,42 @@ import {
   pluginFixedUpdate,
 } from "@crafts/common-plugins";
 
+@unique
 class Controllable extends Component {}
 
-const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
-  onInit((world) => {
+const moveControllable = new System(
+  {
+    players: [Velocity, Controllable.present()],
+    resources: [Input],
+  },
+  ({ players, resources }) => {
+    const [input] = resources;
+
+    const { lx, ly } = input.axes;
+
+    for (const [velocity] of players.asComponents()) {
+      velocity.x = lx * 5;
+
+      if (Math.abs(ly) > 0.1) {
+        velocity.y = -ly * 5;
+      }
+    }
+  }
+);
+
+const setup = new System({}, ({ command }) => {
+  command(({ spawn }) => {
+    // Main camera
+    spawn().add(CameraNode).add(Position, { y: 2, z: 20 }).add(MainCamera);
+
+    // Main scene
+    spawn().add(SceneNode).add(MainScene);
+
     // Ground
-    world.spawn().add(Position).addNew(CuboidCollider, 10, 0.1, 10);
+    spawn().add(Position).addNew(CuboidCollider, 10, 0.1, 10);
 
     // Main cube
-    world
-      .spawn()
+    spawn()
       .add(Controllable)
       .add(MeshNode)
       .add(Velocity)
@@ -37,36 +65,14 @@ const pluginTestContent: ClientPlugin = ({ onInit }, { update }) => {
       .addNew(Rotation, 0, 0, 1, "xyz")
       .addNew(CuboidCollider, 0.5, 0.5, 0.5)
       .addNew(DynamicRigidBody);
-
-    const [cameraPosition] = world
-      .query(Position, MainCamera.present())
-      .getOneAsComponents();
-    cameraPosition.y = 2;
-    cameraPosition.z = 20;
   });
+});
 
-  update.add(
-    {
-      players: [Velocity, Controllable.present()],
-      resources: [Input],
-    },
-    ({ players, resources }) => {
-      const [input] = resources;
-
-      const { lx, ly } = input.axes;
-
-      for (const [velocity] of players.asComponents()) {
-        velocity.x = lx * 5;
-
-        if (Math.abs(ly) > 0.1) {
-          velocity.y = -ly * 5;
-        }
-      }
-    }
-  );
+const pluginTestContent: Plugin = (gameApp) => {
+  gameApp.addStartupSystem(setup).addSystem(moveControllable);
 };
 
-const game = new GameApp<ClientSystemGroups | ServerSystemGroups>()
+const game = new GameApp()
   .addPlugin(pluginThree)
   .addPlugin(pluginFixedUpdate)
   .addPlugin(pluginVariableUpdate)

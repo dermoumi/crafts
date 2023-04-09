@@ -1,8 +1,6 @@
-import type { CommonPlugin } from "..";
-import { FixedUpdate } from "./resources";
+import type { Plugin } from "@crafts/game-app";
+import { setup } from "./systems";
 
-export const pluginFixedUpdate: CommonPlugin = ({ onInit }, { fixed }) => {
-  onInit(({ resources }) => {
-    resources.addNew(FixedUpdate, fixed);
-  });
+export const pluginFixedUpdate: Plugin = (app) => {
+  app.addStartupSystem(setup);
 };

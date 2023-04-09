@@ -1,5 +1,4 @@
-import type { ClientSystemGroups } from "..";
-import { GameApp } from "@crafts/game-app";
+import { GameApp, System } from "@crafts/game-app";
 import { pluginVariableUpdate } from "./plugin";
 import { VariableUpdate } from "./resources";
 
@@ -15,16 +14,15 @@ describe("Variable update plugin", () => {
     vi.useRealTimers();
   });
 
-  it("runs updates periodically", async () => {
+  it("runs updates periodically", () => {
     const renderFunc = vi.fn();
+    const testSystem = new System({}, renderFunc);
 
-    const game = new GameApp<ClientSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginVariableUpdate)
-      .addPlugin((_, { update }) => {
-        update.add({}, renderFunc);
-      });
+      .addSystem(testSystem);
 
-    await game.run();
+    game.run();
     expect(renderFunc).not.toHaveBeenCalled();
 
     vi.advanceTimersByTime(REFRESH_RATE);
@@ -34,20 +32,19 @@ describe("Variable update plugin", () => {
     expect(renderFunc).toHaveBeenCalledTimes(2);
   });
 
-  it("stops updates whon the game stops", async () => {
+  it("stops updates whon the game stops", () => {
     const renderFunc = vi.fn();
+    const testSystem = new System({}, renderFunc);
 
-    const game = new GameApp<ClientSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginVariableUpdate)
-      .addPlugin((_, { update }) => {
-        update.add({}, renderFunc);
-      });
+      .addSystem(testSystem);
 
-    await game.run();
+    game.run();
     vi.advanceTimersByTime(REFRESH_RATE);
     expect(renderFunc).toHaveBeenCalledTimes(1);
 
-    await game.stop();
+    game.stop();
     vi.advanceTimersByTime(REFRESH_RATE * 20);
     expect(renderFunc).toHaveBeenCalledTimes(1);
   });
@@ -70,18 +67,19 @@ describe("FrameInfo resource", () => {
 
   it("caluclates the delta correctly", async () => {
     const renderFunc = vi.fn();
+    const testSystem = new System(
+      { resources: [VariableUpdate] },
+      ({ resources }) => {
+        const [update] = resources;
+        renderFunc(update.delta);
+      }
+    );
 
-    const game = new GameApp<ClientSystemGroups>()
+    const game = new GameApp()
       .addPlugin(pluginVariableUpdate)
-      .addPlugin((_, { update }) => {
-        update.add({ resources: [VariableUpdate] }, ({ resources }) => {
-          const [frameInfo] = resources;
+      .addSystem(testSystem);
 
-          renderFunc(frameInfo.delta);
-        });
-      });
-
-    await game.run();
+    game.run();
 
     // First frame has no delta, because the first frametime is undefined
     await new Promise((resolve) => {

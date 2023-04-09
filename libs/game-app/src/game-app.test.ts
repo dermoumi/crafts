@@ -1,112 +1,95 @@
-import type { Plugin } from "./plugin-manager";
 import GameApp from "./game-app";
-import { createSystemGroup } from "./system-group";
-import { System } from "@crafts/ecs";
+import { System } from "./system";
+import { Schedulers } from "./resources";
+import { World } from "@crafts/ecs";
 
 describe("GameApp", () => {
-  it("invokes the init handlers on run()", async () => {
-    const startupFunc = vi.fn();
-
-    const testPlugin: Plugin = ({ onInit }) => {
-      onInit(startupFunc);
-    };
-
-    const game = new GameApp().addPlugin(testPlugin);
-    expect(startupFunc).not.toHaveBeenCalled();
-
-    await game.run();
-    expect(startupFunc).toHaveBeenCalled();
-  });
-
-  it("invokes the cleanup group on stop()", async () => {
-    const cleanupFunc = vi.fn();
-
-    const testPlugin: Plugin = ({ onInit }) => {
-      onInit(() => cleanupFunc);
-    };
-
-    const game = new GameApp().addPlugin(testPlugin);
-    await game.run();
-    expect(cleanupFunc).not.toHaveBeenCalled();
-
-    await game.stop();
-    expect(cleanupFunc).toHaveBeenCalled();
-  });
-});
-
-describe("GameApp plugins", () => {
-  it("can retrieve existing groups", async () => {
-    const testPlugin: Plugin<"startup"> = (_, { startup }) => {
-      startup.add({}, vi.fn());
-    };
+  it("cleans the world on stop()", () => {
+    const spyWorldClear = vi.spyOn(World.prototype, "clear");
 
     const game = new GameApp();
-    const startupGroup = createSystemGroup(game.world);
-    const startupAddMock = vi.spyOn(startupGroup, "add");
-    game.groups.startup = startupGroup;
+    game.run();
+    expect(spyWorldClear).not.toHaveBeenCalled();
 
-    game.addPlugin(testPlugin);
-    await game.run();
-
-    expect(startupAddMock).toHaveBeenCalledOnce();
+    game.stop();
+    expect(spyWorldClear).toHaveBeenCalled();
   });
 
-  it("can add system instances to groups", async () => {
+  it("can create and run a scheduler", () => {
     const callback = vi.fn();
-    const system = new System({}, callback);
-    const testPlugin: Plugin<"startup"> = (_, { startup }) => {
-      startup.addSystem(system);
-    };
+    const testSystem = new System({}, callback);
 
-    const game = new GameApp().addPlugin(testPlugin);
-    await game.run();
+    const game = new GameApp();
+    const schedulerHandle = game.getScheduler("testScheduler");
 
-    game.groupsProxy.startup?.();
+    game.addSystem(testSystem, "testScheduler");
+    expect(callback).not.toHaveBeenCalled();
 
+    schedulerHandle();
     expect(callback).toHaveBeenCalled();
   });
 
-  it("cannot reassign system groups", () => {
-    const testPlugin: Plugin<"startup"> = (_, groups) => {
-      const dummySystem = vi.fn();
+  it("adds to the 'update' scheduler by default", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
 
-      // @ts-expect-error - We want to test assignment outside typescript
-      groups.startup = dummySystem;
-    };
+    const game = new GameApp();
+    const schedulerHandle = game.getScheduler("update");
 
-    const game = new GameApp().addPlugin(testPlugin);
+    game.addSystem(testSystem);
+    expect(callback).not.toHaveBeenCalled();
 
-    expect(game.run()).rejects.toThrowError("Cannot set system groups");
+    schedulerHandle();
+    expect(callback).toHaveBeenCalled();
   });
 
-  it("cannot add new system groups", () => {
-    const testPlugin: Plugin<"startup" | "newGroup"> = (_, groups) => {
-      const dummySystem = vi.fn();
+  it("exposes schedulers as a resource", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
 
-      // @ts-expect-error - We want to test assignment outside typescript
-      groups.newGroup = dummySystem;
-    };
+    const game = new GameApp();
+    const resource = game.world.resources.get(Schedulers);
+    const scheduler = resource.get("update");
 
-    const game = new GameApp().addPlugin(testPlugin);
+    game.addSystem(testSystem, "update");
+    expect(callback).not.toHaveBeenCalled();
 
-    expect(game.run()).rejects.toThrowError("Cannot set system groups");
+    scheduler();
+    expect(callback).toHaveBeenCalled();
   });
 
-  it("can retrieve non-registered system groups", async () => {
-    // To make sure that the plugin was indeed called
-    const callCheck = vi.fn();
+  it("adds systems to the startup scheduler", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
 
-    const testPlugin: Plugin<"newGroup"> = (_, { newGroup }) => {
-      callCheck();
+    const game = new GameApp();
+    const schedulerHandle = game.getScheduler("startup");
 
-      expect(newGroup).toBeDefined();
-      expect(newGroup).toBeInstanceOf(Function);
-      expect(newGroup).toHaveProperty("add");
-    };
+    game.addStartupSystem(testSystem);
+    expect(callback).not.toHaveBeenCalled();
 
-    const game = new GameApp().addPlugin(testPlugin);
-    await game.run();
+    schedulerHandle();
+    expect(callback).toHaveBeenCalled();
+  });
 
-    expect(callCheck).toHaveBeenCalled();
+  it("runs the startup scheduler on run()", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const game = new GameApp();
+
+    game.addStartupSystem(testSystem);
+    expect(callback).not.toHaveBeenCalled();
+
+    game.run();
+    expect(callback).toHaveBeenCalled();
+  });
+
+  it("calls added plugins", () => {
+    const callback = vi.fn();
+    const game = new GameApp();
+
+    game.addPlugin(callback);
+    expect(callback).toHaveBeenCalled();
   });
 });

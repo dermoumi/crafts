@@ -1,53 +1,61 @@
-import type { SystemGroup } from "./system-group";
-import type { Plugin } from "./plugin-manager";
-import { createSystemGroup } from "./system-group";
-import PluginManager from "./plugin-manager";
+import type { SystemLike } from "./system";
+import { Scheduler } from "./system";
 import * as Ecs from "@crafts/ecs";
+import { DefaultMap } from "@crafts/default-map";
+import { Schedulers } from "./resources";
 
-export default class GameApp<T extends string> {
-  private plugins: PluginManager<T>;
+export type Plugin = (gameApp: GameApp) => void;
+
+export default class GameApp {
   public world = new Ecs.World();
-  public groupsProxy: Record<T, SystemGroup>;
-  public groups: {
-    [K: string]: SystemGroup;
-  };
+  public schedulers = new DefaultMap((_key: string) => new Scheduler());
 
   public constructor() {
-    this.groups = {};
-
-    // This proxy will create new system groups on demand.
-    this.groupsProxy = new Proxy(this.groups, {
-      get: (target, prop: T) => {
-        if (prop in target) {
-          return target[prop];
-        }
-
-        const system = createSystemGroup(this.world);
-        target[prop] = system;
-        return system;
-      },
-      set: () => {
-        throw new Error("Cannot set system groups");
-      },
-    }) as Record<T, SystemGroup>;
-
-    // Create the plugin manager using the proxy.
-    this.plugins = new PluginManager(this.groupsProxy, this.world);
+    this.world.resources.addNew(Schedulers, this);
   }
 
-  public addPlugin(plugin: Plugin<T>) {
-    this.plugins.add(plugin);
+  public addPlugin(plugin: Plugin): this {
+    plugin(this);
+    return this;
+  }
+
+  public run(): void {
+    // Run the startup scheduler.
+    const startup = this.getScheduler("startup");
+    startup();
+  }
+
+  public stop(): void {
+    this.world.clear();
+  }
+
+  /**
+   * Add a system-like to a scheduler.
+   *
+   * @param system - The system to add
+   * @param scheduler - The scheduler's name. Defaults to "update"
+   * @returns This game app
+   */
+  public addSystem(system: SystemLike, scheduler = "update"): this {
+    this.schedulers.get(scheduler).add(system);
 
     return this;
   }
 
-  public async run(): Promise<void> {
-    await this.plugins.init();
+  /**
+   * Add a sytsem-lke to the startup scheduler.
+   */
+  public addStartupSystem(system: SystemLike): this {
+    return this.addSystem(system, "startup");
   }
 
-  public async stop() {
-    await this.plugins.cleanup();
-
-    this.world.clear();
+  /**
+   * Get a scheduler's handle.
+   *
+   * @param scheduler - The scheduler's name
+   * @returns The scheduler's handle
+   */
+  public getScheduler(scheduler: string): Ecs.SystemHandle {
+    return this.schedulers.get(scheduler).makeHandle(this.world);
   }
 }

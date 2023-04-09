@@ -1,6 +1,6 @@
 import type { PerspectiveCamera, Renderer as ThreeJsRenderer } from "three";
-import { System } from "@crafts/ecs";
-import { Renderer } from "./resources";
+import { System } from "@crafts/game-app";
+import { Renderer, WindowResizeHandler } from "./resources";
 import {
   CameraNode,
   ChildNode,
@@ -13,6 +13,17 @@ import {
 } from "./components";
 import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
 import { VariableUpdate } from "../variable-update";
+import { WindowResized } from "./events";
+
+/**
+ * Sets up the plugin.
+ */
+export const setup = new System({}, ({ command }) => {
+  command(({ addNewResource, dispatch }) => {
+    addNewResource(Renderer, document.body);
+    addNewResource(WindowResizeHandler, () => dispatch(WindowResized));
+  });
+});
 
 /**
  * Fit a renderer inside its container.
@@ -63,6 +74,7 @@ export const resizeRenderer = new System(
   {
     resources: [Renderer],
     camera: [CameraNode, MainCamera.present()],
+    event: WindowResized,
   },
   ({ resources, camera }) => {
     const [{ renderer, element }] = resources;
@@ -202,7 +214,7 @@ export const tweenPosition = new System(
       }
     }
   }
-);
+).after(updatePositionTween);
 
 /**
  * Add initial rotation when rotation is first added.
@@ -234,7 +246,7 @@ export const updateRotationTween = new System(
       });
     }
   }
-);
+).after(addInitialRotation);
 
 /**
  * Tween rotation.
@@ -270,4 +282,4 @@ export const tweenRotation = new System(
       }
     }
   }
-);
+).after(updateRotationTween);

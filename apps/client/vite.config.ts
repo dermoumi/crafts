@@ -4,6 +4,7 @@ import { version } from "./package.json";
 import { short as gitShort } from "git-rev";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import topLevelAwaitPlugin from "vite-plugin-top-level-await";
 
 export default defineConfig(async ({ mode }) => {
   const isProduction = mode === "production";
@@ -42,6 +43,7 @@ export default defineConfig(async ({ mode }) => {
       __APP_PLATFORM__: JSON.stringify(appConfig.platform),
     },
     plugins: [
+      topLevelAwaitPlugin(),
       createHtmlPlugin({
         entry: "src/main.ts",
         inject: { data: appConfig },
