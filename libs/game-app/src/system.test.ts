@@ -59,6 +59,30 @@ describe("Systems", () => {
     expect([...clonedSystem._after]).toEqual(["B"]);
     expect([...clonedSystem._before]).toEqual(["C"]);
   });
+
+  it("runs the systems if the condition callback resolves to true", () => {
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const testSystem = new System({}, callback)
+      .runIf(() => true)
+      .makeHandle(world);
+
+    testSystem();
+
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it("does not run the systems if the condition callback resolves to false", () => {
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const testSystem = new System({}, callback)
+      .runIf(() => false)
+      .makeHandle(world);
+
+    testSystem();
+
+    expect(callback).not.toHaveBeenCalled();
+  });
 });
 
 describe("System sets", () => {
