@@ -143,16 +143,27 @@ function makeSystemLike<T extends new (...args: any) => any>(
 
     public makeHandle(world: Ecs.World): Ecs.SystemHandle {
       const originalHandle = super.makeHandle(world);
+      let needsReset = false;
 
-      return () => {
+      const handle = () => {
         for (const condition of this._runConditions) {
           if (!condition(world)) {
+            needsReset = true;
             return;
           }
         }
 
+        if (needsReset) {
+          needsReset = false;
+          originalHandle.reset();
+        }
+
         originalHandle(world);
       };
+
+      handle.reset = originalHandle.reset;
+
+      return handle;
     }
   };
 }
@@ -199,13 +210,23 @@ export class SystemSet implements SystemLike {
   }
 
   public makeHandle(world: Ecs.World): Ecs.SystemHandle {
-    return () => {
+    const handle = () => {
       this.ensureNotDirty(world);
 
-      for (const handle of this.handles.values()) {
-        handle();
+      for (const systemHandle of this.handles.values()) {
+        systemHandle();
       }
     };
+
+    handle.reset = () => {
+      this.ensureNotDirty(world);
+
+      for (const systemHandle of this.handles.values()) {
+        systemHandle.reset();
+      }
+    };
+
+    return handle;
   }
 
   /**

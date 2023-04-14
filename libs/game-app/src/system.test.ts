@@ -83,6 +83,25 @@ describe("Systems", () => {
 
     expect(callback).not.toHaveBeenCalled();
   });
+
+  it("resets systems even if they didn't run due to a run condition", () => {
+    class TestComponent extends Ecs.Component {}
+
+    let trigger = false;
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const testSystem = new System({ query: [TestComponent.added()] }, callback)
+      .runIf(() => trigger)
+      .makeHandle(world);
+
+    world.spawn().add(TestComponent);
+    testSystem();
+    expect(callback).not.toHaveBeenCalled();
+
+    trigger = true;
+    testSystem();
+    expect(callback).not.toHaveBeenCalled();
+  });
 });
 
 describe("System sets", () => {
@@ -265,6 +284,27 @@ describe("System sets", () => {
 
     handle();
     expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it("resets all underlying handles", () => {
+    class TestComponent extends Ecs.Component {}
+
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const system = new System({ query: [TestComponent.added()] }, callback);
+    const systemHandle = world.addSystem(system);
+    const systemSet = new SystemSet().add(system).makeHandle(world);
+
+    world.spawn().add(TestComponent);
+
+    callback.mockClear();
+    systemHandle();
+    expect(callback).toHaveBeenCalledOnce();
+
+    callback.mockClear();
+    systemSet.reset();
+    systemSet();
+    expect(callback).not.toHaveBeenCalled();
   });
 });
 
