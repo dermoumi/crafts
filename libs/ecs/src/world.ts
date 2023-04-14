@@ -348,7 +348,7 @@ export default class World {
       dispatchNew: this.dispatchNew.bind(this),
     };
 
-    const handle: SystemHandle = () => {
+    const handle = () => {
       // Only call the callback if all queries have results
       if (
         queryBuilders.every(({ containers }) => containers.size > 0) &&
@@ -381,8 +381,20 @@ export default class World {
         pending(entityManager);
       }
 
-      // Reset all queries
+      // Clear resource query
       resourceQueryBuilder?.reset();
+
+      // Clear component queries
+      for (const query of queryBuilders) {
+        query.reset();
+      }
+    };
+
+    handle.reset = () => {
+      // Clear resource query
+      resourceQueryBuilder?.reset();
+
+      // Clear component queries
       for (const query of queryBuilders) {
         query.reset();
       }

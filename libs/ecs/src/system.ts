@@ -83,4 +83,7 @@ export default class System<Q extends SystemQuery> {
 /**
  * A handle to invoke a game system and dispose of it.
  */
-export type SystemHandle = () => void;
+export type SystemHandle = {
+  (): void;
+  reset: () => void;
+};
