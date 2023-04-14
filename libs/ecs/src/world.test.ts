@@ -291,6 +291,33 @@ describe("World systems", () => {
     system();
     expect(callback).toHaveBeenCalledTimes(1);
   });
+
+  it("resets component queries correctly when .reset() is called", () => {
+    const world = new World();
+    world.spawn().add(Position);
+
+    const callback = vi.fn();
+    const system = world.addSystem({ query: [Position.added()] }, callback);
+
+    system.reset();
+    system();
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it("resets resource queries correctly when .reset() is called", () => {
+    const world = new World();
+    world.resources.add(FrameInfo);
+
+    const callback = vi.fn();
+    const system = world.addSystem(
+      { resources: [FrameInfo.added()] },
+      callback
+    );
+
+    system.reset();
+    system();
+    expect(callback).not.toHaveBeenCalled();
+  });
 });
 
 describe("System commands", () => {
