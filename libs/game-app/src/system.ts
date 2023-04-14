@@ -20,6 +20,7 @@ export interface SystemLike {
   _priority: number;
   _after: Set<string>;
   _before: Set<string>;
+  _runConditions: Set<(world: Ecs.World) => boolean>;
 
   /**
    * Set the label of the system.
@@ -62,6 +63,13 @@ export interface SystemLike {
   clone: () => SystemLike;
 
   /**
+   * Add a run condition to the system.
+   *
+   * @param condition - The condition to add
+   */
+  runIf: (condition: (world: Ecs.World) => boolean) => this;
+
+  /**
    * Make a callable handle.
    *
    * @param world - The world to run the system on
@@ -82,6 +90,7 @@ function makeSystemLike<T extends new (...args: any) => any>(
     public _priority = 0;
     public readonly _after = new Set<string>();
     public readonly _before = new Set<string>();
+    public readonly _runConditions = new Set<(world: Ecs.World) => boolean>();
 
     public label(label: string): this {
       this._label = label;
@@ -124,6 +133,37 @@ function makeSystemLike<T extends new (...args: any) => any>(
       }
 
       return cloned;
+    }
+
+    public runIf(condition: (world: Ecs.World) => boolean): this {
+      this._runConditions.add(condition);
+
+      return this;
+    }
+
+    public makeHandle(world: Ecs.World): Ecs.SystemHandle {
+      const originalHandle = super.makeHandle(world);
+      let needsReset = false;
+
+      const handle = () => {
+        for (const condition of this._runConditions) {
+          if (!condition(world)) {
+            needsReset = true;
+            return;
+          }
+        }
+
+        if (needsReset) {
+          needsReset = false;
+          originalHandle.reset();
+        }
+
+        originalHandle(world);
+      };
+
+      handle.reset = originalHandle.reset;
+
+      return handle;
     }
   };
 }
@@ -170,13 +210,23 @@ export class SystemSet implements SystemLike {
   }
 
   public makeHandle(world: Ecs.World): Ecs.SystemHandle {
-    return () => {
+    const handle = () => {
       this.ensureNotDirty(world);
 
-      for (const handle of this.handles.values()) {
-        handle();
+      for (const systemHandle of this.handles.values()) {
+        systemHandle();
       }
     };
+
+    handle.reset = () => {
+      this.ensureNotDirty(world);
+
+      for (const systemHandle of this.handles.values()) {
+        systemHandle.reset();
+      }
+    };
+
+    return handle;
   }
 
   /**
