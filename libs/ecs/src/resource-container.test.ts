@@ -106,3 +106,37 @@ describe("Resource manager's onUpdate", () => {
     expect(listener2).toHaveBeenCalledOnce();
   });
 });
+
+describe("Resource container queries", () => {
+  it("returns requested resources", () => {
+    const { resources } = new World();
+    const query = resources.query(TestResource);
+
+    resources.add(TestResource);
+
+    const [resource] = query() ?? [];
+    expect(resource).toBeDefined();
+    expect(resource).toBeInstanceOf(TestResource);
+  });
+
+  it("returns undefined if the query is not satisfied", () => {
+    const { resources } = new World();
+    const query = resources.query(TestResource);
+
+    expect(query()).toBeUndefined();
+  });
+
+  it("reset properly", () => {
+    const { resources } = new World();
+    const query = resources.query(TestResource, TestResource.changed());
+
+    resources.add(TestResource);
+    const testResource = resources.get(TestResource);
+    query.reset();
+
+    expect(query()).toBeUndefined();
+
+    testResource.value = 42;
+    expect(query()).toEqual([testResource]);
+  });
+});
