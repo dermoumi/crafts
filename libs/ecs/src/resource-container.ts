@@ -1,5 +1,6 @@
 import type Resource from "./resource";
 import type { TraitConstructor } from "./trait";
+import type { FilterSet, TraitInstances } from "./filter";
 
 import { SetMap } from "@crafts/default-map";
 import Container from "./container";
@@ -34,7 +35,42 @@ export default class ResourceContainer extends Container<Resource> {
       callback
     );
   }
+
+  /**
+   * Query resources.
+   *
+   * @typeParam F - The filter to match against
+   * @param filters - The resource filters
+   * @returns A function to query the resources
+   */
+  public query<F extends FilterSet<Resource>>(...filters: F): ResourceQuery<F> {
+    const queryBuilder = this.manager.createQuery(...filters);
+
+    const query = () => {
+      // eslint-disable-next-line no-unreachable-loop
+      for (const container of queryBuilder.containers) {
+        return queryBuilder.getTraitInstances(container);
+      }
+
+      return undefined;
+    };
+
+    query.reset = () => queryBuilder.reset();
+
+    return query;
+  }
 }
+
+/**
+ * A resource query.
+ *
+ * When called, it will either return a tuple of the queried resources,
+ * or undefined if the filter does not entirely match.
+ */
+export type ResourceQuery<F extends FilterSet<Resource>> = {
+  (): TraitInstances<Resource, F> | undefined;
+  reset: () => void;
+};
 
 /**
  * A manager for resources

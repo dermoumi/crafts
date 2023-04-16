@@ -352,6 +352,33 @@ query = world.query(
 );
 ```
 
+### Resource queries
+
+You can also query for resources:
+
+```ts
+import * as Ecs from "@crafts/ecs";
+
+// ...
+
+const resourceQuery = world.resources.query(
+  FrameInfo,
+  Physics,
+  FrameInfo.changed()
+);
+
+// ResourceQuery is a function that returns either a single set of resources
+// or undefined, if the query is not satisfied:
+const resources = resourceQuery();
+if (resources) {
+  const [frameInfo, physics] = resources;
+  // ....
+}
+
+// Resource queries can also be reset:
+resourceQuery.reset();
+```
+
 ### Systems
 
 Systems are functions that are paired with queries. Once defined, they can be
