@@ -161,7 +161,10 @@ function makeSystemLike<T extends new (...args: any) => any>(
         originalHandle(world);
       };
 
-      handle.reset = originalHandle.reset;
+      handle.reset = () => {
+        originalHandle.reset();
+        return handle;
+      };
 
       return handle;
     }
@@ -224,6 +227,8 @@ export class SystemSet implements SystemLike {
       for (const systemHandle of this.handles.values()) {
         systemHandle.reset();
       }
+
+      return handle;
     };
 
     return handle;

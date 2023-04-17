@@ -57,7 +57,10 @@ export class ResourceContainer extends Container<Resource> {
       return undefined;
     };
 
-    query.reset = () => queryBuilder.reset();
+    query.reset = () => {
+      queryBuilder.reset();
+      return query;
+    };
 
     return query;
   }
@@ -71,7 +74,7 @@ export class ResourceContainer extends Container<Resource> {
  */
 export type ResourceQuery<F extends FilterSet<Resource>> = {
   (): TraitInstances<Resource, F> | undefined;
-  reset: () => void;
+  reset: () => ResourceQuery<F>;
 };
 
 /**

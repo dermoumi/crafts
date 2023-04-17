@@ -85,5 +85,5 @@ export class System<Q extends SystemQuery> {
  */
 export type SystemHandle = {
   (): void;
-  reset: () => void;
+  reset: () => SystemHandle;
 };

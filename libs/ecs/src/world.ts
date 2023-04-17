@@ -398,6 +398,8 @@ export class World {
       for (const query of queryBuilders) {
         query.reset();
       }
+
+      return handle;
     };
 
     return handle;
