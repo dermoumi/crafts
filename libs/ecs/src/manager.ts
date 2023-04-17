@@ -1,4 +1,4 @@
-import type Container from "./container";
+import type { Container } from "./container";
 import type { FilterSet } from "./filter";
 import type { Trait, TraitConstructor } from "./trait";
 

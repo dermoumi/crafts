@@ -8,7 +8,7 @@ import type {
 /**
  * A base class with shared functionality for Entities and ResourceContainer.
  */
-export default abstract class Container<T extends Trait> {
+export abstract class Container<T extends Trait> {
   /**
    * @internal
    */

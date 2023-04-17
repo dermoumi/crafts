@@ -2,7 +2,7 @@ import type { Component } from "./component";
 import type { Manager } from "./manager";
 import type { TraitConcreteConstructor } from "./trait";
 
-import Container from "./container";
+import { Container } from "./container";
 
 /**
  * An entity is a container of components.

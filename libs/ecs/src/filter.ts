@@ -1,4 +1,4 @@
-import type Container from "./container";
+import type { Container } from "./container";
 import type { Optional, Trait, TraitConstructor } from "./trait";
 
 import { DefaultMap, SetMap } from "@crafts/default-map";

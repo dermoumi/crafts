@@ -3,7 +3,7 @@ import type { TraitConstructor } from "./trait";
 import type { FilterSet, TraitInstances } from "./filter";
 
 import { SetMap } from "@crafts/default-map";
-import Container from "./container";
+import { Container } from "./container";
 import { Manager } from "./manager";
 
 /**
