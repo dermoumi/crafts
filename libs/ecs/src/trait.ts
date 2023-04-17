@@ -1,5 +1,5 @@
 import type { Component } from "./component";
-import type Resource from "./resource";
+import type { Resource } from "./resource";
 
 /**
  * Common base type to traits

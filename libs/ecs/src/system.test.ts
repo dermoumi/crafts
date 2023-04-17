@@ -1,5 +1,5 @@
 import { Component } from "./component";
-import Resource from "./resource";
+import { Resource } from "./resource";
 import System from "./system";
 import World from "./world";
 

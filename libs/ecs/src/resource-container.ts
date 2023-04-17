@@ -1,4 +1,4 @@
-import type Resource from "./resource";
+import type { Resource } from "./resource";
 import type { TraitConstructor } from "./trait";
 import type { FilterSet, TraitInstances } from "./filter";
 

@@ -1,5 +1,4 @@
-import System from "./system";
-import type Resource from "./resource";
+import type { Resource } from "./resource";
 import type { Component } from "./component";
 import type { FilterSet } from "./filter";
 import type { QueryBuilder } from "./query";
@@ -19,6 +18,7 @@ import ResourceContainer, { ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
 import { SetMap } from "@crafts/default-map";
 import Event from "./event";
+import System from "./system";
 
 /**
  * A basic ID generator that uses a counter.

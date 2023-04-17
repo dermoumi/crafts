@@ -8,7 +8,7 @@ export { default as System } from "./system";
 export { default as Event } from "./event";
 
 export { Component, unique } from "./component";
-export { default as Resource } from "./resource";
+export { Resource } from "./resource";
 export { state, Optional } from "./trait";
 
 export type { ResettableQuery } from "./query";
