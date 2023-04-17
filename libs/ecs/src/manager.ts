@@ -123,6 +123,7 @@ export default class Manager<
     }
 
     container.clear();
+    (container as any).manager = undefined;
   }
 
   /**

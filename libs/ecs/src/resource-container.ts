@@ -10,6 +10,8 @@ import Manager from "./manager";
  * A container for resources.
  */
 export default class ResourceContainer extends Container<Resource> {
+  protected declare manager: Manager<Resource, Container<Resource>>;
+
   /**
    * Shows the correct name in exceptions.
    *

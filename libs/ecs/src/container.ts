@@ -17,7 +17,7 @@ export default abstract class Container<T extends Trait> {
   /**
    * @internal
    */
-  protected readonly manager: Manager<T, Container<T>>;
+  protected readonly manager?: Manager<T, Container<T>>;
 
   /**
    * @internal
@@ -179,7 +179,7 @@ export default abstract class Container<T extends Trait> {
 
         // Make sure to trigger the hook after the trait has been updated
         if (value !== originalValue) {
-          this.manager.onTraitChanged(this, constructor);
+          this.manager?.onTraitChanged(this, constructor);
         }
 
         return result;
@@ -192,10 +192,10 @@ export default abstract class Container<T extends Trait> {
       // Dispose of the previous trait if it exists
       previousTrait.__dispose();
       // Notify the query manager about the change
-      this.manager.onTraitChanged(this, constructor);
+      this.manager?.onTraitChanged(this, constructor);
     } else {
       // Notify the query manager about the addition
-      this.manager.onTraitAdded(this, constructor);
+      this.manager?.onTraitAdded(this, constructor);
     }
 
     // Handle state traits if any
@@ -211,16 +211,23 @@ export default abstract class Container<T extends Trait> {
         );
 
         // Notify the query manager about the change
-        this.manager.onTraitChanged(this, stateTrait);
+        this.manager?.onTraitChanged(this, stateTrait);
       } else {
         // Notify the query manager about the addition
-        this.manager.onTraitAdded(this, stateTrait);
+        this.manager?.onTraitAdded(this, stateTrait);
       }
     }
 
     return this;
   }
 
+  /**
+   * Removes the given trait from the container.
+   *
+   * @param constructor - The trait to remove
+   * @param trait - The trait instance to remove
+   * @param removeStateTrait - Whether to remove the state trait if it exists
+   */
   protected removeTrait(
     constructor: TraitConstructor<T>,
     trait: T,
@@ -230,7 +237,7 @@ export default abstract class Container<T extends Trait> {
     trait.__dispose();
 
     this.traitMap.delete(constructor);
-    this.manager.onTraitRemoved(this, constructor);
+    this.manager?.onTraitRemoved(this, constructor);
 
     // Remove any state traits that are children of this trait
     if (removeStateTrait) {
@@ -239,10 +246,10 @@ export default abstract class Container<T extends Trait> {
 
       if (parentTrait !== constructor) {
         this.traitMap.delete(parentTrait as TraitConstructor<T>);
-        this.manager.onTraitRemoved(this, parentTrait as TraitConstructor<T>);
+        this.manager?.onTraitRemoved(this, parentTrait as TraitConstructor<T>);
       } else if (stateTrait !== undefined) {
         this.traitMap.delete(stateTrait);
-        this.manager.onTraitRemoved(this, stateTrait);
+        this.manager?.onTraitRemoved(this, stateTrait);
       }
     }
   }

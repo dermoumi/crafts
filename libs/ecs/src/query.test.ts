@@ -240,6 +240,19 @@ describe("Query builder", () => {
     expect(position?.x).toBe(11);
     expect(position?.y).toBe(22);
   });
+
+  it("does not track components from removed entities", () => {
+    const world = new World();
+    const entity = world.spawn();
+    const query = world.query(Position.added()).reset();
+
+    expect(query.size).toBe(0);
+
+    world.remove(entity);
+    entity.add(Position);
+
+    expect(query.size).toBe(0);
+  });
 });
 
 describe("Query", () => {

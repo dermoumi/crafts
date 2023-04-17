@@ -51,7 +51,11 @@ export default class Entity extends Container<Component> {
     trait: C
   ): this {
     // Remove unique components from all other entities
-    if ((trait as any).__isUniqueComponent?.() && !this.has(constructor)) {
+    if (
+      (trait as any).__isUniqueComponent?.() &&
+      !this.has(constructor) &&
+      this.manager
+    ) {
       const builder = this.manager.createQuery(
         new PresentFilter(constructor) as TraitFilter<C>
       );
