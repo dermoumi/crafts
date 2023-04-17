@@ -11,10 +11,7 @@ import { QueryBuilder } from "./query";
  * @internal
  * @typeParam T - The type of the trait (Component, Resource...)
  */
-export default class Manager<
-  T extends Trait,
-  C extends Container<T> = Container<T>
-> {
+export class Manager<T extends Trait, C extends Container<T> = Container<T>> {
   /**
    * @internal
    */

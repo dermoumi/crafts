@@ -4,7 +4,7 @@ import type { FilterSet, TraitInstances } from "./filter";
 
 import { SetMap } from "@crafts/default-map";
 import Container from "./container";
-import Manager from "./manager";
+import { Manager } from "./manager";
 
 /**
  * A container for resources.
