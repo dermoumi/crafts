@@ -18,7 +18,7 @@ import ResourceContainer, { ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
 import { SetMap } from "@crafts/default-map";
 import { Event } from "./event";
-import System from "./system";
+import { System } from "./system";
 
 /**
  * A basic ID generator that uses a counter.

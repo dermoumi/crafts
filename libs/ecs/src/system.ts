@@ -59,7 +59,7 @@ export type SystemCallback<Q extends SystemQuery> = (
  *
  * @typeParam Q - The corresponding SystemQuery type
  */
-export default class System<Q extends SystemQuery> {
+export class System<Q extends SystemQuery> {
   /**
    * @internal
    */

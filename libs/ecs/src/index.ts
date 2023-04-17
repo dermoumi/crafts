@@ -4,7 +4,7 @@ export { World, makeDefaultIDGenerator } from "./world";
 export type { Entity } from "./entity";
 
 export type { SystemQuery, SystemCallback, SystemHandle } from "./system";
-export { default as System } from "./system";
+export { System } from "./system";
 export { Event } from "./event";
 
 export { Component, unique } from "./component";
