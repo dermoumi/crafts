@@ -4,7 +4,7 @@ import Filter, {
   AnyFilter,
   CompositeFilter,
 } from "./filter";
-import World from "./world";
+import { World } from "./world";
 import { Component } from "./component";
 
 class Position extends Component {

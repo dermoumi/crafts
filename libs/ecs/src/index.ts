@@ -1,5 +1,5 @@
 export type { EntityIDGenerator } from "./world";
-export { default as World, makeDefaultIDGenerator } from "./world";
+export { World, makeDefaultIDGenerator } from "./world";
 
 export type { default as Entity } from "./entity";
 

@@ -1,7 +1,7 @@
 import type Entity from "./entity";
 
 import { Component } from "./component";
-import World from "./world";
+import { World } from "./world";
 import { state } from "./trait";
 
 class TestTrait extends Component {

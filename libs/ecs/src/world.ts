@@ -109,7 +109,7 @@ export type WorldManager = {
 /**
  * Manages entities, components and systems.
  */
-export default class World {
+export class World {
   /**
    * @internal
    */

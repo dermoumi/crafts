@@ -1,5 +1,5 @@
 import { Resource } from "./resource";
-import World from "./world";
+import { World } from "./world";
 
 class TestResource extends Resource {
   public value = 0;

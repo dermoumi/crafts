@@ -1,7 +1,7 @@
 import type Entity from "./entity";
 
 import { Component, unique } from "./component";
-import World from "./world";
+import { World } from "./world";
 
 class TestComponent extends Component {
   public x = 0;
