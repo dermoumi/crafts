@@ -3,7 +3,7 @@ import type { Component } from "./component";
 import type { FilterSet, TraitInstances } from "./filter";
 import type { Query } from "./query";
 import type { WorldManager } from "./world";
-import type Event from "./event";
+import type { Event } from "./event";
 
 /**
  * A function to be executed at the end of the system's execution.

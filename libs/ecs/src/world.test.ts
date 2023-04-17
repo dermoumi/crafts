@@ -3,7 +3,7 @@ import Entity from "./entity";
 import { ResettableQuery } from "./query";
 import { Resource } from "./resource";
 import System from "./system";
-import Event from "./event";
+import { Event } from "./event";
 import { World, makeDefaultIDGenerator } from "./world";
 
 class Position extends Component {

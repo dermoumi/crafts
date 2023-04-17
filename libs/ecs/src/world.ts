@@ -17,7 +17,7 @@ import Manager from "./manager";
 import ResourceContainer, { ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
 import { SetMap } from "@crafts/default-map";
-import Event from "./event";
+import { Event } from "./event";
 import System from "./system";
 
 /**
