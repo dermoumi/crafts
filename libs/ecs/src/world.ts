@@ -1,6 +1,6 @@
 import System from "./system";
 import type Resource from "./resource";
-import type Component from "./component";
+import type { Component } from "./component";
 import type { FilterSet } from "./filter";
 import type { QueryBuilder } from "./query";
 import type {

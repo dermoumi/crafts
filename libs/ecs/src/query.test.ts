@@ -1,5 +1,5 @@
 import type Entity from "./entity";
-import Component from "./component";
+import { Component } from "./component";
 import { QueryBuilder } from "./query";
 import World from "./world";
 

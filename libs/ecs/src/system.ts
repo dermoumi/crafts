@@ -1,5 +1,5 @@
 import type Resource from "./resource";
-import type Component from "./component";
+import type { Component } from "./component";
 import type { FilterSet, TraitInstances } from "./filter";
 import type { Query } from "./query";
 import type { WorldManager } from "./world";

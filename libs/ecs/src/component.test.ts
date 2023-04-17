@@ -1,4 +1,4 @@
-import Component, { unique } from "./component";
+import { Component, unique } from "./component";
 import {
   AbsentFilter,
   AddedFilter,

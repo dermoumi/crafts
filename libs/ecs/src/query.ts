@@ -1,4 +1,4 @@
-import type Component from "./component";
+import type { Component } from "./component";
 import type Container from "./container";
 import type Entity from "./entity";
 import type { FilterSet, TraitFilter, TraitInstances } from "./filter";

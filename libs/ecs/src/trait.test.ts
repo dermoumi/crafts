@@ -1,4 +1,4 @@
-import Component from "./component";
+import { Component } from "./component";
 import { Optional, state } from "./trait";
 
 class Position extends Component {

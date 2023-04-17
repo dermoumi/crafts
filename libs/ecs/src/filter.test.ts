@@ -5,7 +5,7 @@ import Filter, {
   CompositeFilter,
 } from "./filter";
 import World from "./world";
-import Component from "./component";
+import { Component } from "./component";
 
 class Position extends Component {
   public x = 0;

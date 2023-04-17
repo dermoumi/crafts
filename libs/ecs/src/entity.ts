@@ -1,10 +1,8 @@
-import type Component from "./component";
+import type { Component } from "./component";
 import type Manager from "./manager";
 import type { TraitConcreteConstructor } from "./trait";
-import type { TraitFilter } from "./filter";
 
 import Container from "./container";
-import { PresentFilter } from "./filter";
 
 /**
  * An entity is a container of components.
@@ -56,9 +54,7 @@ export default class Entity extends Container<Component> {
       !this.has(constructor) &&
       this.manager
     ) {
-      const builder = this.manager.createQuery(
-        new PresentFilter(constructor) as TraitFilter<C>
-      );
+      const builder = this.manager.createQuery(constructor);
 
       for (const container of builder.containers) {
         container.remove(constructor);

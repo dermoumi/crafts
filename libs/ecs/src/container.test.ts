@@ -1,6 +1,6 @@
 import type Entity from "./entity";
 
-import Component from "./component";
+import { Component } from "./component";
 import World from "./world";
 import { state } from "./trait";
 

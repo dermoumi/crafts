@@ -1,6 +1,6 @@
 import type { QueryBuilder } from "./query";
 
-import Component from "./component";
+import { Component } from "./component";
 import Manager from "./manager";
 import Entity from "./entity";
 
