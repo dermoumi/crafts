@@ -14,7 +14,7 @@ import type { EventConcreteConstructor } from "./event";
 
 import { Entity } from "./entity";
 import { Manager } from "./manager";
-import ResourceContainer, { ResourceManager } from "./resource-container";
+import { ResourceContainer, ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
 import { SetMap } from "@crafts/default-map";
 import { Event } from "./event";

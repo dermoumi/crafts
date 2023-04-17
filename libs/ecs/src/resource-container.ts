@@ -9,7 +9,7 @@ import { Manager } from "./manager";
 /**
  * A container for resources.
  */
-export default class ResourceContainer extends Container<Resource> {
+export class ResourceContainer extends Container<Resource> {
   protected declare manager: Manager<Resource, Container<Resource>>;
 
   /**
