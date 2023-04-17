@@ -1,3 +1,4 @@
+import type { TraitConstructor } from "./trait";
 import {
   AbsentFilter,
   AddedFilter,
@@ -91,3 +92,8 @@ export default abstract class Resource extends BaseTrait {
     return new AnyFilter(new ChangedFilter(this), new RemovedFilter(this));
   }
 }
+
+/**
+ * A constructor for a Resource.
+ */
+export type ResourceConstructor = TraitConstructor<Resource>;
