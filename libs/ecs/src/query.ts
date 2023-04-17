@@ -402,7 +402,9 @@ export class ResettableQuery<F extends FilterSet<Component>> extends Query<F> {
   /**
    * Reset the query's tracked entities.
    */
-  public reset(): void {
+  public reset(): this {
     this.query.reset();
+
+    return this;
   }
 }
