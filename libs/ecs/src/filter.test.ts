@@ -1,4 +1,5 @@
-import Filter, {
+import {
+  Filter,
   AggregateFilter,
   AllFilter,
   AnyFilter,

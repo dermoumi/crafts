@@ -14,7 +14,7 @@ export { state, Optional } from "./trait";
 export type { ResettableQuery } from "./query";
 
 export type {
-  default as Filter,
+  Filter,
   SingleFilter,
   CompositeFilter,
   AggregateFilter,

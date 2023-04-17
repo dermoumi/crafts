@@ -4,7 +4,8 @@ import type { Entity } from "./entity";
 import type { FilterSet, TraitFilter, TraitInstances } from "./filter";
 import type { Trait, TraitConstructor } from "./trait";
 
-import Filter, {
+import {
+  Filter,
   AbsentFilter,
   AllFilter,
   ChangeTrackMap,
