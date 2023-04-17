@@ -1,7 +1,7 @@
 export type { EntityIDGenerator } from "./world";
 export { World, makeDefaultIDGenerator } from "./world";
 
-export type { default as Entity } from "./entity";
+export type { Entity } from "./entity";
 
 export type { SystemQuery, SystemCallback, SystemHandle } from "./system";
 export { default as System } from "./system";

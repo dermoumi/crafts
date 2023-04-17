@@ -1,5 +1,5 @@
 import { Component } from "./component";
-import Entity from "./entity";
+import { Entity } from "./entity";
 import { ResettableQuery } from "./query";
 import { Resource } from "./resource";
 import System from "./system";

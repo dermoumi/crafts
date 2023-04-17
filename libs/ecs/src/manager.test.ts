@@ -2,7 +2,7 @@ import type { QueryBuilder } from "./query";
 
 import { Component } from "./component";
 import Manager from "./manager";
-import Entity from "./entity";
+import { Entity } from "./entity";
 
 class Position extends Component {
   public x = 0;

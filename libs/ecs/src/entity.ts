@@ -7,7 +7,7 @@ import Container from "./container";
 /**
  * An entity is a container of components.
  */
-export default class Entity extends Container<Component> {
+export class Entity extends Container<Component> {
   /**
    * The entity's ID.
    */

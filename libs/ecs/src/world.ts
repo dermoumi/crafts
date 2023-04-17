@@ -12,7 +12,7 @@ import type {
 import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
 import type { EventConcreteConstructor } from "./event";
 
-import Entity from "./entity";
+import { Entity } from "./entity";
 import Manager from "./manager";
 import ResourceContainer, { ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";

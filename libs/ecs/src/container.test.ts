@@ -1,4 +1,4 @@
-import type Entity from "./entity";
+import type { Entity } from "./entity";
 
 import { Component } from "./component";
 import { World } from "./world";
