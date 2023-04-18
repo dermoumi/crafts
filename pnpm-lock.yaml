@@ -62,14 +62,14 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vite-plugin-html:
         specifier: ^3.2.0
-        version: 3.2.0(vite@4.2.1)
+        version: 3.2.0(vite@4.2.2)
       vite-plugin-top-level-await:
         specifier: ^1.3.0
-        version: 1.3.0(@swc/helpers@0.5.0)(vite@4.2.1)
+        version: 1.3.0(@swc/helpers@0.5.0)(vite@4.2.2)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -101,8 +101,8 @@ importers:
         specifier: ^2.8.7
         version: 2.8.7
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vite-node:
         specifier: ^0.30.1
         version: 0.30.1(@types/node@18.15.11)
@@ -147,8 +147,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -184,8 +184,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -214,8 +214,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -248,8 +248,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -313,8 +313,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -350,8 +350,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.2.1
-        version: 4.2.1(@types/node@18.15.11)
+        specifier: ^4.2.2
+        version: 4.2.2(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
@@ -4255,7 +4255,7 @@ packages:
       mlly: 1.2.0
       pathe: 1.1.0
       picocolors: 1.0.0
-      vite: 4.2.1(@types/node@18.15.11)
+      vite: 4.2.2(@types/node@18.15.11)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -4266,7 +4266,7 @@ packages:
       - terser
     dev: true
 
-  /vite-plugin-html@3.2.0(vite@4.2.1):
+  /vite-plugin-html@3.2.0(vite@4.2.2):
     resolution: {integrity: sha512-2VLCeDiHmV/BqqNn5h2V+4280KRgQzCFN47cst3WiNK848klESPQnzuC3okH5XHtgwHH/6s1Ho/YV6yIO0pgoQ==}
     peerDependencies:
       vite: '>=2.0.0'
@@ -4283,10 +4283,10 @@ packages:
       html-minifier-terser: 6.1.0
       node-html-parser: 5.4.2
       pathe: 0.2.0
-      vite: 4.2.1(@types/node@18.15.11)
+      vite: 4.2.2(@types/node@18.15.11)
     dev: true
 
-  /vite-plugin-top-level-await@1.3.0(@swc/helpers@0.5.0)(vite@4.2.1):
+  /vite-plugin-top-level-await@1.3.0(@swc/helpers@0.5.0)(vite@4.2.2):
     resolution: {integrity: sha512-owIfsgWudMlQODWJSwp0sQB3AZZu3qsMygeBjZy8CyjEk6OB9AGd8lHqmgwrcEqgvy9N58lYxSBLVk3/4ejEiA==}
     peerDependencies:
       vite: '>=2.8'
@@ -4294,14 +4294,14 @@ packages:
       '@rollup/plugin-virtual': 3.0.1
       '@swc/core': 1.3.46(@swc/helpers@0.5.0)
       uuid: 9.0.0
-      vite: 4.2.1(@types/node@18.15.11)
+      vite: 4.2.2(@types/node@18.15.11)
     transitivePeerDependencies:
       - '@swc/helpers'
       - rollup
     dev: true
 
-  /vite@4.2.1(@types/node@18.15.11):
-    resolution: {integrity: sha512-7MKhqdy0ISo4wnvwtqZkjke6XN4taqQ2TBaTccLIpOKv7Vp2h4Y+NpmWCnGDeSvvn45KxvWgGyb0MkHvY1vgbg==}
+  /vite@4.2.2(@types/node@18.15.11):
+    resolution: {integrity: sha512-PcNtT5HeDxb3QaSqFYkEum8f5sCVe0R3WK20qxgIvNBZPXU/Obxs/+ubBMeE7nLWeCo2LDzv+8hRYSlcaSehig==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -4389,7 +4389,7 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.4.0
       tinypool: 0.4.0
-      vite: 4.2.1(@types/node@18.15.11)
+      vite: 4.2.2(@types/node@18.15.11)
       vite-node: 0.30.1(@types/node@18.15.11)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
