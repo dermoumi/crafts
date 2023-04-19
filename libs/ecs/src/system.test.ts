@@ -1,7 +1,7 @@
-import Component from "./component";
-import Resource from "./resource";
-import System from "./system";
-import World from "./world";
+import { Component } from "./component";
+import { Resource } from "./resource";
+import { System } from "./system";
+import { World } from "./world";
 
 class Position extends Component {
   public x = 0;

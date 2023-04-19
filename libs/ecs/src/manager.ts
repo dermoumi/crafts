@@ -1,4 +1,4 @@
-import type Container from "./container";
+import type { Container } from "./container";
 import type { FilterSet } from "./filter";
 import type { Trait, TraitConstructor } from "./trait";
 
@@ -11,10 +11,7 @@ import { QueryBuilder } from "./query";
  * @internal
  * @typeParam T - The type of the trait (Component, Resource...)
  */
-export default class Manager<
-  T extends Trait,
-  C extends Container<T> = Container<T>
-> {
+export class Manager<T extends Trait, C extends Container<T> = Container<T>> {
   /**
    * @internal
    */
@@ -123,6 +120,7 @@ export default class Manager<
     }
 
     container.clear();
+    (container as any).manager = undefined;
   }
 
   /**

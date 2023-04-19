@@ -1,4 +1,4 @@
-export default abstract class Event {
+export abstract class Event {
   /**
    * Marker that this class is an event.
    *

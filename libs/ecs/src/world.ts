@@ -1,24 +1,23 @@
-import System from "./system";
-import type Resource from "./resource";
-import type Component from "./component";
+import type { Resource } from "./resource";
+import type { Component } from "./component";
 import type { FilterSet } from "./filter";
 import type { QueryBuilder } from "./query";
 import type {
   Command,
-  SystemCallback,
   SystemHandle,
   SystemQuery,
   SystemResult,
+  System,
 } from "./system";
 import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
 import type { EventConcreteConstructor } from "./event";
 
-import Entity from "./entity";
-import Manager from "./manager";
-import ResourceContainer, { ResourceManager } from "./resource-container";
+import { Entity } from "./entity";
+import { Manager } from "./manager";
+import { ResourceContainer, ResourceManager } from "./resource-container";
 import { Query, ResettableQuery } from "./query";
 import { SetMap } from "@crafts/default-map";
-import Event from "./event";
+import { Event } from "./event";
 
 /**
  * A basic ID generator that uses a counter.
@@ -109,7 +108,7 @@ export type WorldManager = {
 /**
  * Manages entities, components and systems.
  */
-export default class World {
+export class World {
   /**
    * @internal
    */
@@ -253,49 +252,13 @@ export default class World {
   /**
    * Create a system handle to invoke the given system.
    *
-   * @overload
    * @typeParam Q - The corresponding SystemQuery type
    * @param system - A System instance to define the system
    * @returns A callable system handle
    */
   public addSystem<Q extends SystemQuery>(system: System<Q>): SystemHandle;
-
-  /**
-   * Create a system using the given queries and callback.
-   *
-   * @overload
-   * @typeParam Q - The corresponding SystemQuery type
-   * @param queries - The queries to match against
-   * @param callback - The system callback
-   * @returns A callable system handle
-   */
-  public addSystem<Q extends SystemQuery>(
-    queries: Q,
-    callback: SystemCallback<Q>
-  ): SystemHandle;
-
-  /**
-   * @internal
-   * @param systemOrQueries - A System instance or a SystemQuery object
-   * @param systemCallback - The system callback
-   *  if systemOrQueries is a SystemQuery object
-   * @returns A callable system handle
-   */
-  public addSystem<Q extends SystemQuery>(
-    systemOrQueries: System<Q> | Q,
-    systemCallback?: SystemCallback<Q>
-  ): SystemHandle {
-    let queries: Q;
-    let callback: SystemCallback<Q>;
-    if (systemOrQueries instanceof System) {
-      queries = systemOrQueries.queries;
-      callback = systemOrQueries.callback;
-    } else if (systemCallback === undefined) {
-      throw new Error("Missing system callback");
-    } else {
-      queries = systemOrQueries;
-      callback = systemCallback;
-    }
+  public addSystem<Q extends SystemQuery>(system: System<Q>): SystemHandle {
+    const { queries, callback } = system;
 
     const eventQueues: Record<string, Set<Event>> = {};
     const eventSets: Array<Set<Event>> = [];
@@ -398,6 +361,8 @@ export default class World {
       for (const query of queryBuilders) {
         query.reset();
       }
+
+      return handle;
     };
 
     return handle;

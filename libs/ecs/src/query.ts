@@ -1,10 +1,11 @@
-import type Component from "./component";
-import type Container from "./container";
-import type Entity from "./entity";
+import type { Component } from "./component";
+import type { Container } from "./container";
+import type { Entity } from "./entity";
 import type { FilterSet, TraitFilter, TraitInstances } from "./filter";
 import type { Trait, TraitConstructor } from "./trait";
 
-import Filter, {
+import {
+  Filter,
   AbsentFilter,
   AllFilter,
   ChangeTrackMap,
@@ -402,7 +403,9 @@ export class ResettableQuery<F extends FilterSet<Component>> extends Query<F> {
   /**
    * Reset the query's tracked entities.
    */
-  public reset(): void {
+  public reset(): this {
     this.query.reset();
+
+    return this;
   }
 }

@@ -12,7 +12,7 @@ import { BaseTrait } from "./trait";
 /**
  * A base class for Resources.
  */
-export default abstract class Resource extends BaseTrait {
+export abstract class Resource extends BaseTrait {
   /**
    * Marker to identify resoruces.
    *

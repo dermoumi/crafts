@@ -1,10 +1,7 @@
-import type { PresentFilter } from "./filter";
-
-import Component from "./component";
-import Entity from "./entity";
-import Manager from "./manager";
-import { Query, QueryBuilder, ResettableQuery } from "./query";
-import { Optional } from "./trait";
+import type { Entity } from "./entity";
+import { Component } from "./component";
+import { QueryBuilder } from "./query";
+import { World } from "./world";
 
 class Position extends Component {
   public x = 0;
@@ -36,11 +33,8 @@ describe("Query builder", () => {
   });
 
   it("fails when a query does not contain any filters", () => {
-    const entityPool = new Map<string, Entity>();
-    expect(() => {
-      // eslint-disable-next-line no-new
-      new QueryBuilder<Component, Entity>([], entityPool.values());
-    }).toThrowError(
+    const world = new World();
+    expect(() => world.query()).toThrowError(
       "Query must contain at least one filter or non-optional trait"
     );
   });
@@ -59,227 +53,205 @@ describe("Query builder", () => {
   });
 
   it("initializes the initial container list", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entityA = new Entity("a", manager).add(Position);
-    const entityB = new Entity("b", manager).add(Position).add(Velocity);
-    entityPool.set(entityA.id, entityA);
-    entityPool.set(entityB.id, entityB);
+    const world = new World();
+    const entityA = world.spawn().add(Position);
+    const entityB = world.spawn().add(Position).add(Velocity);
+    const query = world.query(Position, Velocity.present());
 
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position, Velocity.present()],
-      entityPool.values()
-    );
-
-    const { containers } = builder;
-    expect(containers.size).toBe(1);
-    expect(containers.has(entityA)).toBe(false);
-    expect(containers.has(entityB)).toBe(true);
+    expect(query.size).toBe(1);
+    expect(query.has(entityA)).toBe(false);
+    expect(query.has(entityB)).toBe(true);
   });
 
   it("adds container if the newly added trait matches the filter", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position.added()],
-      entityPool.values()
-    );
-    const { containers } = builder;
-    expect(containers.size).toBe(0);
+    const world = new World();
+    const query = world.query(Position.added());
 
-    const entity = new Entity("a", manager).add(Position);
-    builder.onTraitAdded(entity, Position);
+    expect(query.size).toBe(0);
 
-    expect(containers.size).toBe(1);
-    expect([...containers]).toContain(entity);
+    const onTraitAddedSpy = vi.spyOn(QueryBuilder.prototype, "onTraitAdded");
+    const entity = world.spawn().add(Position);
+
+    expect(onTraitAddedSpy).toHaveBeenCalledOnce();
+    expect(query.size).toBe(1);
+    expect([...query]).toContain(entity);
   });
 
   it("ignores container if the newly added does not match the filter", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position.added()],
-      entityPool.values()
-    );
-    const { containers } = builder;
-    expect(containers.size).toBe(0);
+    const world = new World();
+    const query = world.query(Position.added());
 
-    const entity = new Entity("a", manager).add(Velocity);
-    builder.onTraitAdded(entity, Velocity);
+    expect(query.size).toBe(0);
 
-    expect(containers.size).toBe(0);
+    const onTraitAddedSpy = vi.spyOn(QueryBuilder.prototype, "onTraitAdded");
+    world.spawn().add(Velocity);
+
+    expect(onTraitAddedSpy).not.toHaveBeenCalled();
+    expect(query.size).toBe(0);
   });
 
   it("removes the container if not longer matches the filter", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position).add(Velocity);
-    entityPool.set(entity.id, entity);
+    const world = new World();
+    const query = world.query(Position);
 
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position],
-      entityPool.values()
+    const entity = world.spawn().add(Position).add(Velocity);
+    expect(query.size).toBe(1);
+
+    const onTraitRemovedSpy = vi.spyOn(
+      QueryBuilder.prototype,
+      "onTraitRemoved"
     );
-    const { containers } = builder;
-    expect(containers.size).toBe(1);
-
     entity.remove(Position);
-    builder.onTraitRemoved(entity, Position);
-    expect(containers.size).toBe(0);
+
+    expect(onTraitRemovedSpy).toHaveBeenCalledOnce();
+    expect(query.size).toBe(0);
   });
 
   it("adds newly spawned container if it matches the filter", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position.absent()],
-      entityPool.values()
+    const world = new World();
+    const query = world.query(Position);
+
+    expect(query.size).toBe(0);
+
+    const onContainerAddedSpy = vi.spyOn(
+      QueryBuilder.prototype,
+      "onContainerAdded"
     );
-    const { containers } = builder;
-    expect(containers.size).toBe(0);
+    const entity = world.spawn().add(Position);
 
-    const entity = new Entity("a", manager);
-    builder.onContainerAdded(entity);
-
-    expect(containers.size).toBe(1);
-    expect([...containers]).toContain(entity);
+    expect(onContainerAddedSpy).toHaveBeenCalledOnce();
+    expect(query.size).toBe(1);
+    expect([...query]).toContain(entity);
   });
 
   it("ignores newly spawned container when not tracking absence", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position.present()],
-      entityPool.values()
+    const world = new World();
+    const query = world.query(Position.present());
+
+    expect(query.size).toBe(0);
+
+    const onContainerAddedSpy = vi.spyOn(
+      QueryBuilder.prototype,
+      "onContainerAdded"
     );
-    const { containers } = builder;
-    expect(containers.size).toBe(0);
+    world.spawn();
 
-    const entity = new Entity("a", manager);
-    builder.onContainerAdded(entity);
-
-    expect(containers.size).toBe(0);
+    expect(onContainerAddedSpy).toHaveBeenCalled();
+    expect(query.size).toBe(0);
   });
 
   it("removes newly removed containers", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
-    entityPool.set(entity.id, entity);
+    const world = new World();
+    const query = world.query(Position);
 
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position],
-      entityPool.values()
+    const entity = world.spawn().add(Position);
+    expect(query.size).toBe(1);
+
+    const onContainerRemovedSpy = vi.spyOn(
+      QueryBuilder.prototype,
+      "onContainerRemoved"
     );
-    const { containers } = builder;
-    expect(containers.size).toBe(1);
+    world.remove(entity);
 
-    builder.onContainerRemoved(entity);
-    expect(containers.size).toBe(0);
-    expect([...containers]).not.toContain(entity);
+    expect(onContainerRemovedSpy).toHaveBeenCalledOnce();
+    expect(query.size).toBe(0);
+    expect([...query]).not.toContain(entity);
   });
 
   it("clears tracked result when reset() is called", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
-    entityPool.set(entity.id, entity);
+    const world = new World();
+    world.spawn().add(Position);
 
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position.changed()],
-      entityPool.values()
-    );
-    const { containers } = builder;
-    expect(containers.size).toBe(1);
+    const query = world.query(Position.changed());
+    expect(query.size).toBe(1);
 
-    builder.reset();
-    expect(containers.size).toBe(0);
+    query.reset();
+    expect(query.size).toBe(0);
   });
 
   it("does nothing when reset() is called but no trait is tracking", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
-    entityPool.set(entity.id, entity);
+    const world = new World();
+    world.spawn().add(Position);
 
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position],
-      entityPool.values()
-    );
-    const { containers } = builder;
-    expect(containers.size).toBe(1);
+    const query = world.query(Position);
+    expect(query.size).toBe(1);
 
-    builder.reset();
-    expect(containers.size).toBe(1);
+    query.reset();
+    expect(query.size).toBe(1);
   });
 
   it("adds newly changed containers if it matches the filter", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position, { x: 11, y: 22 });
-    entityPool.set(entity.id, entity);
-    const builder = new QueryBuilder<Component, Entity>(
-      [Position.changed()],
-      entityPool.values()
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const query = world.query(Position.changed()).reset();
+
+    expect(query.size).toBe(0);
+
+    const spyOnTraitChanged = vi.spyOn(
+      QueryBuilder.prototype,
+      "onTraitChanged"
     );
-    builder.reset();
-
-    const { containers } = builder;
-    expect(containers.size).toBe(0);
-
     entity.get(Position).x = 22;
-    builder.onTraitChanged(entity, Position);
 
-    expect(containers.size).toBe(1);
-    expect([...containers]).toContain(entity);
+    expect(spyOnTraitChanged).toHaveBeenCalledOnce();
+    expect(query.size).toBe(1);
+    expect([...query]).toContain(entity);
   });
 
   it("ignores newly changed containers if the trait are not tracked", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager)
-      .add(Position, { x: 11, y: 22 })
-      .add(Velocity);
-    entityPool.set(entity.id, entity);
+    const world = new World();
+    const entity = world.spawn().add(Position).add(Velocity);
+    const query = world.query(Velocity.changed()).reset();
 
-    const builder = new QueryBuilder<Component, Entity>(
-      [Velocity.changed()],
-      entityPool.values()
+    expect(query.size).toBe(0);
+
+    const spyOnTraitChanged = vi.spyOn(
+      QueryBuilder.prototype,
+      "onTraitChanged"
     );
-    const { containers } = builder;
-    expect(containers.size).toBe(1);
-
-    builder.reset();
-    expect(containers.size).toBe(0);
-
     entity.get(Position).x = 22;
-    builder.onTraitChanged(entity, Position);
 
-    expect(containers.size).toBe(0);
+    expect(spyOnTraitChanged).not.toHaveBeenCalled();
+    expect(query.size).toBe(0);
   });
 
-  it("retrieves request trait values", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager)
+  it("retrieves requested trait values", () => {
+    const world = new World();
+    const entity = world
+      .spawn()
       .add(Position, { x: 11, y: 22 })
       .add(Rotation, { angle: 69 }) // Nice
       .add(Velocity);
-    entityPool.set(entity.id, entity);
+    const query = world.query(Rotation, Velocity.present(), Position);
 
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Rotation, PresentFilter<Component>, typeof Position]
-    >([Rotation, Velocity.present(), Position], entityPool.values());
+    const spyGetTraitInstances = vi.spyOn(
+      QueryBuilder.prototype,
+      "getTraitInstances"
+    );
+    const instances = query.getOneAsComponents();
 
-    const instances = builder.getTraitInstances(entity);
-    expect(instances).toHaveLength(2);
-    expect(instances[0]).toBeInstanceOf(Rotation);
-    expect(instances[0]?.angle).toBe(69);
-    expect(instances[1]).toBeInstanceOf(Position);
-    expect(instances[1]?.x).toBe(11);
-    expect(instances[1]?.y).toBe(22);
+    expect(spyGetTraitInstances).toHaveBeenCalledOnce();
+    expect(spyGetTraitInstances).toHaveBeenCalledWith(entity);
+
+    const [rotation, position] = instances;
+    expect(rotation).toBeInstanceOf(Rotation);
+    expect(rotation?.angle).toBe(69);
+    expect(position).toBeInstanceOf(Position);
+    expect(position?.x).toBe(11);
+    expect(position?.y).toBe(22);
+  });
+
+  it("does not track components from removed entities", () => {
+    const world = new World();
+    const entity = world.spawn();
+    const query = world.query(Position.added()).reset();
+
+    expect(query.size).toBe(0);
+
+    world.remove(entity);
+    entity.add(Position);
+
+    expect(query.size).toBe(0);
   });
 });
 
@@ -293,36 +265,21 @@ describe("Query", () => {
   });
 
   it("iterates directly over entities", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entityA = new Entity("a", manager).add(Position);
-    const entityB = new Entity("b", manager).add(Position).add(Velocity);
-    entityPool.set(entityA.id, entityA);
-    entityPool.set(entityB.id, entityB);
+    const world = new World();
+    const entityA = world.spawn().add(Position);
+    const entityB = world.spawn().add(Position).add(Velocity);
 
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
+    const query = world.query(Position);
 
     expect([...query]).toEqual([entityA, entityB]);
   });
 
   it("iterates directly over entities' components", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position).add(Velocity);
+    const world = new World();
+    const entity = world.spawn().add(Position).add(Velocity);
     const position = entity.get(Position);
     const velocity = entity.get(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Position, typeof Velocity]
-    >([Position, Velocity], entityPool.values());
-    const query = new Query(builder);
+    const query = world.query(Position, Velocity);
 
     const components = [...query.asComponents()];
     expect(components).toEqual([[position, velocity]]);
@@ -330,19 +287,11 @@ describe("Query", () => {
   });
 
   it("iterates over tuples of entities with their componenents", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position).add(Velocity);
+    const world = new World();
+    const entity = world.spawn().add(Position).add(Velocity);
     const position = entity.get(Position);
     const velocity = entity.get(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Position, typeof Velocity]
-    >([Position, Velocity], entityPool.values());
-    const query = new Query(builder);
+    const query = world.query(Position, Velocity);
 
     const entities = [...query.withComponents()];
     expect(entities).toEqual([[entity, position, velocity]]);
@@ -350,97 +299,51 @@ describe("Query", () => {
   });
 
   it("can check if an entity is in the query set", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const query = world.query(Position);
 
     expect(query.has(entity)).toBe(true);
   });
 
   it("can check if an entity is not in the query set", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Position, typeof Velocity]
-    >([Position, Velocity], entityPool.values());
-    const query = new Query(builder);
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const query = world.query(Position, Velocity);
 
     expect(query.has(entity)).toBe(false);
   });
 
   it("can count the number of entities in the queryset", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entityA = new Entity("a", manager).add(Position);
-    const entityB = new Entity("b", manager).add(Position);
-    const entityC = new Entity("c", manager).add(Position);
-    entityPool.set(entityA.id, entityA);
-    entityPool.set(entityB.id, entityB);
-    entityPool.set(entityC.id, entityC);
-
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
+    const world = new World();
+    const query = world.query(Position);
+    for (let i = 0; i < 3; ++i) {
+      world.spawn().add(Position);
+    }
 
     expect(query.size).toBe(3);
   });
 
   it("can retrieve a single entity in the queryset", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entityA = new Entity("a", manager).add(Position);
-    entityPool.set(entityA.id, entityA);
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const query = world.query(Position);
 
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
-
-    expect(query.getOne()).toBe(entityA);
+    expect(query.getOne()).toBe(entity);
   });
 
   it("throws an error if there are no entities in the queryset", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
+    const world = new World();
+    const query = world.query(Position);
 
     expect(() => query.getOne()).toThrowError();
   });
 
   it("warns if there are more than one entities in the queryset", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityA = new Entity("a", manager).add(Position);
-    const entityB = new Entity("b", manager).add(Position);
-
-    const entityPool = manager.containers;
-    entityPool.set(entityA.id, entityA);
-    entityPool.set(entityB.id, entityB);
-
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
+    const world = new World();
+    const query = world.query(Position);
+    const entityA = world.spawn().add(Position);
+    world.spawn().add(Position);
 
     const result = query.getOne();
 
@@ -450,49 +353,29 @@ describe("Query", () => {
   });
 
   it("can retrieve a single entity as components", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entityA = new Entity("a", manager).add(Position);
-    entityPool.set(entityA.id, entityA);
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const query = world.query(Position);
 
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
-
-    expect(query.getOneAsComponents()).toEqual([entityA.get(Position)]);
+    expect(query.getOneAsComponents()).toEqual([entity.get(Position)]);
   });
 
   it("can retrieve a single entity with its components", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entityA = new Entity("a", manager).add(Position);
-    entityPool.set(entityA.id, entityA);
+    const world = new World();
+    const entity = world.spawn().add(Position);
+    const position = entity.get(Position);
+    const query = world.query(Position);
 
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new Query(builder);
-
-    expect(query.getOneWithComponents()).toEqual([
-      entityA,
-      entityA.get(Position),
-    ]);
+    expect(query.getOneWithComponents()).toEqual([entity, position]);
   });
 });
 
 describe("ResettableQuery", () => {
   it("calls the builder's reset method", () => {
-    const entityPool = new Map<string, Entity>();
-    const builder = new QueryBuilder<Component, Entity, [typeof Position]>(
-      [Position],
-      entityPool.values()
-    );
-    const query = new ResettableQuery(builder);
+    const world = new World();
+    const query = world.query(Position);
 
-    const mockReset = vi.spyOn(builder, "reset");
+    const mockReset = vi.spyOn(QueryBuilder.prototype, "reset");
     query.reset();
     expect(mockReset).toHaveBeenCalled();
   });
@@ -500,17 +383,9 @@ describe("ResettableQuery", () => {
 
 describe("Optional traits", () => {
   it("retreieves optional traits", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position).add(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Velocity, Optional<Component>]
-    >([Velocity, new Optional(Position)], entityPool.values());
-    const query = new Query(builder);
+    const world = new World();
+    const entity = world.spawn().add(Position).add(Velocity);
+    const query = world.query(Velocity, Position.optional());
 
     const entities = [...query];
     expect(entities).toEqual([entity]);
@@ -522,17 +397,9 @@ describe("Optional traits", () => {
   });
 
   it("retrieves optional traits that don't exist", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Velocity, Optional<Component>]
-    >([Velocity, new Optional(Position)], entityPool.values());
-    const query = new Query(builder);
+    const world = new World();
+    const entity = world.spawn().add(Velocity);
+    const query = world.query(Velocity, Position.optional());
 
     const entities = [...query];
     expect(entities).toEqual([entity]);
@@ -543,18 +410,9 @@ describe("Optional traits", () => {
   });
 
   it("retrieves optional traits added after the query is created", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Velocity, Optional<Component>]
-    >([Velocity, new Optional(Position)], entityPool.values());
-
-    const query = new Query(builder);
+    const world = new World();
+    const entity = world.spawn().add(Velocity);
+    const query = world.query(Velocity, Position.optional());
 
     entity.add(Position);
 
@@ -567,22 +425,12 @@ describe("Optional traits", () => {
     expect(components).toEqual([[velocity, position]]);
   });
 
-  it("retrieves optional traits added after the query is reset", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Velocity, Optional<Component>]
-    >([Velocity, new Optional(Position)], entityPool.values());
-
-    const query = new ResettableQuery(builder);
+  it("retrieves optional traits added before the query is reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Velocity);
+    const query = world.query(Velocity, Position.optional());
 
     entity.add(Position);
-
     query.reset();
 
     const entities = [...query];
@@ -595,18 +443,9 @@ describe("Optional traits", () => {
   });
 
   it("retrieves optional traits removed after the query is created", () => {
-    const manager = new Manager<Component, Entity>();
-    const entityPool = manager.containers;
-    const entity = new Entity("a", manager).add(Position).add(Velocity);
-    entityPool.set(entity.id, entity);
-
-    const builder = new QueryBuilder<
-      Component,
-      Entity,
-      [typeof Velocity, Optional<Component>]
-    >([Velocity, new Optional(Position)], entityPool.values());
-
-    const query = new Query(builder);
+    const world = new World();
+    const entity = world.spawn().add(Velocity).add(Position);
+    const query = world.query(Velocity, Position.optional());
 
     entity.remove(Position);
 

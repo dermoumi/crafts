@@ -1,24 +1,24 @@
 export type { EntityIDGenerator } from "./world";
-export { default as World, makeDefaultIDGenerator } from "./world";
+export { World, makeDefaultIDGenerator } from "./world";
 
-export type { default as Entity } from "./entity";
+export type { Entity } from "./entity";
 
 export type { SystemQuery, SystemCallback, SystemHandle } from "./system";
-export { default as System } from "./system";
-export { default as Event } from "./event";
+export { System } from "./system";
+export { Event } from "./event";
 
 export type { ComponentConstructor } from "./component";
-export { default as Component, unique } from "./component";
+export { Component, unique } from "./component";
 
 export type { ResourceConstructor } from "./resource";
-export { default as Resource } from "./resource";
+export { Resource } from "./resource";
 
 export { state, Optional } from "./trait";
 
 export type { ResettableQuery } from "./query";
 
 export type {
-  default as Filter,
+  Filter,
   SingleFilter,
   CompositeFilter,
   AggregateFilter,

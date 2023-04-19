@@ -1,4 +1,4 @@
-import type Container from "./container";
+import type { Container } from "./container";
 import type { Optional, Trait, TraitConstructor } from "./trait";
 
 import { DefaultMap, SetMap } from "@crafts/default-map";
@@ -25,7 +25,7 @@ export class ChangeTrackMap<T extends Trait = any> extends DefaultMap<
  *
  * @typeParam T - Lock to a type of the trait (Component, Resource...)
  */
-export default abstract class Filter<T extends Trait> {
+export abstract class Filter<T extends Trait> {
   /**
    * Traits that this filter interacts with.
    */

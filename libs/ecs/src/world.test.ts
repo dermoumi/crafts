@@ -1,10 +1,10 @@
-import Component from "./component";
-import Entity from "./entity";
+import { Component } from "./component";
+import { Entity } from "./entity";
 import { ResettableQuery } from "./query";
-import Resource from "./resource";
-import System from "./system";
-import Event from "./event";
-import World, { makeDefaultIDGenerator } from "./world";
+import { Resource } from "./resource";
+import { System } from "./system";
+import { Event } from "./event";
+import { World, makeDefaultIDGenerator } from "./world";
 
 class Position extends Component {
   public x = 0;
@@ -233,35 +233,9 @@ describe("World systems", () => {
     expect([...query.asComponents()]).toEqual([[{ x: 144, y: 42 }]]);
   });
 
-  it("creates in-place systems", () => {
-    const systemResult = vi.fn();
-    const world = new World();
-    const entity = world.spawn().add(Position);
-    const system = world.addSystem({ query: [Position] }, ({ query }) => {
-      systemResult([...query]);
-    });
-
-    systemResult.mockClear();
-    system();
-
-    expect(systemResult).toHaveBeenCalledWith([entity]);
-  });
-
-  it("fails if the callback is omitted when creating an in-place system", () => {
-    const world = new World();
-
-    expect(() => {
-      // @ts-expect-error - Calling the non-overloaded version of addSystem
-      world.addSystem({ query: [Position] });
-    }).toThrowError("Missing system callback");
-  });
-
   it("system component queries reset correctly after calls", () => {
-    const world = new World();
-    world.spawn().add(Position);
-
     const callback = vi.fn();
-    const system = world.addSystem(
+    const testSystem = new System(
       { entities: [Position.added()] },
       ({ entities }) => {
         for (const entity of entities) {
@@ -270,6 +244,10 @@ describe("World systems", () => {
       }
     );
 
+    const world = new World();
+    world.spawn().add(Position);
+    const system = world.addSystem(testSystem);
+
     expect(callback).not.toHaveBeenCalled();
     system();
     system();
@@ -277,14 +255,15 @@ describe("World systems", () => {
   });
 
   it("system resource queries reset correctly after calls", () => {
-    const world = new World();
-    world.resources.add(FrameInfo);
-
     const callback = vi.fn();
-    const system = world.addSystem(
+    const testSystem = new System(
       { resources: [FrameInfo, FrameInfo.added()] },
       callback
     );
+
+    const world = new World();
+    world.resources.add(FrameInfo);
+    const system = world.addSystem(testSystem);
 
     expect(callback).not.toHaveBeenCalled();
     system();
@@ -293,11 +272,12 @@ describe("World systems", () => {
   });
 
   it("resets component queries correctly when .reset() is called", () => {
+    const callback = vi.fn();
+    const testSystem = new System({ query: [Position.added()] }, callback);
+
     const world = new World();
     world.spawn().add(Position);
-
-    const callback = vi.fn();
-    const system = world.addSystem({ query: [Position.added()] }, callback);
+    const system = world.addSystem(testSystem);
 
     system.reset();
     system();
@@ -305,14 +285,12 @@ describe("World systems", () => {
   });
 
   it("resets resource queries correctly when .reset() is called", () => {
+    const callback = vi.fn();
+    const testSystem = new System({ resources: [FrameInfo.added()] }, callback);
+
     const world = new World();
     world.resources.add(FrameInfo);
-
-    const callback = vi.fn();
-    const system = world.addSystem(
-      { resources: [FrameInfo.added()] },
-      callback
-    );
+    const system = world.addSystem(testSystem);
 
     system.reset();
     system();
@@ -322,13 +300,15 @@ describe("World systems", () => {
 
 describe("System commands", () => {
   it("spawns new entities", () => {
-    const world = new World();
-    const query = world.query(Position);
-    const system = world.addSystem({}, ({ command }) => {
+    const testSystem = new System({}, ({ command }) => {
       command(({ spawn }) => {
         spawn().add(Position);
       });
     });
+
+    const world = new World();
+    const query = world.query(Position);
+    const system = world.addSystem(testSystem);
 
     expect(query.size).toBe(0);
 
@@ -337,12 +317,8 @@ describe("System commands", () => {
   });
 
   it("removes entities", () => {
-    const world = new World();
-    world.spawn().add(Position);
-    const query = world.query(Position);
-
-    const system = world.addSystem(
-      { entities: [Position] },
+    const testSystem = new System(
+      { entities: [Position.present()] },
       ({ entities, command }) => {
         command(({ remove }) => {
           for (const entity of entities) {
@@ -352,6 +328,12 @@ describe("System commands", () => {
       }
     );
 
+    const world = new World();
+    world.spawn().add(Position);
+    const query = world.query(Position);
+
+    const system = world.addSystem(testSystem);
+
     expect(query.size).toBe(1);
 
     system();
@@ -359,13 +341,14 @@ describe("System commands", () => {
   });
 
   it("adds resources", () => {
-    const world = new World();
-
-    const system = world.addSystem({}, ({ command }) => {
+    const testSystem = new System({}, ({ command }) => {
       command(({ addResource }) => {
         addResource(FrameInfo);
       });
     });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     expect(world.resources.has(FrameInfo)).toBe(false);
 
@@ -374,15 +357,16 @@ describe("System commands", () => {
   });
 
   it("returns the resource when adding it", () => {
-    const world = new World();
-
     const callback = vi.fn();
-    const system = world.addSystem({}, ({ command }) => {
+    const testSystem = new System({}, ({ command }) => {
       command(({ addResource }) => {
         const resource = addResource(FrameInfo);
         callback(resource);
       });
     });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -392,13 +376,14 @@ describe("System commands", () => {
   });
 
   it("instanciates resources", () => {
-    const world = new World();
-
-    const system = world.addSystem({}, ({ command }) => {
+    const testSystem = new System({}, ({ command }) => {
       command(({ addNewResource }) => {
         addNewResource(Renderer, 42);
       });
     });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     expect(world.resources.has(Renderer)).toBe(false);
 
@@ -410,15 +395,16 @@ describe("System commands", () => {
   });
 
   it("returns the resource when instanciating it", () => {
-    const world = new World();
-
     const callback = vi.fn();
-    const system = world.addSystem({}, ({ command }) => {
+    const testSystem = new System({}, ({ command }) => {
       command(({ addNewResource }) => {
         const resource = addNewResource(Renderer, 42);
         callback(resource);
       });
     });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     expect(callback).not.toHaveBeenCalled();
 
@@ -428,14 +414,15 @@ describe("System commands", () => {
   });
 
   it("removes resources", () => {
-    const world = new World();
-    world.resources.add(FrameInfo);
-
-    const system = world.addSystem({}, ({ command }) => {
+    const testSystem = new System({}, ({ command }) => {
       command(({ removeResource }) => {
         removeResource(FrameInfo);
       });
     });
+
+    const world = new World();
+    world.resources.add(FrameInfo);
+    const system = world.addSystem(testSystem);
 
     expect(world.resources.has(FrameInfo)).toBe(true);
 
@@ -575,9 +562,10 @@ describe("World disposal", () => {
 
   it("invalidates systems that query resources", () => {
     const callback = vi.fn();
+    const testSystem = new System({ resources: [FrameInfo] }, callback);
 
     const world = new World();
-    const system = world.addSystem({ resources: [FrameInfo] }, callback);
+    const system = world.addSystem(testSystem);
 
     world.resources.add(FrameInfo);
     system();
@@ -595,12 +583,13 @@ describe("World disposal", () => {
     // from the resources manager after a `.clear()`
 
     const callback = vi.fn();
+    const testSystem = new System({ resources: [FrameInfo] }, callback);
 
     const world = new World();
     world.clear();
 
     world.resources.add(FrameInfo);
-    const system = world.addSystem({ resources: [FrameInfo] }, callback);
+    const system = world.addSystem(testSystem);
     system();
 
     expect(callback).toHaveBeenCalledOnce();
@@ -620,11 +609,12 @@ describe("System events", () => {
 
   it("dispatches events to systems", () => {
     const callback = vi.fn();
-
-    const world = new World();
-    const system = world.addSystem({ events: TestEvent }, ({ events }) => {
+    const testSystem = new System({ events: TestEvent }, ({ events }) => {
       callback(events.map(({ value }) => value));
     });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     world.dispatch(TestEvent, { value: 42 });
     world.dispatchNew(TestEvent, 144);
@@ -637,15 +627,16 @@ describe("System events", () => {
   it("can iterate over the same event queue multiple times", () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
-
-    const world = new World();
-    const system = world.addSystem(
+    const testSystem = new System(
       { testEvents: TestEvent },
       ({ testEvents }) => {
         callback1(testEvents.map(({ value }) => value));
         callback2(testEvents.map(({ value }) => value));
       }
     );
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     world.dispatch(TestEvent, { value: 42 });
     world.dispatchNew(TestEvent, 144);
@@ -659,15 +650,16 @@ describe("System events", () => {
   it("can retrieve multiple event queues", () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
-
-    const world = new World();
-    const system = world.addSystem(
+    const testSystem = new System(
       { testEvents1: TestEvent, testEvents2: TestEvent },
       ({ testEvents1, testEvents2 }) => {
         callback1(testEvents1.map(({ value }) => value));
         callback2(testEvents2.map(({ value }) => value));
       }
     );
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     world.dispatch(TestEvent, { value: 42 });
     world.dispatchNew(TestEvent, 144);
@@ -681,20 +673,22 @@ describe("System events", () => {
   it("only dispatches events to systems that listen to them", () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
+    const testSystem1 = new System({ events: TestEvent }, ({ events }) => {
+      callback1(events.map(({ value }) => value));
+    });
+    const testSystem2 = new System({ events: TestEvent }, ({ events }) => {
+      callback2(events.map(({ value }) => value));
+    });
 
     const world = new World();
 
     world.dispatch(TestEvent, { value: 42 });
 
-    const system1 = world.addSystem({ events: TestEvent }, ({ events }) => {
-      callback1(events.map(({ value }) => value));
-    });
+    const system1 = world.addSystem(testSystem1);
 
     world.dispatch(TestEvent, { value: 144 });
 
-    const system2 = world.addSystem({ events: TestEvent }, ({ events }) => {
-      callback2(events.map(({ value }) => value));
-    });
+    const system2 = world.addSystem(testSystem2);
 
     world.dispatch(TestEvent, { value: 256 });
 
@@ -707,11 +701,12 @@ describe("System events", () => {
 
   it("resets events between calls", () => {
     const callback = vi.fn();
-
-    const world = new World();
-    const system = world.addSystem({ events: TestEvent }, ({ events }) => {
+    const testSystem = new System({ events: TestEvent }, ({ events }) => {
       callback(events.map(({ value }) => value));
     });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
 
     world.dispatch(TestEvent, { value: 42 });
     system();
@@ -728,15 +723,16 @@ describe("System events", () => {
   it("doesn't affect other systems when resetting events", () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
-
-    const world = new World();
-    const system1 = world.addSystem({ events: TestEvent }, ({ events }) => {
+    const testSystem1 = new System({ events: TestEvent }, ({ events }) => {
       callback1(events.map(({ value }) => value));
     });
-
-    const system2 = world.addSystem({ events: TestEvent }, ({ events }) => {
+    const testSystem2 = new System({ events: TestEvent }, ({ events }) => {
       callback2(events.map(({ value }) => value));
     });
+
+    const world = new World();
+    const system1 = world.addSystem(testSystem1);
+    const system2 = world.addSystem(testSystem2);
 
     world.dispatch(TestEvent, { value: 42 });
     system1();
@@ -751,9 +747,10 @@ describe("System events", () => {
 
   it("does not call a system if it has no event", () => {
     const callback = vi.fn();
+    const testSystem = new System({ events: TestEvent }, callback);
 
     const world = new World();
-    const system = world.addSystem({ events: TestEvent }, callback);
+    const system = world.addSystem(testSystem);
 
     system();
 
@@ -761,8 +758,9 @@ describe("System events", () => {
   });
 
   it("removes garbage collected event queues", () => {
+    const testSystem = new System({ events: TestEvent }, vi.fn());
     const world = new World();
-    world.addSystem({ events: TestEvent }, vi.fn());
+    world.addSystem(testSystem);
 
     // @ts-expect-error - We need to access the private property
     const queueSet = world.eventQueues.get(TestEvent);

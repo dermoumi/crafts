@@ -1,15 +1,17 @@
-import type Resource from "./resource";
+import type { Resource } from "./resource";
 import type { TraitConstructor } from "./trait";
 import type { FilterSet, TraitInstances } from "./filter";
 
 import { SetMap } from "@crafts/default-map";
-import Container from "./container";
-import Manager from "./manager";
+import { Container } from "./container";
+import { Manager } from "./manager";
 
 /**
  * A container for resources.
  */
-export default class ResourceContainer extends Container<Resource> {
+export class ResourceContainer extends Container<Resource> {
+  protected declare manager: Manager<Resource, Container<Resource>>;
+
   /**
    * Shows the correct name in exceptions.
    *
@@ -55,7 +57,10 @@ export default class ResourceContainer extends Container<Resource> {
       return undefined;
     };
 
-    query.reset = () => queryBuilder.reset();
+    query.reset = () => {
+      queryBuilder.reset();
+      return query;
+    };
 
     return query;
   }
@@ -69,7 +74,7 @@ export default class ResourceContainer extends Container<Resource> {
  */
 export type ResourceQuery<F extends FilterSet<Resource>> = {
   (): TraitInstances<Resource, F> | undefined;
-  reset: () => void;
+  reset: () => ResourceQuery<F>;
 };
 
 /**

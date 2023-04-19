@@ -1,15 +1,13 @@
-import type Component from "./component";
-import type Manager from "./manager";
+import type { Component } from "./component";
+import type { Manager } from "./manager";
 import type { TraitConcreteConstructor } from "./trait";
-import type { TraitFilter } from "./filter";
 
-import Container from "./container";
-import { PresentFilter } from "./filter";
+import { Container } from "./container";
 
 /**
  * An entity is a container of components.
  */
-export default class Entity extends Container<Component> {
+export class Entity extends Container<Component> {
   /**
    * The entity's ID.
    */
@@ -51,10 +49,12 @@ export default class Entity extends Container<Component> {
     trait: C
   ): this {
     // Remove unique components from all other entities
-    if ((trait as any).__isUniqueComponent?.() && !this.has(constructor)) {
-      const builder = this.manager.createQuery(
-        new PresentFilter(constructor) as TraitFilter<C>
-      );
+    if (
+      (trait as any).__isUniqueComponent?.() &&
+      !this.has(constructor) &&
+      this.manager
+    ) {
+      const builder = this.manager.createQuery(constructor);
 
       for (const container of builder.containers) {
         container.remove(constructor);

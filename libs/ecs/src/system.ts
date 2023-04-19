@@ -1,9 +1,9 @@
-import type Resource from "./resource";
-import type Component from "./component";
+import type { Resource } from "./resource";
+import type { Component } from "./component";
 import type { FilterSet, TraitInstances } from "./filter";
 import type { Query } from "./query";
 import type { WorldManager } from "./world";
-import type Event from "./event";
+import type { Event } from "./event";
 
 /**
  * A function to be executed at the end of the system's execution.
@@ -59,7 +59,7 @@ export type SystemCallback<Q extends SystemQuery> = (
  *
  * @typeParam Q - The corresponding SystemQuery type
  */
-export default class System<Q extends SystemQuery> {
+export class System<Q extends SystemQuery> {
   /**
    * @internal
    */
@@ -85,5 +85,5 @@ export default class System<Q extends SystemQuery> {
  */
 export type SystemHandle = {
   (): void;
-  reset: () => void;
+  reset: () => SystemHandle;
 };
