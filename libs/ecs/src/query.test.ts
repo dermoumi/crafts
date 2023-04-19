@@ -162,7 +162,7 @@ describe("Query builder", () => {
     const world = new World();
     world.spawn().add(Position);
 
-    const query = world.query(Position.changed());
+    const query = world.query(Position.added());
     expect(query.size).toBe(1);
 
     query.reset();

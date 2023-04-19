@@ -240,18 +240,13 @@ export class ChangedFilter<T extends Trait> extends SingleFilter<T> {
    * @returns `true` if the container has this filter's trait
    *  changed since the last query reset.
    */
-  public matches(
-    container: Container<T>,
-    tracked: ChangeTrackMap,
-    initial: boolean
-  ): boolean {
+  public matches(container: Container<T>, tracked: ChangeTrackMap): boolean {
     const { trait } = this;
     if (!container.has(trait)) return false;
 
     return (
-      initial ||
-      (tracked.get("changed").get(container).has(trait) &&
-        !tracked.get("added").get(container).has(trait))
+      tracked.get("changed").get(container).has(trait) &&
+      !tracked.get("added").get(container).has(trait)
     );
   }
 }
