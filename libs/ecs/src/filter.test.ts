@@ -307,12 +307,12 @@ describe("querying for trait change", () => {
     expect([...query]).not.toContain(entity);
   });
 
-  it("gets containers with the given trait when the query is created", () => {
+  it("ignores containers with the given trait when the query is created", () => {
     const world = new World();
     const entity = world.spawn().add(Position, { x: 0, y: 0 });
 
     const query = world.query(Position.changed());
-    expect([...query]).toContain(entity);
+    expect([...query]).not.toContain(entity);
   });
 
   it("get containers that had their trait replaced with a different one", () => {
