@@ -7,8 +7,12 @@ export type { SystemQuery, SystemCallback, SystemHandle } from "./system";
 export { System } from "./system";
 export { Event } from "./event";
 
+export type { ComponentConstructor } from "./component";
 export { Component, unique } from "./component";
+
+export type { ResourceConstructor } from "./resource";
 export { Resource } from "./resource";
+
 export { state, Optional } from "./trait";
 
 export type { ResettableQuery } from "./query";
@@ -18,6 +22,7 @@ export type {
   SingleFilter,
   CompositeFilter,
   AggregateFilter,
+  FilterSet,
 } from "./filter";
 export {
   PresentFilter,

@@ -14,7 +14,7 @@
     "@crafts/default-map": "workspace:^",
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^",
-    "@types/three": "^0.150.1",
+    "@types/three": "^0.150.2",
     "three": "^0.151.3"
   },
   "devDependencies": {
@@ -24,7 +24,7 @@
     "eslint": "^8.38.0",
     "prettier": "^2.8.7",
     "typescript": "^5.0.4",
-    "vite": "^4.2.1",
+    "vite": "^4.2.2",
     "vitest": "^0.30.1"
   }
 }

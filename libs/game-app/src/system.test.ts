@@ -325,3 +325,63 @@ describe("System schedules", () => {
     expect(callback).toHaveBeenCalledOnce();
   });
 });
+
+describe("Generic run conditions", () => {
+  class TestResource extends Ecs.Resource {}
+  class TestComponent extends Ecs.Component {}
+
+  it("runs the system when the given resource exists", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const world = new Ecs.World();
+    const handle = new SystemSet()
+      .add(testSystem.runIf(System.resourcePresent(TestResource)))
+      .makeHandle(world);
+
+    handle();
+    expect(callback).not.toHaveBeenCalled();
+
+    world.resources.add(TestResource);
+    handle();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it("runs the system when the resource filter matches", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const world = new Ecs.World();
+    world.resources.add(TestResource);
+
+    const handle = new SystemSet()
+      .add(testSystem.runIf(System.resourceFilter(TestResource.removed())))
+      .makeHandle(world);
+
+    handle();
+    expect(callback).not.toHaveBeenCalled();
+
+    world.resources.remove(TestResource);
+    handle();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+
+  it("runs the system when the component filter matches", () => {
+    const callback = vi.fn();
+    const testSystem = new System({}, callback);
+
+    const world = new Ecs.World();
+    const entity = world.spawn().add(TestComponent);
+
+    const handle = new SystemSet()
+      .add(testSystem.runIf(System.componentFilter(TestComponent.removed())))
+      .makeHandle(world);
+
+    handle();
+    expect(callback).not.toHaveBeenCalled();
+
+    entity.remove(TestComponent);
+    handle();
+    expect(callback).toHaveBeenCalledOnce();
+  });
+});

@@ -189,6 +189,56 @@ export class System<Q extends Ecs.SystemQuery> extends Ecs.System<Q> {
   public makeHandle(world: Ecs.World): Ecs.SystemHandle {
     return world.addSystem(this);
   }
+
+  /**
+   * Utility condition to only run a system-like if the given resource exists.
+   *
+   * This is better than using a resource filter because it will not
+   * have to maintain a query.
+   *
+   * @param resource - The resource to check for
+   */
+  public static resourcePresent(resource: Ecs.ResourceConstructor) {
+    return (world: Ecs.World) => world.resources.has(resource);
+  }
+
+  /**
+   * Utility condition to only run a system-like if the given resource
+   * filter is satisfied.
+   *
+   * @param filter - The resource filter to check for
+   */
+  public static resourceFilter(...filter: Ecs.FilterSet<Ecs.Resource>) {
+    let query: undefined | (() => void);
+
+    return (world: Ecs.World) => {
+      if (query === undefined) {
+        query = world.resources.query(...filter);
+      }
+
+      return query() !== undefined;
+    };
+  }
+
+  /**
+   * Utility condition to only run a system-like if the given component
+   * filter is satisfied.
+   *
+   * @param filter - The component filter to check for
+   */
+  public static componentFilter<T extends Ecs.FilterSet<Ecs.Component>>(
+    ...filter: T
+  ) {
+    let query: undefined | Ecs.ResettableQuery<T>;
+
+    return (world: Ecs.World) => {
+      if (query === undefined) {
+        query = world.query(...filter);
+      }
+
+      return query.size > 0;
+    };
+  }
 }
 
 /**

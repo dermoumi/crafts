@@ -1,3 +1,4 @@
+import type { TraitConstructor } from "./trait";
 import {
   AbsentFilter,
   AddedFilter,
@@ -91,6 +92,11 @@ export abstract class Component extends BaseTrait {
     return new AnyFilter(new ChangedFilter(this), new RemovedFilter(this));
   }
 }
+
+/**
+ * A constructor for a Component.
+ */
+export type ComponentConstructor = TraitConstructor<Component>;
 
 /**
  * Decorator to mark a component as unique.
