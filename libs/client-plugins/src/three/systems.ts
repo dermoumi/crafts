@@ -19,9 +19,9 @@ import { WindowResized } from "./events";
  * Sets up the plugin.
  */
 export const setup = new System({}, ({ command }) => {
-  command(({ addNewResource, dispatch }) => {
+  command(({ addNewResource, emit }) => {
     addNewResource(Renderer, document.body);
-    addNewResource(WindowResizeHandler, () => dispatch(WindowResized));
+    addNewResource(WindowResizeHandler, () => emit(WindowResized));
   });
 });
 

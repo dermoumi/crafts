@@ -555,9 +555,9 @@ const collisionSystem = world.addSystem(
 // Executing the system will do nothing since there are no evenst
 collisionSystem();
 
-// Dispatch some events
-world.dispatchNew(CollisionEvent, 0, 0);
-world.dispatch(CollisionEvent, { x: 42, y: 144 });
+// Emit some events
+world.emitNew(CollisionEvent, 0, 0);
+world.emit(CollisionEvent, { x: 42, y: 144 });
 
 // Executing the system will now process the events
 collisionSystem();
@@ -586,8 +586,8 @@ const CleanupSystem = new Ecs.System(
       });
     }
 
-    command(({ dispatch }) => {
-      dispatch(CleanupDone);
+    command(({ emit }) => {
+      emit(CleanupDone);
     });
   }
 );

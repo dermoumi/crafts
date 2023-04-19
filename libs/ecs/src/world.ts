@@ -83,23 +83,23 @@ export type WorldManager = {
   removeResource: (resource: TraitConstructor<Resource>) => void;
 
   /**
-   * Dispatch an event.
+   * Emit an event.
    *
-   * @param constructor - The event to dispatch
+   * @param constructor - The event to emit
    * @param value - The value of the event
    */
-  dispatch: <T extends Event>(
+  emit: <T extends Event>(
     constructor: EventConcreteConstructor<T, []>,
     value?: Partial<T>
   ) => void;
 
   /**
-   * Dispatch an event using its constructor.
+   * Emit an event using its constructor.
    *
-   * @param constructor - The event to dispatch
+   * @param constructor - The event to emit
    * @param args - The arguments to pass to the constructor
    */
-  dispatchNew: <T extends Event, TArgs extends unknown[]>(
+  emitNew: <T extends Event, TArgs extends unknown[]>(
     constructor: EventConcreteConstructor<T, TArgs>,
     ...args: TArgs
   ) => void;
@@ -185,40 +185,44 @@ export class World {
   }
 
   /**
-   * Dispatch an event.
+   * Emit an event.
    *
-   * @param constructor - The event to dispatch
+   * @param constructor - The event to emit
    * @param value - The value of the event
    */
-  public dispatch<T extends Event>(
+  public emit<T extends Event>(
     constructor: EventConcreteConstructor<T, []>,
     value?: Partial<T>
   ): void {
     const event = new constructor();
     Object.assign(event, value);
 
-    return this.dispatchEvent(constructor, event);
+    return this.emitEvent(constructor, event);
   }
 
   /**
-   * Dispatch an event.
+   * Emit an event.
    *
-   * @param constructor - The event to dispatch
+   * @param constructor - The event to emit
    * @param args - The arguments to pass to the constructor
    */
-  public dispatchNew<T extends Event, TArgs extends unknown[]>(
+  public emitNew<T extends Event, TArgs extends unknown[]>(
     constructor: EventConcreteConstructor<T, TArgs>,
     ...args: TArgs
   ): void {
     const event = new constructor(...args);
 
-    return this.dispatchEvent(constructor, event);
+    return this.emitEvent(constructor, event);
   }
 
   /**
-   * Dispatch an event
+   * Emit an event.
+   *
+   * @internal
+   * @param constructor - The constructor of the event to emit
+   * @param event - The event instance to emit
    */
-  private dispatchEvent<T extends Event>(
+  private emitEvent<T extends Event>(
     constructor: EventConcreteConstructor<T>,
     event: T
   ): void {
@@ -307,8 +311,8 @@ export class World {
       removeResource: (...args) => {
         this.resources.remove(...args);
       },
-      dispatch: this.dispatch.bind(this),
-      dispatchNew: this.dispatchNew.bind(this),
+      emit: this.emit.bind(this),
+      emitNew: this.emitNew.bind(this),
     };
 
     const handle = () => {
