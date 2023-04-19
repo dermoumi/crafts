@@ -47,17 +47,15 @@ vi.mock("@crafts/common-plugins", async () => {
 });
 
 const testConfigSystem = new System({}, ({ command }) => {
-  command(({ addNewResource }) => {
-    addNewResource(FixedUpdate, vi.fn());
-    addNewResource(VariableUpdate, vi.fn());
-  });
+  command
+    .addNewResource(FixedUpdate, vi.fn())
+    .addNewResource(VariableUpdate, vi.fn());
 });
 
 const testSceneAndCamera = new System({}, ({ command }) => {
-  command(({ spawn }) => {
-    spawn().add(MainScene).add(SceneNode);
-    spawn().add(MainCamera).add(CameraNode);
-  });
+  command
+    .spawn((e) => e.add(MainScene).add(SceneNode))
+    .spawn((e) => e.add(MainCamera).add(CameraNode));
 });
 
 // Mock the three.js WebGLRenderer

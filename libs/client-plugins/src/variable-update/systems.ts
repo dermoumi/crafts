@@ -5,9 +5,8 @@ export const setup = new System(
   { resources: [Schedulers] },
   ({ resources, command }) => {
     const [schedulers] = resources;
+    const updateScheduler = schedulers.get("update");
 
-    command(({ addNewResource }) => {
-      addNewResource(VariableUpdate, schedulers.get("update"));
-    });
+    command.addNewResource(VariableUpdate, updateScheduler);
   }
 );
