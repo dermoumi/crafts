@@ -8,6 +8,7 @@ import type {
   SystemQuery,
   SystemResult,
   System,
+  CommandAdder,
 } from "./system";
 import type { TraitConstructor, TraitConcreteConstructor } from "./trait";
 import type { EventConcreteConstructor } from "./event";
@@ -297,8 +298,81 @@ export class World {
     }
 
     const commands: Command[] = [];
-    const command = (pending: Command): void => {
+    const command: CommandAdder = (pending: Command): void => {
       commands.push(pending);
+    };
+
+    command.spawn = (
+      spawnCallback?: (entity: Entity) => void
+    ): CommandAdder => {
+      command(({ spawn }) => {
+        const entity = spawn();
+        spawnCallback?.(entity);
+      });
+
+      return command;
+    };
+
+    command.remove = (entity: Entity): CommandAdder => {
+      command(({ remove }) => {
+        remove(entity);
+      });
+
+      return command;
+    };
+
+    command.addResource = <T extends Resource>(
+      constructor: TraitConcreteConstructor<T, []>,
+      initialValue?: Partial<T>
+    ): CommandAdder => {
+      command(({ addResource }) => {
+        addResource(constructor, initialValue);
+      });
+
+      return command;
+    };
+
+    command.addNewResource = <T extends Resource, TArgs extends unknown[]>(
+      constructor: TraitConcreteConstructor<T, TArgs>,
+      ...args: TArgs
+    ): CommandAdder => {
+      command(({ addNewResource }) => {
+        addNewResource(constructor, ...args);
+      });
+
+      return command;
+    };
+
+    command.removeResource = <T extends Resource>(
+      constructor: TraitConstructor<T, []>
+    ): CommandAdder => {
+      command(({ removeResource }) => {
+        removeResource(constructor);
+      });
+
+      return command;
+    };
+
+    command.emit = <T extends Event>(
+      constructor: EventConcreteConstructor<T, []>,
+      value?: Partial<T>
+    ): CommandAdder => {
+      command(({ emit }) => {
+        emit(constructor, value);
+      });
+
+      return command;
+    };
+
+    command.emitNew = <T extends Event, TArgs extends unknown[]>(
+      constructor: EventConcreteConstructor<T, TArgs>,
+      ...args: TArgs
+    ): CommandAdder => {
+      command(({ emitNew }) => {
+        emitNew(constructor, ...args);
+      });
+
+      return command;
     };
 
     const entityManager: WorldManager = {
