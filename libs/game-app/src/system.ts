@@ -70,6 +70,13 @@ export interface SystemLike {
   runIf: (condition: (world: Ecs.World) => boolean) => this;
 
   /**
+   * Add an inverted run condition to the system.
+   *
+   * @param condition - The condition to add
+   */
+  runUnless: (condition: (world: Ecs.World) => boolean) => this;
+
+  /**
    * Make a callable handle.
    *
    * @param world - The world to run the system on
@@ -139,6 +146,10 @@ function makeSystemLike<T extends new (...args: any) => any>(
       this._runConditions.add(condition);
 
       return this;
+    }
+
+    public runUnless(condition: (world: Ecs.World) => boolean): this {
+      return this.runIf((world) => !condition(world));
     }
 
     public makeHandle(world: Ecs.World): Ecs.SystemHandle {
