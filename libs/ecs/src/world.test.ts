@@ -607,7 +607,7 @@ describe("System events", () => {
     }
   }
 
-  it("dispatches events to systems", () => {
+  it("emits events to systems", () => {
     const callback = vi.fn();
     const testSystem = new System({ events: TestEvent }, ({ events }) => {
       callback(events.map(({ value }) => value));
@@ -616,8 +616,8 @@ describe("System events", () => {
     const world = new World();
     const system = world.addSystem(testSystem);
 
-    world.dispatch(TestEvent, { value: 42 });
-    world.dispatchNew(TestEvent, 144);
+    world.emit(TestEvent, { value: 42 });
+    world.emitNew(TestEvent, 144);
 
     system();
 
@@ -638,8 +638,8 @@ describe("System events", () => {
     const world = new World();
     const system = world.addSystem(testSystem);
 
-    world.dispatch(TestEvent, { value: 42 });
-    world.dispatchNew(TestEvent, 144);
+    world.emit(TestEvent, { value: 42 });
+    world.emitNew(TestEvent, 144);
 
     system();
 
@@ -661,8 +661,8 @@ describe("System events", () => {
     const world = new World();
     const system = world.addSystem(testSystem);
 
-    world.dispatch(TestEvent, { value: 42 });
-    world.dispatchNew(TestEvent, 144);
+    world.emit(TestEvent, { value: 42 });
+    world.emitNew(TestEvent, 144);
 
     system();
 
@@ -670,7 +670,7 @@ describe("System events", () => {
     expect(callback2).toHaveBeenCalledWith([42, 144]);
   });
 
-  it("only dispatches events to systems that listen to them", () => {
+  it("only emits events to systems that listen to them", () => {
     const callback1 = vi.fn();
     const callback2 = vi.fn();
     const testSystem1 = new System({ events: TestEvent }, ({ events }) => {
@@ -682,15 +682,15 @@ describe("System events", () => {
 
     const world = new World();
 
-    world.dispatch(TestEvent, { value: 42 });
+    world.emit(TestEvent, { value: 42 });
 
     const system1 = world.addSystem(testSystem1);
 
-    world.dispatch(TestEvent, { value: 144 });
+    world.emit(TestEvent, { value: 144 });
 
     const system2 = world.addSystem(testSystem2);
 
-    world.dispatch(TestEvent, { value: 256 });
+    world.emit(TestEvent, { value: 256 });
 
     system1();
     system2();
@@ -708,11 +708,11 @@ describe("System events", () => {
     const world = new World();
     const system = world.addSystem(testSystem);
 
-    world.dispatch(TestEvent, { value: 42 });
+    world.emit(TestEvent, { value: 42 });
     system();
     expect(callback).toHaveBeenCalledWith([42]);
 
-    world.dispatch(TestEvent, { value: 144 });
+    world.emit(TestEvent, { value: 144 });
 
     callback.mockClear();
     system();
@@ -734,10 +734,10 @@ describe("System events", () => {
     const system1 = world.addSystem(testSystem1);
     const system2 = world.addSystem(testSystem2);
 
-    world.dispatch(TestEvent, { value: 42 });
+    world.emit(TestEvent, { value: 42 });
     system1();
 
-    world.dispatch(TestEvent, { value: 144 });
+    world.emit(TestEvent, { value: 144 });
     system1();
     system2();
 
@@ -771,7 +771,7 @@ describe("System events", () => {
 
     expect(queueSet.size).toBe(1);
 
-    world.dispatch(TestEvent, { value: 42 });
+    world.emit(TestEvent, { value: 42 });
 
     expect(queueSet.size).toBe(0);
   });
