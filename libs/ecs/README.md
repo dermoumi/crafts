@@ -330,6 +330,11 @@ for (const entities of query) {
 
 // Note 4:
 // Removing and adding a component between resets will not count as a removal
+
+// Note 5:
+// The `.removed()` filter does not include components that were removed
+// because the entity itself was removed.
+// e.g.: `world.remove(entityA);` will not trigger the `.removed()` filter.
 ```
 
 You can also make composite filters using AND and OR operators:
