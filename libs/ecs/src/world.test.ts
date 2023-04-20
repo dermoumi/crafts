@@ -776,3 +776,133 @@ describe("System events", () => {
     expect(queueSet.size).toBe(0);
   });
 });
+
+describe("System command shortcuts", () => {
+  it("spawns new entities", () => {
+    const testSystem = new System({}, ({ command }) => {
+      command.spawn((entity) => {
+        entity.add(Position);
+      });
+    });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+    const query = world.query(Position.present());
+
+    system();
+
+    expect([...query]).toHaveLength(1);
+  });
+
+  it("removes entities", () => {
+    const testSystem = new System(
+      { entities: [Position.present()] },
+      ({ entities, command }) => {
+        for (const entity of entities) {
+          command.remove(entity);
+        }
+      }
+    );
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+    const query = world.query(Position.present());
+
+    world.spawn().add(Position);
+
+    system();
+
+    expect([...query]).toHaveLength(0);
+  });
+
+  it("adds new resources", () => {
+    const testSystem = new System({}, ({ command }) => {
+      command.addResource(FrameInfo);
+    });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+
+    expect(world.resources.has(FrameInfo)).toBe(false);
+
+    system();
+
+    expect(world.resources.has(FrameInfo)).toBe(true);
+  });
+
+  it("instantiates new resources", () => {
+    const testSystem = new System({}, ({ command }) => {
+      command.addNewResource(FrameInfo);
+    });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+
+    expect(world.resources.has(FrameInfo)).toBe(false);
+
+    system();
+
+    expect(world.resources.has(FrameInfo)).toBe(true);
+  });
+
+  it("removes resources", () => {
+    const testSystem = new System({}, ({ command }) => {
+      command.removeResource(FrameInfo);
+    });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+
+    world.resources.add(FrameInfo);
+
+    expect(world.resources.has(FrameInfo)).toBe(true);
+
+    system();
+
+    expect(world.resources.has(FrameInfo)).toBe(false);
+  });
+
+  it("emits events", () => {
+    class TestEvent extends Event {}
+
+    const callback = vi.fn();
+    const testSystemReceiver = new System({ events: TestEvent }, callback);
+    const testSystemEmitter = new System({}, ({ command }) => {
+      command.emit(TestEvent);
+    });
+
+    const world = new World();
+    const systemReceiver = world.addSystem(testSystemReceiver);
+    const systemEmitter = world.addSystem(testSystemEmitter);
+
+    systemReceiver();
+    expect(callback).not.toHaveBeenCalled();
+
+    systemEmitter();
+
+    systemReceiver();
+    expect(callback).toHaveBeenCalled();
+  });
+
+  it("intantiates new events", () => {
+    class TestEvent extends Event {}
+
+    const callback = vi.fn();
+    const testSystemReceiver = new System({ events: TestEvent }, callback);
+    const testSystemEmitter = new System({}, ({ command }) => {
+      command.emitNew(TestEvent);
+    });
+
+    const world = new World();
+    const systemReceiver = world.addSystem(testSystemReceiver);
+    const systemEmitter = world.addSystem(testSystemEmitter);
+
+    systemReceiver();
+    expect(callback).not.toHaveBeenCalled();
+
+    systemEmitter();
+
+    systemReceiver();
+    expect(callback).toHaveBeenCalled();
+  });
+});

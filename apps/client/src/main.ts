@@ -46,26 +46,26 @@ const moveControllable = new System(
 );
 
 const setup = new System({}, ({ command }) => {
-  command(({ spawn }) => {
+  command
     // Main camera
-    spawn().add(CameraNode).add(Position, { y: 2, z: 20 }).add(MainCamera);
-
+    .spawn((e) =>
+      e.add(CameraNode).add(Position, { y: 2, z: 20 }).add(MainCamera)
+    )
     // Main scene
-    spawn().add(SceneNode).add(MainScene);
-
+    .spawn((e) => e.add(SceneNode).add(MainScene))
     // Ground
-    spawn().add(Position).addNew(CuboidCollider, 10, 0.1, 10);
-
+    .spawn((e) => e.add(Position).addNew(CuboidCollider, 10, 0.1, 10))
     // Main cube
-    spawn()
-      .add(Controllable)
-      .add(MeshNode)
-      .add(Velocity)
-      .add(Position, { x: 0, y: 10, z: 0 })
-      .addNew(Rotation, 0, 0, 1, "xyz")
-      .addNew(CuboidCollider, 0.5, 0.5, 0.5)
-      .addNew(DynamicRigidBody);
-  });
+    .spawn((e) =>
+      e
+        .add(Controllable)
+        .add(MeshNode)
+        .add(Velocity)
+        .add(Position, { x: 0, y: 10, z: 0 })
+        .addNew(Rotation, 0, 0, 1, "xyz")
+        .addNew(CuboidCollider, 0.5, 0.5, 0.5)
+        .addNew(DynamicRigidBody)
+    );
 });
 
 const pluginTestContent: Plugin = (gameApp) => {

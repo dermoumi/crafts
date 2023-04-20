@@ -3,12 +3,40 @@ import type { Component } from "./component";
 import type { FilterSet, TraitInstances } from "./filter";
 import type { Query } from "./query";
 import type { WorldManager } from "./world";
-import type { Event } from "./event";
+import type { Event, EventConcreteConstructor } from "./event";
+import type { Entity } from "./entity";
+import type { TraitConcreteConstructor, TraitConstructor } from "./trait";
 
 /**
  * A function to be executed at the end of the system's execution.
  */
 export type Command = (world: WorldManager) => void;
+
+/**
+ * A function that adds new commands.
+ */
+export type CommandAdder = {
+  (command: Command): void;
+  spawn: (callback?: (entity: Entity) => void) => CommandAdder;
+  remove: (entity: Entity) => CommandAdder;
+  addResource: <T extends Resource>(
+    constructor: TraitConcreteConstructor<T, []>,
+    initialValue?: Partial<T>
+  ) => CommandAdder;
+  addNewResource: <T extends Resource, TArgs extends unknown[]>(
+    constructor: TraitConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ) => CommandAdder;
+  removeResource: (resource: TraitConstructor<Resource>) => CommandAdder;
+  emit: <T extends Event>(
+    constructor: EventConcreteConstructor<T, []>,
+    value?: Partial<T>
+  ) => CommandAdder;
+  emitNew: <T extends Event, TArgs extends unknown[]>(
+    constructor: EventConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ) => CommandAdder;
+};
 
 /**
  * A container for queries that can be used in a system.
@@ -41,7 +69,7 @@ export type SystemResult<Q extends SystemQuery> = {
   resources: Q["resources"] extends FilterSet<Resource>
     ? TraitInstances<Resource, Q["resources"]>
     : [];
-  command: (pending: Command) => void;
+  command: CommandAdder;
 };
 
 /**
