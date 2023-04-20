@@ -84,6 +84,30 @@ describe("Systems", () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
+  it("does not run the systems unless the callback resolves to false", () => {
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const testSystem = new System({}, callback)
+      .runUnless(() => false)
+      .makeHandle(world);
+
+    testSystem();
+
+    expect(callback).toHaveBeenCalled();
+  });
+
+  it("runs the system unless the condition resolves to true", () => {
+    const callback = vi.fn();
+    const world = new Ecs.World();
+    const testSystem = new System({}, callback)
+      .runUnless(() => true)
+      .makeHandle(world);
+
+    testSystem();
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
   it("resets systems even if they didn't run due to a run condition", () => {
     class TestComponent extends Ecs.Component {}
 
