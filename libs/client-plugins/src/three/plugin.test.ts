@@ -304,16 +304,21 @@ describe("RenderPosition animation", () => {
     const entity = game.world.spawn().add(Position).add(SceneNode);
 
     game.run();
+    update();
 
     // We need to set the value after the initialization
     const position = entity.get(Position);
     Object.assign(position, { x: 10, y: 100, z: 1000 });
 
     update();
+
+    expect(entity.has(TweenPosition)).toBe(true);
+    const { node } = entity.get(SceneNode);
+    expect(node.position).toEqual({ x: 5, y: 50, z: 500 });
+
     update();
 
     expect(entity.has(TweenPosition)).toBe(false);
-    const { node } = entity.get(SceneNode);
     expect(node.position).toEqual({ x: 10, y: 100, z: 1000 });
   });
 });
@@ -410,16 +415,20 @@ describe("RenderRotation animation", () => {
     const entity = game.world.spawn().add(Rotation).add(SceneNode);
 
     game.run();
+    update();
 
     // We need to set the value after the initialization
     const rotation = entity.get(Rotation);
     Object.assign(rotation, { x: 10, y: 100, z: 1000, w: 2 });
 
     update();
+    expect(entity.has(TweenRotation)).toBe(true);
+    const { node } = entity.get(SceneNode);
+    expect(node.quaternion.toArray()).toEqual([5, 50, 500, 1.5]);
+
     update();
 
     expect(entity.has(TweenRotation)).toBe(false);
-    const { node } = entity.get(SceneNode);
     expect(node.quaternion.toArray()).toEqual([10, 100, 1000, 2]);
   });
 });
