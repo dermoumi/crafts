@@ -26,20 +26,20 @@ export const pluginPhysics: Plugin = (app) => {
     .addStartupSystem(setup)
     .addSystem(
       new SystemSet()
-        .add(syncTimestep)
-        .add(createRigidBodies)
-        .add(createColliders)
-        .add(updateUserColliderPositions)
-        .add(updateUserRigidBodySleeping)
-        .add(updateUserRigidBodyAwake)
-        .add(updateUserRigidBodyPositions)
-        .add(updateUserRigidBodyVelocities)
-        .add(updateUserRigidBodyRotations)
-        .add(doPhysicsStep)
-        .add(updateRigidBodySleeping)
-        .add(updateRigidBodyPositions)
-        .add(updateRigidBodyVelocities)
-        .add(updateRigidBodyRotations),
+        .with(syncTimestep)
+        .with(createRigidBodies)
+        .with(createColliders)
+        .with(updateUserColliderPositions)
+        .with(updateUserRigidBodySleeping)
+        .with(updateUserRigidBodyAwake)
+        .with(updateUserRigidBodyPositions)
+        .with(updateUserRigidBodyVelocities)
+        .with(updateUserRigidBodyRotations)
+        .with(doPhysicsStep)
+        .with(updateRigidBodySleeping)
+        .with(updateRigidBodyPositions)
+        .with(updateRigidBodyVelocities)
+        .with(updateRigidBodyRotations),
       "fixed"
     );
 };

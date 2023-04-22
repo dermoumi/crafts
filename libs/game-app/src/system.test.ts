@@ -152,7 +152,7 @@ describe("System sets", () => {
     const testSystem = new System({}, callback);
 
     const world = new Ecs.World();
-    const systemSet = new SystemSet().add(testSystem);
+    const systemSet = new SystemSet().with(testSystem);
     const handle = systemSet.makeHandle(world);
 
     handle();
@@ -162,8 +162,8 @@ describe("System sets", () => {
 
   it("adds other system sets", () => {
     const world = new Ecs.World();
-    const subSystemSet = new SystemSet().add(testSystemB).add(testSystemC);
-    const systemSet = new SystemSet().add(testSystemA).add(subSystemSet);
+    const subSystemSet = new SystemSet().with(testSystemB).with(testSystemC);
+    const systemSet = new SystemSet().with(testSystemA).with(subSystemSet);
     const handle = systemSet.makeHandle(world);
 
     handle();
@@ -174,7 +174,7 @@ describe("System sets", () => {
   it("clones correctly", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
-      .add(testSystemA)
+      .with(testSystemA)
       .label("testSystemSet")
       .after("B")
       .before("C");
@@ -192,9 +192,9 @@ describe("System sets", () => {
   it("runs systems in the order they were added", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
-      .add(testSystemA)
-      .add(testSystemB)
-      .add(testSystemC)
+      .with(testSystemA)
+      .with(testSystemB)
+      .with(testSystemC)
       .makeHandle(world);
 
     systemSet();
@@ -204,9 +204,9 @@ describe("System sets", () => {
   it("reorders systems such as one runs after the other", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
-      .add(testSystemA.clone().after(testSystemC))
-      .add(testSystemB)
-      .add(testSystemC)
+      .with(testSystemA.clone().after(testSystemC))
+      .with(testSystemB)
+      .with(testSystemC)
       .makeHandle(world);
 
     systemSet();
@@ -217,9 +217,9 @@ describe("System sets", () => {
   it("reorders systems such as one runs before the other", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
-      .add(testSystemA)
-      .add(testSystemB)
-      .add(testSystemC.clone().before(testSystemA))
+      .with(testSystemA)
+      .with(testSystemB)
+      .with(testSystemC.clone().before(testSystemA))
       .makeHandle(world);
 
     systemSet();
@@ -230,9 +230,9 @@ describe("System sets", () => {
   it("reorders systems based on priority", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
-      .add(testSystemA.clone().after(testSystemB))
-      .add(testSystemB)
-      .add(testSystemC.clone().priority(2))
+      .with(testSystemA.clone().after(testSystemB))
+      .with(testSystemB)
+      .with(testSystemC.clone().priority(2))
       .makeHandle(world);
 
     systemSet();
@@ -243,7 +243,7 @@ describe("System sets", () => {
   it("throws an error when a .after() system is not found", () => {
     const world = new Ecs.World();
     const systemSet = new SystemSet()
-      .add(testSystemA.clone().label("A").after("missingSystem"))
+      .with(testSystemA.clone().label("A").after("missingSystem"))
       .makeHandle(world);
 
     expect(() => systemSet()).toThrowError(
@@ -265,7 +265,7 @@ describe("System sets", () => {
     handle();
     expect(mockAfterAccess).not.toHaveBeenCalled();
 
-    systemSet.add(testSystem);
+    systemSet.with(testSystem);
     expect(mockAfterAccess).not.toHaveBeenCalled();
 
     handle();
@@ -286,7 +286,7 @@ describe("System sets", () => {
       callback
     );
     const dummySystem = new System({}, vi.fn());
-    const systemSet = new SystemSet().add(testSystem);
+    const systemSet = new SystemSet().with(testSystem);
     const handle = systemSet.makeHandle(world);
     const entity = world.spawn().add(TestComponent);
     handle();
@@ -304,7 +304,7 @@ describe("System sets", () => {
 
     callback.mockClear();
     entity.remove(TestComponent);
-    systemSet.add(dummySystem);
+    systemSet.with(dummySystem);
 
     handle();
     expect(callback).toHaveBeenCalledOnce();
@@ -317,7 +317,7 @@ describe("System sets", () => {
     const world = new Ecs.World();
     const system = new System({ query: [TestComponent.added()] }, callback);
     const systemHandle = world.addSystem(system);
-    const systemSet = new SystemSet().add(system).makeHandle(world);
+    const systemSet = new SystemSet().with(system).makeHandle(world);
 
     world.spawn().add(TestComponent);
 
@@ -360,7 +360,7 @@ describe("Generic run conditions", () => {
 
     const world = new Ecs.World();
     const handle = new SystemSet()
-      .add(testSystem.runIf(System.resourcePresent(TestResource)))
+      .with(testSystem.runIf(System.resourcePresent(TestResource)))
       .makeHandle(world);
 
     handle();
@@ -379,7 +379,7 @@ describe("Generic run conditions", () => {
     world.resources.add(TestResource);
 
     const handle = new SystemSet()
-      .add(testSystem.runIf(System.resourceFilter(TestResource.removed())))
+      .with(testSystem.runIf(System.resourceFilter(TestResource.removed())))
       .makeHandle(world);
 
     handle();
@@ -398,7 +398,7 @@ describe("Generic run conditions", () => {
     const entity = world.spawn().add(TestComponent);
 
     const handle = new SystemSet()
-      .add(testSystem.runIf(System.componentFilter(TestComponent.removed())))
+      .with(testSystem.runIf(System.componentFilter(TestComponent.removed())))
       .makeHandle(world);
 
     handle();
