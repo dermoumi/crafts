@@ -6,9 +6,9 @@
     "dev": "vite-node -w src/main.ts"
   },
   "devDependencies": {
-    "@crafts/common-plugins": "workspace:^",
     "@crafts/eslint-config": "workspace:^",
     "@crafts/game-app": "workspace:^",
+    "@crafts/plugin-physics": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/node": "^18.15.13",
     "eslint": "^8.39.0",

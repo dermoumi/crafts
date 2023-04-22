@@ -14,13 +14,11 @@ import { GameApp, System } from "@crafts/game-app";
 import { Component, unique } from "@crafts/ecs";
 import {
   pluginPhysics,
-  Position,
-  Velocity,
-  Rotation,
   DynamicRigidBody,
   CuboidCollider,
-  pluginFixedUpdate,
-} from "@crafts/common-plugins";
+} from "@crafts/plugin-physics";
+import { pluginFixedUpdate } from "@crafts/plugin-fixed-update";
+import { Position, Velocity, Rotation } from "@crafts/plugin-world-entities";
 
 @unique
 class Controllable extends Component {}
