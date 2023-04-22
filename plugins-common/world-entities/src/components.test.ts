@@ -1,4 +1,24 @@
-import { Rotation } from "./components";
+import { Position, Rotation, Velocity } from "./components";
+
+describe("Position component", () => {
+  it("has default values", () => {
+    const position = new Position();
+
+    expect(position.x).toBe(0);
+    expect(position.y).toBe(0);
+    expect(position.z).toBe(0);
+  });
+});
+
+describe("Velocity component", () => {
+  it("has default values", () => {
+    const velocity = new Velocity();
+
+    expect(velocity.x).toBe(0);
+    expect(velocity.y).toBe(0);
+    expect(velocity.z).toBe(0);
+  });
+});
 
 describe("Rotation component", () => {
   const rotationTestSet = [
