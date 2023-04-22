@@ -270,7 +270,7 @@ export class SystemSet implements SystemLike {
     const systemSet = new SystemSet();
     systemSet.dirty = true;
     for (const system of this.systems) {
-      systemSet.add(system.clone());
+      systemSet.with(system.clone());
     }
 
     return systemSet;
@@ -302,7 +302,7 @@ export class SystemSet implements SystemLike {
    * Add a new system-like object to the system set.
    * @returns - The system itself
    */
-  public add(system: SystemLike): this {
+  public with(system: SystemLike): this {
     this.systems.add(system);
     this.dirty = true;
     return this;
@@ -410,7 +410,7 @@ export class Scheduler {
    * @returns The scheduler itself
    */
   public add(system: SystemLike): this {
-    this.systemSet.add(system);
+    this.systemSet.with(system);
     return this;
   }
 
