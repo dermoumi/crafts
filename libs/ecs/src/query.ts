@@ -125,7 +125,7 @@ export class QueryBuilder<
     for (const container of sourceContainers) {
       this.updateWith(container, true);
 
-      if (this.hasAllRevalidationTraits(container)) {
+      if (this.hasRevalidationTraits(container)) {
         this.revalidationContainers.add(container);
       }
     }
@@ -150,7 +150,7 @@ export class QueryBuilder<
       }
     }
 
-    if (this.hasAllRevalidationTraits(container)) {
+    if (this.hasRevalidationTraits(container)) {
       revalidationContainers.add(container);
     }
 
@@ -282,6 +282,7 @@ export class QueryBuilder<
   /**
    * Update the query with the given container.
    *
+   * @internal
    * @param container - The container to update with
    * @param initial - Whether this is the initial update
    */
@@ -300,15 +301,16 @@ export class QueryBuilder<
   }
 
   /**
-   * Checks if the container has all revalidation traits.
+   * Checks if the container has revalidation traits.
    *
+   * @internal
    * @param container
-   * @returns True if the container has all revalidation traits
+   * @returns True if the container has revalidation traits
    */
-  private hasAllRevalidationTraits(container: C): boolean {
+  private hasRevalidationTraits(container: C): boolean {
     if (this.revalidationTraits.size === 0) return false;
 
-    return container.hasAll(...this.revalidationTraits);
+    return container.hasAny(...this.revalidationTraits);
   }
 }
 

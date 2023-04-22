@@ -562,6 +562,16 @@ describe("NotChangedFilter", () => {
 
     expect([...query]).not.toContain(entity);
   });
+
+  it("works with multiple filters", () => {
+    const world = new World();
+    const entity = world.spawn().add(Velocity);
+
+    const query = world.query(Position.notChanged().or(Velocity.notChanged()));
+    query.reset();
+
+    expect([...query]).toContain(entity);
+  });
 });
 
 describe("querying for trait removal", () => {
