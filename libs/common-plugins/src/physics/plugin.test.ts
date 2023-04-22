@@ -10,11 +10,11 @@ import {
 } from "./components";
 import { pluginPhysics } from "./plugin";
 import { Position, Rotation, Velocity } from "@crafts/plugin-world-entities";
-import { FixedUpdate } from "../fixed-update";
+import { FixedUpdate } from "@crafts/plugin-fixed-update";
 
-vi.mock("../fixed-update", async () => {
+vi.mock("@crafts/plugin-fixed-update", async () => {
   const { Resource } = await import("@crafts/ecs");
-  const fixedUpdate = await import("../fixed-update");
+  const fixedUpdate = await import("@crafts/plugin-fixed-update");
 
   return {
     ...fixedUpdate,

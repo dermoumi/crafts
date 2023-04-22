@@ -1,7 +1,7 @@
 import { AnyFilter } from "@crafts/ecs";
 import { System } from "@crafts/game-app";
 import { Physics } from "./resources";
-import { FixedUpdate } from "../fixed-update";
+import { FixedUpdate } from "@crafts/plugin-fixed-update";
 import { Collider, RigidBody, Sleeping } from "./components";
 import { Position, Rotation, Velocity } from "@crafts/plugin-world-entities";
 

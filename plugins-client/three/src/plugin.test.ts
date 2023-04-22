@@ -1,6 +1,6 @@
 import { System, GameApp } from "@crafts/game-app";
 import { Position, Rotation } from "@crafts/plugin-world-entities";
-import { FixedUpdate } from "@crafts/common-plugins";
+import { FixedUpdate } from "@crafts/plugin-fixed-update";
 import { VariableUpdate } from "@crafts/plugin-variable-update";
 import {
   CameraNode,
@@ -32,11 +32,11 @@ vi.mock("@crafts/plugin-variable-update", async () => {
   };
 });
 
-vi.mock("@crafts/common-plugins", async () => {
-  const commonPlugins = await import("@crafts/common-plugins");
+vi.mock("@crafts/plugin-fixed-update", async () => {
+  const pluginFixedUpdate = await import("@crafts/plugin-fixed-update");
 
   return {
-    ...commonPlugins,
+    ...pluginFixedUpdate,
     FixedUpdate: class {
       public rateMs = UPDATE_RATE;
 

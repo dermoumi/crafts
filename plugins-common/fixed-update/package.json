@@ -1,5 +1,5 @@
 {
-  "name": "@crafts/common-plugins",
+  "name": "@crafts/plugin-fixed-update",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,10 +11,7 @@
   },
   "dependencies": {
     "@crafts/ecs": "workspace:^",
-    "@crafts/game-app": "workspace:^",
-    "@crafts/plugin-fixed-update": "workspace:^",
-    "@crafts/plugin-world-entities": "workspace:^",
-    "@dimforge/rapier3d-compat": "^0.11.2"
+    "@crafts/game-app": "workspace:^"
   },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",

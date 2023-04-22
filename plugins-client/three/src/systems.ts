@@ -11,7 +11,7 @@ import {
   TweenPosition,
   TweenRotation,
 } from "./components";
-import { FixedUpdate } from "@crafts/common-plugins";
+import { FixedUpdate } from "@crafts/plugin-fixed-update";
 import { Position, Rotation } from "@crafts/plugin-world-entities";
 import { VariableUpdate } from "@crafts/plugin-variable-update";
 import { WindowResized } from "./events";
