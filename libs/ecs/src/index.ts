@@ -26,9 +26,11 @@ export type {
 } from "./filter";
 export {
   PresentFilter,
-  AbsentFilter,
+  NotPresentFilter,
   AddedFilter,
+  NotAddedFilter,
   ChangedFilter,
+  NotChangedFilter,
   RemovedFilter,
   AnyFilter,
   AllFilter,

@@ -1,6 +1,6 @@
 import type { TraitConstructor } from "./trait";
 import {
-  AbsentFilter,
+  NotPresentFilter,
   AddedFilter,
   AnyFilter,
   ChangedFilter,
@@ -36,10 +36,10 @@ export abstract class Resource extends BaseTrait {
   /**
    * Create a filter that only allows containers that do not have the trait.
    *
-   * @returns An instance of AbsentFilter
+   * @returns An instance of NotPresentFilter
    */
-  public static absent(): AbsentFilter<Resource> {
-    return new AbsentFilter(this);
+  public static absent(): NotPresentFilter<Resource> {
+    return new NotPresentFilter(this);
   }
 
   /**

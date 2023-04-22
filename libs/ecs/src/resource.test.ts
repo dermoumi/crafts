@@ -1,6 +1,6 @@
 import { Resource } from "./resource";
 import {
-  AbsentFilter,
+  NotPresentFilter,
   AddedFilter,
   AnyFilter,
   ChangedFilter,
@@ -30,12 +30,12 @@ describe("resource filter shortcuts", () => {
     expect(trait).toBe(AppInfo);
   });
 
-  it("provides a shortcut to AbsentFilter", () => {
+  it("provides a shortcut to NotPresentFilter", () => {
     const filter = AppInfo.absent();
     // @ts-expect-error 2341 - We want to check its private property
     const { trait } = filter;
 
-    expect(filter).toBeInstanceOf(AbsentFilter);
+    expect(filter).toBeInstanceOf(NotPresentFilter);
     expect(trait).toBe(AppInfo);
   });
 

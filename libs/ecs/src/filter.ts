@@ -191,7 +191,7 @@ export class PresentFilter<T extends Trait> extends SingleFilter<T> {
  *
  * @typeParam T - Lock to a type of the trait (Component, Resource...)
  */
-export class AbsentFilter<T extends Trait> extends SingleFilter<T> {
+export class NotPresentFilter<T extends Trait> extends SingleFilter<T> {
   /**
    * @override
    */

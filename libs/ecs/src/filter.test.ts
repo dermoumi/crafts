@@ -58,7 +58,7 @@ describe("Filter class", () => {
   });
 });
 
-describe("querying for trait presence", () => {
+describe("PresentFilter", () => {
   it("is not a tracking filter", () => {
     const filter = Position.present();
 
@@ -106,7 +106,7 @@ describe("querying for trait presence", () => {
   });
 });
 
-describe("querying for trait absence", () => {
+describe("NotPresentFilter", () => {
   it("is not a tracking filter", () => {
     const filter = Position.absent();
 
@@ -163,7 +163,7 @@ describe("querying for trait absence", () => {
     expect([...query]).toContain(entity);
   });
 
-  it("test1", () => {
+  it("does not interfere with other queries", () => {
     const world = new World();
     const entityA = world.spawn().add(Position);
     const entityB = world.spawn();
@@ -176,7 +176,7 @@ describe("querying for trait absence", () => {
   });
 });
 
-describe("querying for trait gain", () => {
+describe("AddedFilter", () => {
   it("is a tracking filter", () => {
     const filter = Position.added();
 
@@ -360,7 +360,7 @@ describe("NotAddedFilter", () => {
   });
 });
 
-describe("querying for trait change", () => {
+describe("ChangedFilter", () => {
   it("is a tracking filter", () => {
     const filter = Position.changed();
 
@@ -574,7 +574,7 @@ describe("NotChangedFilter", () => {
   });
 });
 
-describe("querying for trait removal", () => {
+describe("RemovedFilter", () => {
   it("is a tracking filter", () => {
     const filter = Position.removed();
 
