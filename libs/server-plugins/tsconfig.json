@@ -1,8 +1,0 @@
-{
-  "extends": "@crafts/tsconfig/tsconfig.common.json",
-  "compilerOptions": {
-    "types": ["vitest/globals"]
-  },
-  "include": ["src"],
-  "references": [{ "path": "tsconfig.vite.json" }]
-}
