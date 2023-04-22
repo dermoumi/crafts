@@ -16,7 +16,7 @@ import {
   pluginPhysics,
   DynamicRigidBody,
   CuboidCollider,
-} from "@crafts/common-plugins";
+} from "@crafts/plugin-physics";
 import { pluginFixedUpdate } from "@crafts/plugin-fixed-update";
 import { Position, Velocity, Rotation } from "@crafts/plugin-world-entities";
 

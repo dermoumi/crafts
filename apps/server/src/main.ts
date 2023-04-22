@@ -1,8 +1,7 @@
-import type { CommonSystemGroups } from "@crafts/common-plugins";
-import { pluginPhysics } from "@crafts/common-plugins";
+import { pluginPhysics } from "@crafts/plugin-physics";
 import { GameApp } from "@crafts/game-app";
 
-const game = new GameApp<CommonSystemGroups>().addPlugin(pluginPhysics);
+const game = new GameApp().addPlugin(pluginPhysics);
 
 await game.run();
 
