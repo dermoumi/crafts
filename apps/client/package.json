@@ -16,6 +16,7 @@
     "@crafts/ecs": "workspace:^",
     "@crafts/eslint-config": "workspace:^",
     "@crafts/game-app": "workspace:^",
+    "@crafts/plugin-input": "workspace:^",
     "@crafts/server-plugins": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/git-rev": "^0.2.0",
