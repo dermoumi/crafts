@@ -1,5 +1,6 @@
 import { System, GameApp } from "@crafts/game-app";
-import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
+import { Position, Rotation } from "@crafts/plugin-world-entities";
+import { FixedUpdate } from "@crafts/common-plugins";
 import { VariableUpdate } from "@crafts/plugin-variable-update";
 import {
   CameraNode,

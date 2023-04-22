@@ -12,6 +12,7 @@
   "dependencies": {
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^",
+    "@crafts/plugin-world-entities": "workspace:^",
     "@dimforge/rapier3d-compat": "^0.11.2"
   },
   "devDependencies": {

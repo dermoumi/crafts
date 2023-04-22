@@ -9,7 +9,7 @@ import {
   Sleeping,
 } from "./components";
 import { pluginPhysics } from "./plugin";
-import { Position, Rotation, Velocity } from "../world-entities";
+import { Position, Rotation, Velocity } from "@crafts/plugin-world-entities";
 import { FixedUpdate } from "../fixed-update";
 
 vi.mock("../fixed-update", async () => {
