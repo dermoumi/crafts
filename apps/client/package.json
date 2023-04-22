@@ -18,7 +18,6 @@
     "@crafts/plugin-input": "workspace:^",
     "@crafts/plugin-three": "workspace:^",
     "@crafts/plugin-variable-update": "workspace:^",
-    "@crafts/server-plugins": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/git-rev": "^0.2.0",
     "@vitest/coverage-istanbul": "^0.30.1",
