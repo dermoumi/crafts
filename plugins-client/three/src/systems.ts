@@ -12,7 +12,7 @@ import {
   TweenRotation,
 } from "./components";
 import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
-import { VariableUpdate } from "../variable-update";
+import { VariableUpdate } from "@crafts/client-plugins";
 import { WindowResized } from "./events";
 
 /**

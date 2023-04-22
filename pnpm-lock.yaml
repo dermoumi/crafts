@@ -37,6 +37,9 @@ importers:
       '@crafts/plugin-input':
         specifier: workspace:^
         version: link:../../plugins-client/input
+      '@crafts/plugin-three':
+        specifier: workspace:^
+        version: link:../../plugins-client/three
       '@crafts/server-plugins':
         specifier: workspace:^
         version: link:../../libs/server-plugins
@@ -372,6 +375,55 @@ importers:
       '@crafts/game-app':
         specifier: workspace:^
         version: link:../../libs/game-app
+    devDependencies:
+      '@crafts/eslint-config':
+        specifier: workspace:^
+        version: link:../../libs/eslint-config
+      '@crafts/tsconfig':
+        specifier: workspace:^
+        version: link:../../libs/tsconfig
+      '@vitest/coverage-istanbul':
+        specifier: ^0.30.1
+        version: 0.30.1(vitest@0.30.1)
+      eslint:
+        specifier: ^8.39.0
+        version: 8.39.0
+      prettier:
+        specifier: ^2.8.7
+        version: 2.8.7
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite:
+        specifier: ^4.3.1
+        version: 4.3.1(@types/node@18.15.13)
+      vitest:
+        specifier: ^0.30.1
+        version: 0.30.1(jsdom@21.1.1)
+
+  plugins-client/three:
+    dependencies:
+      '@crafts/client-plugins':
+        specifier: workspace:^
+        version: link:../../libs/client-plugins
+      '@crafts/common-plugins':
+        specifier: workspace:^
+        version: link:../../libs/common-plugins
+      '@crafts/default-map':
+        specifier: workspace:^
+        version: link:../../libs/default-map
+      '@crafts/ecs':
+        specifier: workspace:^
+        version: link:../../libs/ecs
+      '@crafts/game-app':
+        specifier: workspace:^
+        version: link:../../libs/game-app
+      '@types/three':
+        specifier: ^0.150.2
+        version: 0.150.2
+      three:
+        specifier: ^0.151.3
+        version: 0.151.3
     devDependencies:
       '@crafts/eslint-config':
         specifier: workspace:^

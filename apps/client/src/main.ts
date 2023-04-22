@@ -5,10 +5,10 @@ import {
   MainScene,
   SceneNode,
   MainCamera,
-  pluginVariableUpdate,
   pluginThree,
   MeshNode,
-} from "@crafts/client-plugins";
+} from "@crafts/plugin-three";
+import { pluginVariableUpdate } from "@crafts/client-plugins";
 import { Input, pluginInput } from "@crafts/plugin-input";
 import { GameApp, System } from "@crafts/game-app";
 import { Component, unique } from "@crafts/ecs";

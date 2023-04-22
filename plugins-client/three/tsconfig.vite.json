@@ -1,0 +1,9 @@
+{
+  "extends": "@crafts/tsconfig/tsconfig.common.json",
+  "compilerOptions": {
+    "composite": true,
+    "noEmit": false,
+    "types": ["vitest/config"]
+  },
+  "include": ["vite.config.ts"]
+}
