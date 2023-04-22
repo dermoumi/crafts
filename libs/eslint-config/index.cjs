@@ -39,6 +39,14 @@ module.exports = {
     "max-params": ["error", 5],
     "require-await": "error",
 
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        allowExpressions: true,
+        allowTypedFunctionExpressions: true,
+        allowHigherOrderFunctions: true,
+      },
+    ],
     "@typescript-eslint/array-type": ["error", { default: "array-simple" }],
     "@typescript-eslint/ban-ts-comment": [
       "error",

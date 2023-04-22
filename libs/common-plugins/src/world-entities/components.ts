@@ -42,7 +42,12 @@ export class Rotation extends Component {
     }
   }
 
-  public setFromEuler(x: number, y: number, z: number, order: RotationOrder) {
+  public setFromEuler(
+    x: number,
+    y: number,
+    z: number,
+    order: RotationOrder
+  ): void {
     const { cos, sin } = Math;
 
     const c1 = cos(x / 2);

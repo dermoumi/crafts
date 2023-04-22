@@ -33,18 +33,18 @@ export class FixedUpdate extends Resource {
   /**
    * Stop the fixed update when the resource is disposed.
    */
-  public __dispose() {
+  public __dispose(): void {
     clearTimeout(this.updateTimeoutID);
   }
 
   /**
    * The update rate in seconds.
    */
-  public get rate() {
+  public get rate(): number {
     return this.rateMs / 1000;
   }
 
-  private updateFunc() {
+  private updateFunc(): void {
     this.updateTimeoutID = setTimeout(this.updateFunc, this.rateMs / 5);
 
     const now = performance.now();

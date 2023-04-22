@@ -67,6 +67,7 @@ export class Optional<T extends Trait> {
 /**
  * A decorator to mark a component/resource as a state.
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function state<
   P extends TraitConstructor<Trait>,
   T extends new (...args: any) => InstanceType<P>

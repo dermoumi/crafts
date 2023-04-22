@@ -22,11 +22,11 @@ class TestConstructibleComponent extends Component {
 
 describe("Component management", () => {
   it("adds component bundles", () => {
-    const testBundle = (entity: Entity, x: number, y: number) => {
+    function testBundle(entity: Entity, x: number, y: number): void {
       entity
         .add(TestComponent, { x, y })
         .addNew(TestConstructibleComponent, x * 2, y * 2);
-    };
+    }
 
     const world = new World();
     const entity = world.spawn();

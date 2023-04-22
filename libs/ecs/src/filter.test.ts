@@ -24,7 +24,7 @@ class Rotation extends Component {
 
 describe("Filter class", () => {
   class TestFilter extends Filter<Component> {
-    public matches() {
+    public matches(): boolean {
       return true;
     }
   }
@@ -451,7 +451,7 @@ describe("querying for trait removal", () => {
 
 describe("matching for the composite filter", () => {
   class TestFilter extends CompositeFilter<Component> {
-    public matches() {
+    public matches(): boolean {
       return true;
     }
   }

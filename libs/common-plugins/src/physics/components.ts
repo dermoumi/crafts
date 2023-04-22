@@ -15,11 +15,11 @@ export abstract class Collider extends Component {
     this._desc = desc;
   }
 
-  public get collider() {
+  public get collider(): Rapier.Collider | undefined {
     return this._collider;
   }
 
-  public __init(world: Rapier.World, rigidBody?: Rapier.RigidBody) {
+  public __init(world: Rapier.World, rigidBody?: Rapier.RigidBody): void {
     this.__dispose();
 
     this._worldRef = world;
@@ -57,11 +57,11 @@ export abstract class RigidBody extends Component {
     this._desc = desc;
   }
 
-  public get body() {
+  public get body(): Rapier.RigidBody | undefined {
     return this._body;
   }
 
-  public __init(world: Rapier.World) {
+  public __init(world: Rapier.World): void {
     this.__dispose();
 
     this._worldRef = world;

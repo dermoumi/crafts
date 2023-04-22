@@ -102,6 +102,7 @@ export type ComponentConstructor = TraitConstructor<Component>;
  * Decorator to mark a component as unique.
  * Only one entity can have this component at a time.
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function unique<T extends new (...args: any) => Component>(
   Base: T,
   _context: ClassDecoratorContext

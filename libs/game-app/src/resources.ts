@@ -15,7 +15,7 @@ export class Schedulers extends Resource {
     this.handlers = new DefaultMap((key) => gameApp.getScheduler(key));
   }
 
-  public get(name: string) {
+  public get(name: string): SystemHandle {
     return this.handlers.get(name);
   }
 }

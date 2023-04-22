@@ -88,6 +88,7 @@ export interface SystemLike {
 /**
  * A decorator to implement a SystemLike interface onto a class.
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function makeSystemLike<T extends new (...args: any) => any>(
   Base: T,
   _: ClassDecoratorContext
@@ -156,7 +157,7 @@ function makeSystemLike<T extends new (...args: any) => any>(
       const originalHandle = super.makeHandle(world);
       let needsReset = false;
 
-      const handle = () => {
+      const handle: Ecs.SystemHandle = () => {
         for (const condition of this._runConditions) {
           if (!condition(world)) {
             needsReset = true;
@@ -219,7 +220,9 @@ export class System<Q extends Ecs.SystemQuery> extends Ecs.System<Q> {
    *
    * @param filter - The resource filter to check for
    */
-  public static resourceFilter(...filter: Ecs.FilterSet<Ecs.Resource>) {
+  public static resourceFilter(
+    ...filter: Ecs.FilterSet<Ecs.Resource>
+  ): (world: Ecs.World) => boolean {
     let query: undefined | (() => void);
 
     return (world: Ecs.World) => {
@@ -239,7 +242,7 @@ export class System<Q extends Ecs.SystemQuery> extends Ecs.System<Q> {
    */
   public static componentFilter<T extends Ecs.FilterSet<Ecs.Component>>(
     ...filter: T
-  ) {
+  ): (world: Ecs.World) => boolean {
     let query: undefined | Ecs.ResettableQuery<T>;
 
     return (world: Ecs.World) => {
@@ -274,7 +277,7 @@ export class SystemSet implements SystemLike {
   }
 
   public makeHandle(world: Ecs.World): Ecs.SystemHandle {
-    const handle = () => {
+    const handle: Ecs.SystemHandle = () => {
       this.ensureNotDirty(world);
 
       for (const systemHandle of this.handles.values()) {
@@ -333,7 +336,9 @@ export class SystemSet implements SystemLike {
    * @param handles - The handles' map to reorder
    * @returns A new handles' map with the systems reordered
    */
-  private reorderHandles(handles: Map<SystemLike, Ecs.SystemHandle>) {
+  private reorderHandles(
+    handles: Map<SystemLike, Ecs.SystemHandle>
+  ): Map<SystemLike, Ecs.SystemHandle> {
     const dependencyLevels: Array<[SystemLike, Ecs.SystemHandle]> = [];
     const processedSystems = new Set<string>();
     const pendingSystems = new Map(

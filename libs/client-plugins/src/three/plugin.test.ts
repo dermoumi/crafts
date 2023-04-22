@@ -39,7 +39,7 @@ vi.mock("@crafts/common-plugins", async () => {
     FixedUpdate: class {
       public rateMs = UPDATE_RATE;
 
-      public get rate() {
+      public get rate(): number {
         return this.rateMs / 1000;
       }
     },
@@ -67,15 +67,15 @@ vi.mock("three", async () => {
     WebGLRenderer: class {
       public domElement = document.createElement("canvas");
 
-      public setSize() {
+      public setSize(): void {
         // Nothing to do
       }
 
-      public render() {
+      public render(): void {
         // Nothing to do
       }
 
-      public dispose() {
+      public dispose(): void {
         // Nothing to do
       }
     },
