@@ -1,5 +1,5 @@
 {
-  "extends": "@crafts/tsconfig/tsconfig.common.json",
+  "extends": "@crafts/tsconfig/tsconfig.browser.json",
   "compilerOptions": {
     "types": ["vitest/globals"]
   },

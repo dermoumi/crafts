@@ -1,14 +1,15 @@
 {
-  "name": "@crafts/server-plugins",
+  "name": "@crafts/plugin-variable-update",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
     "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
   },
   "dependencies": {
-    "@crafts/common-plugins": "workspace:^",
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^"
   },

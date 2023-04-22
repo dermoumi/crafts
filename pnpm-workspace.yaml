@@ -1,3 +1,6 @@
 packages:
   - apps/*
   - libs/*
+  - plugins-client/*
+  - plugins-common/*
+  - plugins-server/*

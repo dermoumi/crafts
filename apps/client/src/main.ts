@@ -1,15 +1,15 @@
+import type { Plugin } from "@crafts/game-app";
+
 import {
   CameraNode,
   MainScene,
   SceneNode,
   MainCamera,
-  Input,
-  pluginInput,
-  pluginVariableUpdate,
   pluginThree,
   MeshNode,
-} from "@crafts/client-plugins";
-import type { Plugin } from "@crafts/game-app";
+} from "@crafts/plugin-three";
+import { pluginVariableUpdate } from "@crafts/plugin-variable-update";
+import { Input, pluginInput } from "@crafts/plugin-input";
 import { GameApp, System } from "@crafts/game-app";
 import { Component, unique } from "@crafts/ecs";
 import {

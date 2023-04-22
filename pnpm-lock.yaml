@@ -16,9 +16,6 @@ importers:
 
   apps/client:
     devDependencies:
-      '@crafts/client-plugins':
-        specifier: workspace:^
-        version: link:../../libs/client-plugins
       '@crafts/common-plugins':
         specifier: workspace:^
         version: link:../../libs/common-plugins
@@ -34,9 +31,15 @@ importers:
       '@crafts/game-app':
         specifier: workspace:^
         version: link:../../libs/game-app
-      '@crafts/server-plugins':
+      '@crafts/plugin-input':
         specifier: workspace:^
-        version: link:../../libs/server-plugins
+        version: link:../../plugins-client/input
+      '@crafts/plugin-three':
+        specifier: workspace:^
+        version: link:../../plugins-client/three
+      '@crafts/plugin-variable-update':
+        specifier: workspace:^
+        version: link:../../plugins-client/variable-update
       '@crafts/tsconfig':
         specifier: workspace:^
         version: link:../../libs/tsconfig
@@ -85,9 +88,6 @@ importers:
       '@crafts/game-app':
         specifier: workspace:^
         version: link:../../libs/game-app
-      '@crafts/server-plugins':
-        specifier: workspace:^
-        version: link:../../libs/server-plugins
       '@crafts/tsconfig':
         specifier: workspace:^
         version: link:../../libs/tsconfig
@@ -106,52 +106,6 @@ importers:
       vite-node:
         specifier: ^0.30.1
         version: 0.30.1(@types/node@18.15.13)
-
-  libs/client-plugins:
-    dependencies:
-      '@crafts/common-plugins':
-        specifier: workspace:^
-        version: link:../common-plugins
-      '@crafts/default-map':
-        specifier: workspace:^
-        version: link:../default-map
-      '@crafts/ecs':
-        specifier: workspace:^
-        version: link:../ecs
-      '@crafts/game-app':
-        specifier: workspace:^
-        version: link:../game-app
-      '@types/three':
-        specifier: ^0.150.2
-        version: 0.150.2
-      three:
-        specifier: ^0.151.3
-        version: 0.151.3
-    devDependencies:
-      '@crafts/eslint-config':
-        specifier: workspace:^
-        version: link:../eslint-config
-      '@crafts/tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@vitest/coverage-istanbul':
-        specifier: ^0.30.1
-        version: 0.30.1(vitest@0.30.1)
-      eslint:
-        specifier: ^8.39.0
-        version: 8.39.0
-      prettier:
-        specifier: ^2.8.7
-        version: 2.8.7
-      typescript:
-        specifier: ^5.0.4
-        version: 5.0.4
-      vite:
-        specifier: ^4.3.1
-        version: 4.3.1(@types/node@18.15.13)
-      vitest:
-        specifier: ^0.30.1
-        version: 0.30.1(jsdom@21.1.1)
 
   libs/common-plugins:
     dependencies:
@@ -319,24 +273,26 @@ importers:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
 
-  libs/server-plugins:
+  libs/tsconfig: {}
+
+  plugins-client/input:
     dependencies:
-      '@crafts/common-plugins':
+      '@crafts/default-map':
         specifier: workspace:^
-        version: link:../common-plugins
+        version: link:../../libs/default-map
       '@crafts/ecs':
         specifier: workspace:^
-        version: link:../ecs
+        version: link:../../libs/ecs
       '@crafts/game-app':
         specifier: workspace:^
-        version: link:../game-app
+        version: link:../../libs/game-app
     devDependencies:
       '@crafts/eslint-config':
         specifier: workspace:^
-        version: link:../eslint-config
+        version: link:../../libs/eslint-config
       '@crafts/tsconfig':
         specifier: workspace:^
-        version: link:../tsconfig
+        version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.30.1
         version: 0.30.1(vitest@0.30.1)
@@ -356,7 +312,88 @@ importers:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.1)
 
-  libs/tsconfig: {}
+  plugins-client/three:
+    dependencies:
+      '@crafts/common-plugins':
+        specifier: workspace:^
+        version: link:../../libs/common-plugins
+      '@crafts/default-map':
+        specifier: workspace:^
+        version: link:../../libs/default-map
+      '@crafts/ecs':
+        specifier: workspace:^
+        version: link:../../libs/ecs
+      '@crafts/game-app':
+        specifier: workspace:^
+        version: link:../../libs/game-app
+      '@crafts/plugin-variable-update':
+        specifier: workspace:^
+        version: link:../variable-update
+      '@types/three':
+        specifier: ^0.150.2
+        version: 0.150.2
+      three:
+        specifier: ^0.151.3
+        version: 0.151.3
+    devDependencies:
+      '@crafts/eslint-config':
+        specifier: workspace:^
+        version: link:../../libs/eslint-config
+      '@crafts/tsconfig':
+        specifier: workspace:^
+        version: link:../../libs/tsconfig
+      '@vitest/coverage-istanbul':
+        specifier: ^0.30.1
+        version: 0.30.1(vitest@0.30.1)
+      eslint:
+        specifier: ^8.39.0
+        version: 8.39.0
+      prettier:
+        specifier: ^2.8.7
+        version: 2.8.7
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite:
+        specifier: ^4.3.1
+        version: 4.3.1(@types/node@18.15.13)
+      vitest:
+        specifier: ^0.30.1
+        version: 0.30.1(jsdom@21.1.1)
+
+  plugins-client/variable-update:
+    dependencies:
+      '@crafts/ecs':
+        specifier: workspace:^
+        version: link:../../libs/ecs
+      '@crafts/game-app':
+        specifier: workspace:^
+        version: link:../../libs/game-app
+    devDependencies:
+      '@crafts/eslint-config':
+        specifier: workspace:^
+        version: link:../../libs/eslint-config
+      '@crafts/tsconfig':
+        specifier: workspace:^
+        version: link:../../libs/tsconfig
+      '@vitest/coverage-istanbul':
+        specifier: ^0.30.1
+        version: 0.30.1(vitest@0.30.1)
+      eslint:
+        specifier: ^8.39.0
+        version: 8.39.0
+      prettier:
+        specifier: ^2.8.7
+        version: 2.8.7
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+      vite:
+        specifier: ^4.3.1
+        version: 4.3.1(@types/node@18.15.13)
+      vitest:
+        specifier: ^0.30.1
+        version: 0.30.1(jsdom@21.1.1)
 
 packages:
 
@@ -1165,10 +1202,6 @@ packages:
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
-
-  /@types/node@18.15.11:
-    resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
-    dev: true
 
   /@types/node@18.15.13:
     resolution: {integrity: sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==}
@@ -4255,27 +4288,6 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: false
 
-  /vite-node@0.30.1(@types/node@18.15.11):
-    resolution: {integrity: sha512-vTikpU/J7e6LU/8iM3dzBo8ZhEiKZEKRznEMm+mJh95XhWaPrJQraT/QsT2NWmuEf+zgAoMe64PKT7hfZ1Njmg==}
-    engines: {node: '>=v14.18.0'}
-    hasBin: true
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.4
-      mlly: 1.2.0
-      pathe: 1.1.0
-      picocolors: 1.0.0
-      vite: 4.3.1(@types/node@18.15.11)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
   /vite-node@0.30.1(@types/node@18.15.13):
     resolution: {integrity: sha512-vTikpU/J7e6LU/8iM3dzBo8ZhEiKZEKRznEMm+mJh95XhWaPrJQraT/QsT2NWmuEf+zgAoMe64PKT7hfZ1Njmg==}
     engines: {node: '>=v14.18.0'}
@@ -4329,39 +4341,6 @@ packages:
     transitivePeerDependencies:
       - '@swc/helpers'
       - rollup
-    dev: true
-
-  /vite@4.3.1(@types/node@18.15.11):
-    resolution: {integrity: sha512-EPmfPLAI79Z/RofuMvkIS0Yr091T2ReUoXQqc5ppBX/sjFRhHKiPPF/R46cTdoci/XgeQpB23diiJxq5w30vdg==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      '@types/node': 18.15.11
-      esbuild: 0.17.11
-      postcss: 8.4.21
-      rollup: 3.20.6
-    optionalDependencies:
-      fsevents: 2.3.2
     dev: true
 
   /vite@4.3.1(@types/node@18.15.13):
@@ -4430,7 +4409,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.4
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.15.11
+      '@types/node': 18.15.13
       '@vitest/expect': 0.30.1
       '@vitest/runner': 0.30.1
       '@vitest/snapshot': 0.30.1
@@ -4452,8 +4431,8 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.4.0
       tinypool: 0.4.0
-      vite: 4.3.1(@types/node@18.15.11)
-      vite-node: 0.30.1(@types/node@18.15.11)
+      vite: 4.3.1(@types/node@18.15.13)
+      vite-node: 0.30.1(@types/node@18.15.13)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less

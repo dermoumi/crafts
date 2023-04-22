@@ -1,6 +1,6 @@
 import { System, GameApp } from "@crafts/game-app";
 import { FixedUpdate, Position, Rotation } from "@crafts/common-plugins";
-import { VariableUpdate } from "../variable-update";
+import { VariableUpdate } from "@crafts/plugin-variable-update";
 import {
   CameraNode,
   ChildNode,
@@ -20,8 +20,8 @@ import { WebGLRenderer } from "three";
 const REFRESH_RATE = 1000 / 60;
 const UPDATE_RATE = 1000 / 30; // Less false positives than the default 20tps
 
-vi.mock("../variable-update", async () => {
-  const variableUpdateModule = await import("../variable-update");
+vi.mock("@crafts/plugin-variable-update", async () => {
+  const variableUpdateModule = await import("@crafts/plugin-variable-update");
 
   return {
     ...variableUpdateModule,

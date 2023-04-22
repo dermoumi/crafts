@@ -1,5 +1,5 @@
 {
-  "name": "@crafts/client-plugins",
+  "name": "@crafts/plugin-three",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,6 +14,7 @@
     "@crafts/default-map": "workspace:^",
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^",
+    "@crafts/plugin-variable-update": "workspace:^",
     "@types/three": "^0.150.2",
     "three": "^0.151.3"
   },
