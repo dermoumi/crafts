@@ -1,9 +1,11 @@
 import { Resource } from "./resource";
 import {
-  AbsentFilter,
+  NotPresentFilter,
   AddedFilter,
   AnyFilter,
   ChangedFilter,
+  NotAddedFilter,
+  NotChangedFilter,
   PresentFilter,
   RemovedFilter,
 } from "./filter";
@@ -28,12 +30,12 @@ describe("resource filter shortcuts", () => {
     expect(trait).toBe(AppInfo);
   });
 
-  it("provides a shortcut to AbsentFilter", () => {
-    const filter = AppInfo.absent();
+  it("provides a shortcut to NotPresentFilter", () => {
+    const filter = AppInfo.notPresent();
     // @ts-expect-error 2341 - We want to check its private property
     const { trait } = filter;
 
-    expect(filter).toBeInstanceOf(AbsentFilter);
+    expect(filter).toBeInstanceOf(NotPresentFilter);
     expect(trait).toBe(AppInfo);
   });
 
@@ -46,12 +48,30 @@ describe("resource filter shortcuts", () => {
     expect(trait).toBe(AppInfo);
   });
 
+  it("provides a shortcut to NotAddedFilter", () => {
+    const filter = AppInfo.notAdded();
+    // @ts-expect-error 2341 - We want to check its private property
+    const { trait } = filter;
+
+    expect(filter).toBeInstanceOf(NotAddedFilter);
+    expect(trait).toBe(AppInfo);
+  });
+
   it("provides a shortcut to ChangedFilter", () => {
     const filter = AppInfo.changed();
     // @ts-expect-error 2341 - We want to check its private property
     const { trait } = filter;
 
     expect(filter).toBeInstanceOf(ChangedFilter);
+    expect(trait).toBe(AppInfo);
+  });
+
+  it("provides a shortcut to NotChangedFilter", () => {
+    const filter = AppInfo.notChanged();
+    // @ts-expect-error 2341 - We want to check its private property
+    const { trait } = filter;
+
+    expect(filter).toBeInstanceOf(NotChangedFilter);
     expect(trait).toBe(AppInfo);
   });
 

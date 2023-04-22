@@ -106,7 +106,7 @@ export const updateCameraAsepectRatio = new System(
  */
 export const nestNodeToMainScene = new System(
   {
-    nodes: [Node, Node.added(), ChildNode.absent()],
+    nodes: [Node, Node.added(), ChildNode.notPresent()],
     scene: [SceneNode, MainScene.present()],
   },
   ({ nodes, scene }) => {

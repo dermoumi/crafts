@@ -58,7 +58,7 @@ describe("Filter class", () => {
   });
 });
 
-describe("querying for trait presence", () => {
+describe("PresentFilter", () => {
   it("is not a tracking filter", () => {
     const filter = Position.present();
 
@@ -106,9 +106,9 @@ describe("querying for trait presence", () => {
   });
 });
 
-describe("querying for trait absence", () => {
+describe("NotPresentFilter", () => {
   it("is not a tracking filter", () => {
-    const filter = Position.absent();
+    const filter = Position.notPresent();
 
     expect([...filter.getTrackingTraits()]).toHaveLength(0);
   });
@@ -117,7 +117,7 @@ describe("querying for trait absence", () => {
     const world = new World();
     const entity = world.spawn();
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
 
     expect([...query]).toContain(entity);
   });
@@ -126,7 +126,7 @@ describe("querying for trait absence", () => {
     const world = new World();
     const entity = world.spawn().add(Position);
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
 
     expect([...query]).not.toContain(entity);
   });
@@ -135,7 +135,7 @@ describe("querying for trait absence", () => {
     const world = new World();
     const entity = world.spawn().add(Position);
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
     expect([...query]).not.toContain(entity);
 
     entity.remove(Position);
@@ -146,7 +146,7 @@ describe("querying for trait absence", () => {
     const world = new World();
     const entity = world.spawn();
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
     expect([...query]).toContain(entity);
 
     world.remove(entity);
@@ -156,27 +156,27 @@ describe("querying for trait absence", () => {
   it("gets containers added after the query's creation", () => {
     const world = new World();
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
     expect([...query]).toHaveLength(0);
 
     const entity = world.spawn();
     expect([...query]).toContain(entity);
   });
 
-  it("test1", () => {
+  it("does not interfere with other queries", () => {
     const world = new World();
     const entityA = world.spawn().add(Position);
     const entityB = world.spawn();
 
     const queryA = world.query(Position);
-    const queryB = world.query(Position.absent());
+    const queryB = world.query(Position.notPresent());
 
     expect([...queryA]).toEqual([entityA]);
     expect([...queryB]).toEqual([entityB]);
   });
 });
 
-describe("querying for trait gain", () => {
+describe("AddedFilter", () => {
   it("is a tracking filter", () => {
     const filter = Position.added();
 
@@ -274,7 +274,93 @@ describe("querying for trait gain", () => {
   });
 });
 
-describe("querying for trait change", () => {
+describe("NotAddedFilter", () => {
+  it("is a tracking filter", () => {
+    const filter = Position.notAdded();
+
+    const trackingTraits = [...filter.getTrackingTraits()];
+    expect(trackingTraits).toHaveLength(1);
+    expect(trackingTraits).toContain(Position);
+  });
+
+  it("gets containers that didn't gain the given trait since last reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position);
+
+    const query = world.query(Position.notAdded());
+    query.reset();
+
+    expect([...query]).toContain(entity);
+  });
+
+  it("ignores containers that gained the given trait since last reset", () => {
+    const world = new World();
+    const entity = world.spawn();
+
+    const query = world.query(Position.notAdded());
+    query.reset();
+
+    entity.add(Position);
+
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("gets containers with the given trait when the query is created", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position);
+
+    const query = world.query(Position.notAdded());
+
+    expect([...query]).toContain(entity);
+  });
+
+  it("gets containers that had their trait replaced with a different one", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notAdded());
+    query.reset();
+
+    entity.add(Position, { x: 42, y: 0 }); // Different from initial value
+    expect([...query]).toContain(entity);
+  });
+
+  it("gets containers that had their trait replaced with an identical one", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notAdded());
+    query.reset();
+
+    entity.add(Position, { x: 0, y: 0 }); // Same as initial value
+    expect([...query]).toContain(entity);
+  });
+
+  it("ignores containers that do not have the given trait", () => {
+    const world = new World();
+    const entity = world.spawn();
+
+    const query = world.query(Position.notAdded());
+
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("gets containers that had the trait added after being removed since last reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position);
+
+    const query = world.query(Position.notAdded());
+
+    query.reset();
+
+    entity.remove(Position);
+    entity.add(Position);
+
+    expect([...query]).toContain(entity);
+  });
+});
+
+describe("ChangedFilter", () => {
   it("is a tracking filter", () => {
     const filter = Position.changed();
 
@@ -394,7 +480,101 @@ describe("querying for trait change", () => {
   });
 });
 
-describe("querying for trait removal", () => {
+describe("NotChangedFilter", () => {
+  it("is a tracking filter", () => {
+    const filter = Position.notChanged();
+
+    const trackingTraits = [...filter.getTrackingTraits()];
+    expect(trackingTraits).toHaveLength(1);
+    expect(trackingTraits).toContain(Position);
+  });
+
+  it("gets containers that had the given trait not changed since last reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+    const position = entity.get(Position);
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    position.x = 0; // Same as initial value
+    expect([...query]).toContain(entity);
+  });
+
+  it("ignores containers that had the given trait changed since last reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+    const position = entity.get(Position);
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    position.x = 42; // Different value from initial value
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers with the given trait when the query is created", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notChanged());
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that had their trait replaced with a different one", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    entity.add(Position, { x: 42, y: 0 }); // Different from initial value
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that had their traits replaced with an identical one", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    entity.add(Position, { x: 0, y: 0 }); // Same as initial value
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that had their traits added but not changed", () => {
+    const world = new World();
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that do not have the given trait", () => {
+    const world = new World();
+    const entity = world.spawn();
+
+    const query = world.query(Position.notChanged());
+
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("works with multiple filters", () => {
+    const world = new World();
+    const entity = world.spawn().add(Velocity);
+
+    const query = world.query(Position.notChanged().or(Velocity.notChanged()));
+    query.reset();
+
+    expect([...query]).toContain(entity);
+  });
+});
+
+describe("RemovedFilter", () => {
   it("is a tracking filter", () => {
     const filter = Position.removed();
 
@@ -493,7 +673,7 @@ describe("matching for aggregate filter", () => {
     const entity = world.spawn().add(Position);
 
     const query = world.query(
-      new TestFilter(Position.present(), Velocity.absent())
+      new TestFilter(Position.present(), Velocity.notPresent())
     );
 
     expect([...query]).toContain(entity);
@@ -514,7 +694,7 @@ describe("matching for aggregate filter", () => {
 describe("matching for all filters", () => {
   it("flattens AllFilter instances", () => {
     const filterA = Position.present();
-    const filterB = Velocity.absent();
+    const filterB = Velocity.notPresent();
     const filterC = Position.added();
     const filterD = Position.changed();
 
@@ -543,7 +723,7 @@ describe("matching for any filters", () => {
     const entity = world.spawn().add(Position);
 
     const query = world.query(
-      new AnyFilter(Position.absent(), Velocity.present())
+      new AnyFilter(Position.notPresent(), Velocity.present())
     );
 
     expect([...query]).not.toContain(entity);
@@ -551,7 +731,7 @@ describe("matching for any filters", () => {
 
   it("flattens AnyFilter instances", () => {
     const filterA = Position.present();
-    const filterB = Velocity.absent();
+    const filterB = Velocity.notPresent();
     const filterC = Position.added();
     const filterD = Position.changed();
 

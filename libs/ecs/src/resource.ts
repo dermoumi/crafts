@@ -1,9 +1,11 @@
 import type { TraitConstructor } from "./trait";
 import {
-  AbsentFilter,
+  NotPresentFilter,
   AddedFilter,
   AnyFilter,
   ChangedFilter,
+  NotAddedFilter,
+  NotChangedFilter,
   PresentFilter,
   RemovedFilter,
 } from "./filter";
@@ -34,14 +36,14 @@ export abstract class Resource extends BaseTrait {
   /**
    * Create a filter that only allows containers that do not have the trait.
    *
-   * @returns An instance of AbsentFilter
+   * @returns An instance of NotPresentFilter
    */
-  public static absent(): AbsentFilter<Resource> {
-    return new AbsentFilter(this);
+  public static notPresent(): NotPresentFilter<Resource> {
+    return new NotPresentFilter(this);
   }
 
   /**
-   * Create a filter that only allows containers that gained trait
+   * Create a filter that only allows containers that gained the given trait
    * since last query reset.
    *
    * @returns An instance of AddedFilter
@@ -51,13 +53,33 @@ export abstract class Resource extends BaseTrait {
   }
 
   /**
-   * Create a filter that only allows containers that had the trait
+   * Create a filter that only allows containers that did not gain the given
+   * trait since last query reset.
+   *
+   * @returns An instance of NotAddedFilter
+   */
+  public static notAdded(): NotAddedFilter<Resource> {
+    return new NotAddedFilter(this);
+  }
+
+  /**
+   * Create a filter that only allows containers that had the given trait
    * changed since last query reset.
    *
    * @returns An instance of ChangedFilter
    */
   public static changed(): ChangedFilter<Resource> {
     return new ChangedFilter(this);
+  }
+
+  /**
+   * Create a filter that only allows containers that did not have the given
+   * trait changed since last query reset.
+   *
+   * @returns An instance of NotChangedFilter
+   */
+  public static notChanged(): NotChangedFilter<Resource> {
+    return new NotChangedFilter(this);
   }
 
   /**

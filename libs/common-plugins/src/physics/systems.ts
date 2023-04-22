@@ -213,7 +213,7 @@ export const updateRigidBodySleeping = new System(
  * Update the positions of rigid bodies.
  */
 export const updateRigidBodyPositions = new System(
-  { bodies: [RigidBody, Position, Sleeping.absent()] },
+  { bodies: [RigidBody, Position, Sleeping.notPresent()] },
   ({ bodies }) => {
     for (const [{ body }, position] of bodies.asComponents()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -233,7 +233,7 @@ export const updateRigidBodyPositions = new System(
  * Update the velocties of rigid bodies.
  */
 export const updateRigidBodyVelocities = new System(
-  { bodies: [RigidBody, Velocity, Sleeping.absent()] },
+  { bodies: [RigidBody, Velocity, Sleeping.notPresent()] },
   ({ bodies }) => {
     for (const [{ body }, velocity] of bodies.asComponents()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -253,7 +253,7 @@ export const updateRigidBodyVelocities = new System(
  * Update the rotations of rigid bodies.
  */
 export const updateRigidBodyRotations = new System(
-  { bodies: [RigidBody, Rotation, Sleeping.absent()] },
+  { bodies: [RigidBody, Rotation, Sleeping.notPresent()] },
   ({ bodies }) => {
     for (const [{ body }, rotation] of bodies.asComponents()) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -265,7 +265,7 @@ const query = world.query(
   Position,
   Rotation.optional(),
   Velocity.present(),
-  Renderable.absent()
+  Renderable.notPresent()
 );
 for (const [position, rotation] of query.asComponents()) {
   // position is always present
@@ -352,7 +352,7 @@ query = world.query(
   Renderable.present().or(
     Position.changed(),
     Velocity.present(),
-    Renderable.absent()
+    Renderable.notPresent()
   )
 );
 ```

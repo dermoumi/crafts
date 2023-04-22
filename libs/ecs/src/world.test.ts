@@ -94,7 +94,7 @@ describe("World systems", () => {
   it("creates a system that has a multiple queries", () => {
     const systemResult = vi.fn();
     const TestSystem = new System(
-      { queryA: [Position], queryB: [Position.absent()] },
+      { queryA: [Position], queryB: [Position.notPresent()] },
       ({ queryA, queryB }) => {
         for (const components of queryA.asComponents()) {
           expectTypeOf(components).toEqualTypeOf<[Position]>();
@@ -156,7 +156,7 @@ describe("World systems", () => {
   it("does not call the system's callback when any of the component queries is empty", () => {
     const systemCallback = vi.fn();
     const TestSystem = new System(
-      { queryA: [Position], queryB: [Position.absent()] },
+      { queryA: [Position], queryB: [Position.notPresent()] },
       systemCallback
     );
     const world = new World();
@@ -188,7 +188,7 @@ describe("World systems", () => {
     const TestSystem = new System(
       {
         queryA: [Position],
-        queryB: [Position.absent()],
+        queryB: [Position.notPresent()],
         resources: [AppInfo],
       },
       ({ queryA, queryB, resources }) => {
