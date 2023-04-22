@@ -480,6 +480,90 @@ describe("querying for trait change", () => {
   });
 });
 
+describe("NotChangedFilter", () => {
+  it("is a tracking filter", () => {
+    const filter = Position.notChanged();
+
+    const trackingTraits = [...filter.getTrackingTraits()];
+    expect(trackingTraits).toHaveLength(1);
+    expect(trackingTraits).toContain(Position);
+  });
+
+  it("gets containers that had the given trait not changed since last reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+    const position = entity.get(Position);
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    position.x = 0; // Same as initial value
+    expect([...query]).toContain(entity);
+  });
+
+  it("ignores containers that had the given trait changed since last reset", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+    const position = entity.get(Position);
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    position.x = 42; // Different value from initial value
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers with the given trait when the query is created", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notChanged());
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that had their trait replaced with a different one", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    entity.add(Position, { x: 42, y: 0 }); // Different from initial value
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that had their traits replaced with an identical one", () => {
+    const world = new World();
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    entity.add(Position, { x: 0, y: 0 }); // Same as initial value
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that had their traits added but not changed", () => {
+    const world = new World();
+
+    const query = world.query(Position.notChanged());
+    query.reset();
+
+    const entity = world.spawn().add(Position, { x: 0, y: 0 });
+
+    expect([...query]).not.toContain(entity);
+  });
+
+  it("ignores containers that do not have the given trait", () => {
+    const world = new World();
+    const entity = world.spawn();
+
+    const query = world.query(Position.notChanged());
+
+    expect([...query]).not.toContain(entity);
+  });
+});
+
 describe("querying for trait removal", () => {
   it("is a tracking filter", () => {
     const filter = Position.removed();

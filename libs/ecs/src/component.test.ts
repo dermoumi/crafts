@@ -5,6 +5,7 @@ import {
   AnyFilter,
   ChangedFilter,
   NotAddedFilter,
+  NotChangedFilter,
   PresentFilter,
   RemovedFilter,
 } from "./filter";
@@ -73,6 +74,15 @@ describe("component filter shortcuts", () => {
     const { trait } = filter;
 
     expect(filter).toBeInstanceOf(ChangedFilter);
+    expect(trait).toBe(Position);
+  });
+
+  it("provides a shortcut to NotChangedFilter", () => {
+    const filter = Position.notChanged();
+    // @ts-expect-error 2341 - We want to check its private property
+    const { trait } = filter;
+
+    expect(filter).toBeInstanceOf(NotChangedFilter);
     expect(trait).toBe(Position);
   });
 

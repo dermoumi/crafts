@@ -5,6 +5,7 @@ import {
   AnyFilter,
   ChangedFilter,
   NotAddedFilter,
+  NotChangedFilter,
   PresentFilter,
   RemovedFilter,
 } from "./filter";
@@ -62,13 +63,23 @@ export abstract class Resource extends BaseTrait {
   }
 
   /**
-   * Create a filter that only allows containers that had the trait
+   * Create a filter that only allows containers that had the given trait
    * changed since last query reset.
    *
    * @returns An instance of ChangedFilter
    */
   public static changed(): ChangedFilter<Resource> {
     return new ChangedFilter(this);
+  }
+
+  /**
+   * Create a filter that only allows containers that did not have the given
+   * trait changed since last query reset.
+   *
+   * @returns An instance of NotChangedFilter
+   */
+  public static notChanged(): NotChangedFilter<Resource> {
+    return new NotChangedFilter(this);
   }
 
   /**

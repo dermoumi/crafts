@@ -55,14 +55,13 @@ export abstract class Filter<T extends Trait> {
   }
 
   /**
-   * Whether the query builder should revalidate the filters after a reset.
+   * List traits that should be revalidated after a reset.
    *
    * @virtual
-   * @returns true if the query builder should revalidate the filters after
-   *  a reset
+   * @returns The traits that are tracked for revalidation
    */
-  public shouldRevalidateAfterReset(): boolean {
-    return false;
+  public *getRevalidationTraits(): IterableIterator<TraitConstructor<T>> {
+    // Nothing to do
   }
 
   /**
@@ -195,6 +194,13 @@ export class PresentFilter<T extends Trait> extends SingleFilter<T> {
 export class AbsentFilter<T extends Trait> extends SingleFilter<T> {
   /**
    * @override
+   */
+  public *getRevalidationTraits(): IterableIterator<TraitConstructor<T>> {
+    yield this.trait;
+  }
+
+  /**
+   * @override
    * @returns `true` if the container does not have this filter's trait.
    */
   public matches(container: Container<T>): boolean {
@@ -249,8 +255,8 @@ export class NotAddedFilter<T extends Trait> extends SingleFilter<T> {
   /**
    * @override
    */
-  public shouldRevalidateAfterReset(): boolean {
-    return true;
+  public *getRevalidationTraits(): IterableIterator<TraitConstructor<T>> {
+    yield this.trait;
   }
 
   /**
@@ -266,8 +272,6 @@ export class NotAddedFilter<T extends Trait> extends SingleFilter<T> {
     const { trait } = this;
     if (!container.has(trait)) return false;
 
-    console.log(initial, tracked.get("added").get(container).has(trait));
-
     return initial || !tracked.get("added").get(container).has(trait);
   }
 }
@@ -276,7 +280,7 @@ export class NotAddedFilter<T extends Trait> extends SingleFilter<T> {
  * Filters container that had their instance of the given trait
  * changed since the last reset.
  *
- * @typeParam T - Lock to a type of the trait (Component, Resource...)
+ * @typeParam T - Lock to a type of trait (Component, Resource...)
  */
 export class ChangedFilter<T extends Trait> extends SingleFilter<T> {
   /**
@@ -298,6 +302,48 @@ export class ChangedFilter<T extends Trait> extends SingleFilter<T> {
     return (
       tracked.get("changed").get(container).has(trait) &&
       !tracked.get("added").get(container).has(trait)
+    );
+  }
+}
+
+/**
+ * Filters containers that had their instance of the given trait
+ * not changed since the last reset.
+ *
+ * @typeParam T - Lock to a type of trait (Component, Resource...)
+ */
+export class NotChangedFilter<T extends Trait> extends SingleFilter<T> {
+  /**
+   * @override
+   */
+  public *getTrackingTraits(): IterableIterator<TraitConstructor<T>> {
+    yield this.trait;
+  }
+
+  /**
+   * @override
+   */
+  public *getRevalidationTraits(): IterableIterator<TraitConstructor<T>> {
+    yield this.trait;
+  }
+
+  /**
+   * @override
+   * @returns `true` if the container has this filter's trait
+   * not changed since the last query reset.
+   */
+  public matches(
+    container: Container<T>,
+    trakced: ChangeTrackMap,
+    initial: boolean
+  ): boolean {
+    const { trait } = this;
+    if (!container.has(trait)) return false;
+
+    return (
+      !initial &&
+      !trakced.get("changed").get(container).has(trait) &&
+      !trakced.get("added").get(container).has(trait)
     );
   }
 }
@@ -368,10 +414,10 @@ export abstract class CompositeFilter<T extends Trait> extends Filter<T> {
   /**
    * @override
    */
-  public shouldRevalidateAfterReset(): boolean {
-    return this.subFilters.some((filter) =>
-      filter.shouldRevalidateAfterReset()
-    );
+  public *getRevalidationTraits(): IterableIterator<TraitConstructor<T>> {
+    for (const filter of this.subFilters) {
+      yield* filter.getRevalidationTraits();
+    }
   }
 
   /**

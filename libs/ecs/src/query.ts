@@ -4,13 +4,7 @@ import type { Entity } from "./entity";
 import type { FilterSet, TraitFilter, TraitInstances } from "./filter";
 import type { Trait, TraitConstructor } from "./trait";
 
-import {
-  Filter,
-  AbsentFilter,
-  AllFilter,
-  ChangeTrackMap,
-  PresentFilter,
-} from "./filter";
+import { Filter, AllFilter, ChangeTrackMap, PresentFilter } from "./filter";
 import { Optional } from "./trait";
 
 /**
@@ -54,11 +48,6 @@ export class QueryBuilder<
   /**
    * @internal
    */
-  private readonly absenceFilters = new Set<TraitConstructor<T>>();
-
-  /**
-   * @internal
-   */
   private readonly trackingTraits = new Set<TraitConstructor<T>>();
 
   /**
@@ -69,7 +58,12 @@ export class QueryBuilder<
   /**
    * @internal
    */
-  private readonly revalidateOnReset: boolean;
+  private readonly revalidationTraits = new Set<TraitConstructor<T>>();
+
+  /**
+   * @internal
+   */
+  private readonly revalidationContainers = new Set<C>();
 
   /**
    * The containers that are currently matched by this query
@@ -105,16 +99,14 @@ export class QueryBuilder<
         return [new PresentFilter(filter)];
       }
 
-      if (filter instanceof AbsentFilter) {
-        for (const trait of filter.relatedTraits) {
-          this.absenceFilters.add(trait);
-        }
-      }
-
       // Some filters track changes (AddedFilter, ChangedFilter...)
       // Setting this will allow some optimizations down the line
       for (const trait of filter.getTrackingTraits()) {
         this.trackingTraits.add(trait);
+      }
+
+      for (const trait of filter.getRevalidationTraits()) {
+        this.revalidationTraits.add(trait);
       }
 
       return [filter];
@@ -127,12 +119,15 @@ export class QueryBuilder<
     }
 
     this.filter = AllFilter.wrapIfMany(...filterObjs);
-    this.revalidateOnReset = this.filter.shouldRevalidateAfterReset();
     this.requestedTraits = requestedTraits as TraitConstructorTuple<T, F>;
 
     // Update the query with all existing containers
     for (const container of sourceContainers) {
       this.updateWith(container, true);
+
+      if (this.hasAllRevalidationTraits(container)) {
+        this.revalidationContainers.add(container);
+      }
     }
   }
 
@@ -144,7 +139,7 @@ export class QueryBuilder<
    * @param trait - The trait that was added
    */
   public onTraitAdded(container: C, trait: TraitConstructor<T>): void {
-    const { trackingTraits, changeTrackMap } = this;
+    const { trackingTraits, changeTrackMap, revalidationContainers } = this;
 
     if (trackingTraits.has(trait)) {
       // If it's in the removed set, remove it and add it to the changed set
@@ -153,6 +148,10 @@ export class QueryBuilder<
       } else {
         changeTrackMap.get("added").get(container).add(trait);
       }
+    }
+
+    if (this.hasAllRevalidationTraits(container)) {
+      revalidationContainers.add(container);
     }
 
     this.updateWith(container);
@@ -168,6 +167,10 @@ export class QueryBuilder<
   public onTraitRemoved(container: C, trait: TraitConstructor<T>): void {
     if (this.trackingTraits.has(trait)) {
       this.changeTrackMap.get("removed").get(container).add(trait);
+    }
+
+    if (this.revalidationTraits.has(trait)) {
+      this.revalidationContainers.delete(container);
     }
 
     this.updateWith(container);
@@ -194,8 +197,7 @@ export class QueryBuilder<
    * @param container - The container that was removed
    */
   public onContainerAdded(container: C): void {
-    // Only needed when the query is tracking the absence of a trait
-    if (this.absenceFilters.size === 0) return;
+    if (this.revalidationTraits.size === 0) return;
 
     this.updateWith(container);
   }
@@ -208,6 +210,7 @@ export class QueryBuilder<
    */
   public onContainerRemoved(container: C): void {
     this.containers.delete(container);
+    this.revalidationContainers.delete(container);
   }
 
   /**
@@ -221,8 +224,8 @@ export class QueryBuilder<
 
     this.changeTrackMap.clear();
 
-    if (this.revalidateOnReset) {
-      for (const container of this.containers) {
+    if (this.revalidationContainers.size > 0) {
+      for (const container of this.revalidationContainers) {
         this.updateWith(container, false);
       }
     } else {
@@ -294,6 +297,18 @@ export class QueryBuilder<
     } else {
       containers.delete(container);
     }
+  }
+
+  /**
+   * Checks if the container has all revalidation traits.
+   *
+   * @param container
+   * @returns True if the container has all revalidation traits
+   */
+  private hasAllRevalidationTraits(container: C): boolean {
+    if (this.revalidationTraits.size === 0) return false;
+
+    return container.hasAll(...this.revalidationTraits);
   }
 }
 
