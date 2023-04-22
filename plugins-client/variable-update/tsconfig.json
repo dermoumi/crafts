@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["vitest/globals"]
   },
-  "include": ["src", "setup-tests.ts"],
+  "include": ["srco", "setup-tests.ts", "src"],
   "references": [{ "path": "tsconfig.vite.json" }]
 }

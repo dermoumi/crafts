@@ -8,7 +8,7 @@ import {
   pluginThree,
   MeshNode,
 } from "@crafts/plugin-three";
-import { pluginVariableUpdate } from "@crafts/client-plugins";
+import { pluginVariableUpdate } from "@crafts/plugin-variable-update";
 import { Input, pluginInput } from "@crafts/plugin-input";
 import { GameApp, System } from "@crafts/game-app";
 import { Component, unique } from "@crafts/ecs";

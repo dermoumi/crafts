@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@crafts/common-plugins": "workspace:^",
-    "@crafts/client-plugins": "workspace:^",
     "@crafts/default-map": "workspace:^",
     "@crafts/ecs": "workspace:^",
     "@crafts/game-app": "workspace:^",
+    "@crafts/plugin-variable-update": "workspace:^",
     "@types/three": "^0.150.2",
     "three": "^0.151.3"
   },
