@@ -38,7 +38,7 @@ export abstract class Component extends BaseTrait {
    *
    * @returns An instance of NotPresentFilter
    */
-  public static absent(): NotPresentFilter<Component> {
+  public static notPresent(): NotPresentFilter<Component> {
     return new NotPresentFilter(this);
   }
 

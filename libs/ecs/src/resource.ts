@@ -38,7 +38,7 @@ export abstract class Resource extends BaseTrait {
    *
    * @returns An instance of NotPresentFilter
    */
-  public static absent(): NotPresentFilter<Resource> {
+  public static notPresent(): NotPresentFilter<Resource> {
     return new NotPresentFilter(this);
   }
 

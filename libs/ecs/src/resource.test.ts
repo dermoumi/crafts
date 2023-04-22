@@ -31,7 +31,7 @@ describe("resource filter shortcuts", () => {
   });
 
   it("provides a shortcut to NotPresentFilter", () => {
-    const filter = AppInfo.absent();
+    const filter = AppInfo.notPresent();
     // @ts-expect-error 2341 - We want to check its private property
     const { trait } = filter;
 

@@ -108,7 +108,7 @@ describe("PresentFilter", () => {
 
 describe("NotPresentFilter", () => {
   it("is not a tracking filter", () => {
-    const filter = Position.absent();
+    const filter = Position.notPresent();
 
     expect([...filter.getTrackingTraits()]).toHaveLength(0);
   });
@@ -117,7 +117,7 @@ describe("NotPresentFilter", () => {
     const world = new World();
     const entity = world.spawn();
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
 
     expect([...query]).toContain(entity);
   });
@@ -126,7 +126,7 @@ describe("NotPresentFilter", () => {
     const world = new World();
     const entity = world.spawn().add(Position);
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
 
     expect([...query]).not.toContain(entity);
   });
@@ -135,7 +135,7 @@ describe("NotPresentFilter", () => {
     const world = new World();
     const entity = world.spawn().add(Position);
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
     expect([...query]).not.toContain(entity);
 
     entity.remove(Position);
@@ -146,7 +146,7 @@ describe("NotPresentFilter", () => {
     const world = new World();
     const entity = world.spawn();
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
     expect([...query]).toContain(entity);
 
     world.remove(entity);
@@ -156,7 +156,7 @@ describe("NotPresentFilter", () => {
   it("gets containers added after the query's creation", () => {
     const world = new World();
 
-    const query = world.query(Position.absent());
+    const query = world.query(Position.notPresent());
     expect([...query]).toHaveLength(0);
 
     const entity = world.spawn();
@@ -169,7 +169,7 @@ describe("NotPresentFilter", () => {
     const entityB = world.spawn();
 
     const queryA = world.query(Position);
-    const queryB = world.query(Position.absent());
+    const queryB = world.query(Position.notPresent());
 
     expect([...queryA]).toEqual([entityA]);
     expect([...queryB]).toEqual([entityB]);
@@ -673,7 +673,7 @@ describe("matching for aggregate filter", () => {
     const entity = world.spawn().add(Position);
 
     const query = world.query(
-      new TestFilter(Position.present(), Velocity.absent())
+      new TestFilter(Position.present(), Velocity.notPresent())
     );
 
     expect([...query]).toContain(entity);
@@ -694,7 +694,7 @@ describe("matching for aggregate filter", () => {
 describe("matching for all filters", () => {
   it("flattens AllFilter instances", () => {
     const filterA = Position.present();
-    const filterB = Velocity.absent();
+    const filterB = Velocity.notPresent();
     const filterC = Position.added();
     const filterD = Position.changed();
 
@@ -723,7 +723,7 @@ describe("matching for any filters", () => {
     const entity = world.spawn().add(Position);
 
     const query = world.query(
-      new AnyFilter(Position.absent(), Velocity.present())
+      new AnyFilter(Position.notPresent(), Velocity.present())
     );
 
     expect([...query]).not.toContain(entity);
@@ -731,7 +731,7 @@ describe("matching for any filters", () => {
 
   it("flattens AnyFilter instances", () => {
     const filterA = Position.present();
-    const filterB = Velocity.absent();
+    const filterB = Velocity.notPresent();
     const filterC = Position.added();
     const filterD = Position.changed();
 

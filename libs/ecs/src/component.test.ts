@@ -42,7 +42,7 @@ describe("component filter shortcuts", () => {
   });
 
   it("provides a shortcut to NotPresentFilter", () => {
-    const filter = Position.absent();
+    const filter = Position.notPresent();
     // @ts-expect-error 2341 - We want to check its private property
     const { trait } = filter;
 
