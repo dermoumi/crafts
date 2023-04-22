@@ -4,6 +4,7 @@ import {
   AddedFilter,
   AnyFilter,
   ChangedFilter,
+  NotAddedFilter,
   PresentFilter,
   RemovedFilter,
 } from "./filter";
@@ -41,13 +42,23 @@ export abstract class Component extends BaseTrait {
   }
 
   /**
-   * Create a filter that only allows containers that gained trait
+   * Create a filter that only allows containers that gained the given trait
    * since last query reset.
    *
    * @returns An instance of AddedFilter
    */
   public static added(): AddedFilter<Component> {
     return new AddedFilter(this);
+  }
+
+  /**
+   * Create a filter that only allows containers that did not gain the given
+   * trait since last query reset.
+   *
+   * @returns An instance of NotAddedFilter
+   */
+  public static notAdded(): NotAddedFilter<Component> {
+    return new NotAddedFilter(this);
   }
 
   /**

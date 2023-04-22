@@ -67,6 +67,11 @@ export class QueryBuilder<
   private readonly changeTrackMap = new ChangeTrackMap<T>();
 
   /**
+   * @internal
+   */
+  private readonly revalidateOnReset: boolean;
+
+  /**
    * The containers that are currently matched by this query
    *
    * @internal
@@ -122,6 +127,7 @@ export class QueryBuilder<
     }
 
     this.filter = AllFilter.wrapIfMany(...filterObjs);
+    this.revalidateOnReset = this.filter.shouldRevalidateAfterReset();
     this.requestedTraits = requestedTraits as TraitConstructorTuple<T, F>;
 
     // Update the query with all existing containers
@@ -211,9 +217,16 @@ export class QueryBuilder<
    * @internal
    */
   public reset(): void {
-    if (this.trackingTraits.size > 0) {
+    if (this.trackingTraits.size === 0) return;
+
+    this.changeTrackMap.clear();
+
+    if (this.revalidateOnReset) {
+      for (const container of this.containers) {
+        this.updateWith(container, false);
+      }
+    } else {
       this.containers.clear();
-      this.changeTrackMap.clear();
     }
   }
 

@@ -55,6 +55,17 @@ export abstract class Filter<T extends Trait> {
   }
 
   /**
+   * Whether the query builder should revalidate the filters after a reset.
+   *
+   * @virtual
+   * @returns true if the query builder should revalidate the filters after
+   *  a reset
+   */
+  public shouldRevalidateAfterReset(): boolean {
+    return false;
+  }
+
+  /**
    * Makes a new filter that matches entities that match both this filter
    * and the given filters.
    *
@@ -194,7 +205,7 @@ export class AbsentFilter<T extends Trait> extends SingleFilter<T> {
 /**
  * Filters containers that had the given trait added since the last reset.
  *
- * @typeParam T - Lock to a type of the trait (Component, Resource...)
+ * @typeParam T - Lock to a type of trait (Component, Resource...)
  */
 export class AddedFilter<T extends Trait> extends SingleFilter<T> {
   /**
@@ -218,6 +229,46 @@ export class AddedFilter<T extends Trait> extends SingleFilter<T> {
     if (!container.has(trait)) return false;
 
     return initial || tracked.get("added").get(container).has(trait);
+  }
+}
+
+/**
+ * Filters containers that had had the given trait not added since the last
+ * reset.
+ *
+ * @typeParam T - Lock to a type of trait (Component, Resource...)
+ */
+export class NotAddedFilter<T extends Trait> extends SingleFilter<T> {
+  /**
+   * @override
+   */
+  public *getTrackingTraits(): IterableIterator<TraitConstructor<T>> {
+    yield this.trait;
+  }
+
+  /**
+   * @override
+   */
+  public shouldRevalidateAfterReset(): boolean {
+    return true;
+  }
+
+  /**
+   * @override
+   * @returns `true` if the container has this filter's trait
+   * not added since the last query reset.
+   */
+  public matches(
+    container: Container<T>,
+    tracked: ChangeTrackMap<any>,
+    initial: boolean
+  ): boolean {
+    const { trait } = this;
+    if (!container.has(trait)) return false;
+
+    console.log(initial, tracked.get("added").get(container).has(trait));
+
+    return initial || !tracked.get("added").get(container).has(trait);
   }
 }
 
@@ -312,6 +363,15 @@ export abstract class CompositeFilter<T extends Trait> extends Filter<T> {
     for (const filter of this.subFilters) {
       yield* filter.getTrackingTraits();
     }
+  }
+
+  /**
+   * @override
+   */
+  public shouldRevalidateAfterReset(): boolean {
+    return this.subFilters.some((filter) =>
+      filter.shouldRevalidateAfterReset()
+    );
   }
 
   /**
