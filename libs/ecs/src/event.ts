@@ -4,7 +4,7 @@ export abstract class Event {
    *
    * @returns true
    */
-  public __isEvent() {
+  public __isEvent(): boolean {
     return true;
   }
 }

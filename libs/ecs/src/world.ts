@@ -389,7 +389,7 @@ export class World {
       emitNew: this.emitNew.bind(this),
     };
 
-    const handle = () => {
+    const handle: SystemHandle = () => {
       // Only call the callback if all queries have results
       if (
         queryBuilders.every(({ containers }) => containers.size > 0) &&

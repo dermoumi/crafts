@@ -21,7 +21,7 @@ vi.mock("../fixed-update", async () => {
     FixedUpdate: class extends Resource {
       public rateMs = 1000 / 60;
 
-      public get rate() {
+      public get rate(): number {
         return this.rateMs / 1000;
       }
     },

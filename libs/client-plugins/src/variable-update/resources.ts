@@ -31,7 +31,7 @@ export class VariableUpdate extends Resource {
     cancelAnimationFrame(this.rafID);
   }
 
-  private updateFunc(timestamp: number) {
+  private updateFunc(timestamp: number): void {
     this.rafID = requestAnimationFrame(this.updateFunc);
 
     this.lastTimestamp = this.currentTimestamp;

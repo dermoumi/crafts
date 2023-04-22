@@ -4,7 +4,7 @@ import { pluginFixedUpdate } from "./plugin";
 
 const UPDATE_RATE = 1000 / 30;
 
-async function nextUpdate(times = 1, deviation = 0.25) {
+async function nextUpdate(times = 1, deviation = 0.25): Promise<void> {
   await new Promise((resolve) => {
     setTimeout(resolve, UPDATE_RATE * (times + deviation));
   });

@@ -101,11 +101,11 @@ describe("Trait management", () => {
   });
 
   it("can add component bundles", () => {
-    const TestBundle = (entity: Entity, x: number, y: number) => {
+    function TestBundle(entity: Entity, x: number, y: number): void {
       entity
         .add(TestTrait, { x: 10, y: 42 })
         .addNew(TestConstructibleTrait, x, y);
-    };
+    }
 
     const world = new World();
     const entity = world.spawn();

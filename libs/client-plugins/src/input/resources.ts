@@ -5,7 +5,7 @@ export type InputAxis = "lx" | "ly" | "rx" | "ry" | "lt" | "rt";
 export type DirectionInputAction = "left" | "right" | "up" | "down";
 export type InputAction = DirectionInputAction | "interact" | "cancel" | "menu";
 
-function isInputElementActive() {
+function isInputElementActive(): boolean {
   const { activeElement } = document;
   return (
     activeElement instanceof HTMLInputElement ||
@@ -143,7 +143,7 @@ export class Input extends Resource {
     this.oldActions = new Set(this.actions);
   }
 
-  private keydownHandler(event: KeyboardEvent) {
+  private keydownHandler(event: KeyboardEvent): void {
     if (isInputElementActive()) return;
 
     const { code } = event;
@@ -179,7 +179,7 @@ export class Input extends Resource {
     }
   }
 
-  private keyupHandler(event: KeyboardEvent) {
+  private keyupHandler(event: KeyboardEvent): void {
     if (isInputElementActive()) return;
 
     const { code } = event;
@@ -226,7 +226,7 @@ export class Input extends Resource {
     }
   }
 
-  private axesActionKeyDown(action: DirectionInputAction) {
+  private axesActionKeyDown(action: DirectionInputAction): void {
     const axis = action === "up" || action === "down" ? "ly" : "lx";
     const stack = this.axesActionStacks.get(axis);
 
@@ -243,7 +243,7 @@ export class Input extends Resource {
     stack.unshift(action);
   }
 
-  private axesActionKeyUp(action: DirectionInputAction) {
+  private axesActionKeyUp(action: DirectionInputAction): void {
     const axis = action === "up" || action === "down" ? "ly" : "lx";
     const stack = this.axesActionStacks.get(axis);
 
@@ -266,7 +266,7 @@ export class Input extends Resource {
     }
   }
 
-  private updateJoystick(x: number, y: number) {
+  private updateJoystick(x: number, y: number): number[] {
     let xCapped = x;
     let yCapped = y;
 

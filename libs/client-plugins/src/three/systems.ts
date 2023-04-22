@@ -31,11 +31,11 @@ export const setup = new System({}, ({ command }) => {
  * @param renderer - The renderer to fit
  * @param container - The renderer's container
  */
-const fitContainer = (renderer: ThreeJsRenderer, container: HTMLElement) => {
+function fitContainer(renderer: ThreeJsRenderer, container: HTMLElement): void {
   const { clientWidth, clientHeight } = container;
 
   renderer.setSize(clientWidth, clientHeight);
-};
+}
 
 /**
  * Fix the aspect ratio of a perspective camera.
@@ -43,15 +43,15 @@ const fitContainer = (renderer: ThreeJsRenderer, container: HTMLElement) => {
  * @param renderer - The renderer to fit the camera to
  * @param camera - The camera to fix
  */
-const fitCameraAsepectRatio = (
+function fitCameraAsepectRatio(
   renderer: ThreeJsRenderer,
   camera: PerspectiveCamera
-) => {
+): void {
   const { width, height } = renderer.domElement;
 
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-};
+}
 
 /**
  * When a MainRenderer is added, create a new ThreeJS renderer and

@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ["@crafts"],
+  extends: ["@crafts/eslint-config/apps"],
 };

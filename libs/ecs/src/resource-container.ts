@@ -48,7 +48,7 @@ export class ResourceContainer extends Container<Resource> {
   public query<F extends FilterSet<Resource>>(...filters: F): ResourceQuery<F> {
     const queryBuilder = this.manager.createQuery(...filters);
 
-    const query = () => {
+    const query: ResourceQuery<F> = () => {
       // eslint-disable-next-line no-unreachable-loop
       for (const container of queryBuilder.containers) {
         return queryBuilder.getTraitInstances(container);

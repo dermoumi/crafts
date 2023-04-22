@@ -53,7 +53,7 @@ describe("World entities", () => {
 
   it("generates IDs using the given generator", () => {
     let id = 0;
-    function generator() {
+    function generator(): string {
       return `id-${id++}`;
     }
 
@@ -450,13 +450,13 @@ describe("Trait disposal", () => {
   const disposeMock = vi.fn();
 
   class DisposableComponent extends Component {
-    public __dispose() {
+    public __dispose(): void {
       disposeMock();
     }
   }
 
   class DisposableResource extends Resource {
-    public __dispose() {
+    public __dispose(): void {
       disposeMock();
     }
   }
