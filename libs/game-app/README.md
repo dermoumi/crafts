@@ -44,7 +44,7 @@ const system2 = new System({ resources: MyResource }, ({ resources }) => {
   .label("labelled-system");
 
 const system3 = new System({}, ({ command }) => {
-  command.spawn((e) => e.add(MyComponent));
+  command.spawn().add(MyComponent);
 }).before("labelled-system");
 ```
 

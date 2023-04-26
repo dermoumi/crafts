@@ -778,11 +778,41 @@ describe("System events", () => {
 });
 
 describe("System command shortcuts", () => {
-  it("spawns new entities", () => {
+  it("spawns entities and adds components to them", () => {
     const testSystem = new System({}, ({ command }) => {
-      command.spawn((entity) => {
-        entity.add(Position);
-      });
+      command.spawn().add(Position);
+    });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+    const query = world.query(Position.present());
+
+    system();
+
+    expect([...query]).toHaveLength(1);
+  });
+
+  it("spawns entities and intanciates components to them", () => {
+    const testSystem = new System({}, ({ command }) => {
+      command.spawn().addNew(Position);
+    });
+
+    const world = new World();
+    const system = world.addSystem(testSystem);
+    const query = world.query(Position.present());
+
+    system();
+
+    expect([...query]).toHaveLength(1);
+  });
+
+  it("spaws entities and adds bundles to them", () => {
+    const bundle = (entity: Entity): void => {
+      entity.add(Position);
+    };
+
+    const testSystem = new System({}, ({ command }) => {
+      command.spawn().addBundle(bundle);
     });
 
     const world = new World();
