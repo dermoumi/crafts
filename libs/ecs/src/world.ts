@@ -2,6 +2,7 @@ import type { Resource } from "./resource";
 import type { Component } from "./component";
 import type { FilterSet } from "./filter";
 import type { QueryBuilder } from "./query";
+import type { Bundle } from "./entity";
 import type {
   Command,
   SystemHandle,
@@ -297,17 +298,54 @@ export class World {
       }
     }
 
+    let entityCommands: Array<Bundle<[]>> = [];
     const commands: Command[] = [];
     const command: CommandAdder = (pending: Command): void => {
       commands.push(pending);
     };
 
-    command.spawn = (
-      spawnCallback?: (entity: Entity) => void
-    ): CommandAdder => {
+    command.spawn = (): CommandAdder => {
+      const currentEntityCommands: Array<Bundle<[]>> = [];
+      entityCommands = currentEntityCommands;
+
       command(({ spawn }) => {
         const entity = spawn();
-        spawnCallback?.(entity);
+        for (const entityCommand of currentEntityCommands) {
+          entityCommand(entity);
+        }
+      });
+
+      return command;
+    };
+
+    command.add = <T extends Component>(
+      component: TraitConcreteConstructor<T, []>,
+      initialValue?: Partial<T>
+    ): CommandAdder => {
+      entityCommands.push((entity) => {
+        entity.add(component, initialValue);
+      });
+
+      return command;
+    };
+
+    command.addNew = <T extends Component, TArgs extends unknown[]>(
+      component: TraitConcreteConstructor<T, TArgs>,
+      ...args: TArgs
+    ): CommandAdder => {
+      entityCommands.push((entity) => {
+        entity.addNew(component, ...args);
+      });
+
+      return command;
+    };
+
+    command.addBundle = <TArgs extends unknown[]>(
+      bundle: (entity: Entity, ...args: TArgs) => void,
+      ...args: TArgs
+    ): CommandAdder => {
+      entityCommands.push((entity) => {
+        bundle(entity, ...args);
       });
 
       return command;

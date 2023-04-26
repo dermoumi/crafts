@@ -17,7 +17,19 @@ export type Command = (world: WorldManager) => void;
  */
 export type CommandAdder = {
   (command: Command): void;
-  spawn: (callback?: (entity: Entity) => void) => CommandAdder;
+  spawn: () => CommandAdder;
+  add: <T extends Component>(
+    constructor: TraitConcreteConstructor<T, []>,
+    trait?: Partial<T>
+  ) => CommandAdder;
+  addNew: <T extends Component, TArgs extends unknown[]>(
+    constructor: TraitConcreteConstructor<T, TArgs>,
+    ...args: TArgs
+  ) => CommandAdder;
+  addBundle: <TArgs extends unknown[]>(
+    bundle: (entity: Entity, ...args: TArgs) => void,
+    ...args: TArgs
+  ) => CommandAdder;
   remove: (entity: Entity) => CommandAdder;
   addResource: <T extends Resource>(
     constructor: TraitConcreteConstructor<T, []>,

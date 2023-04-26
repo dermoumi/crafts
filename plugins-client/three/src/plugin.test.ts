@@ -55,8 +55,12 @@ const testConfigSystem = new System({}, ({ command }) => {
 
 const testSceneAndCamera = new System({}, ({ command }) => {
   command
-    .spawn((e) => e.add(MainScene).add(SceneNode))
-    .spawn((e) => e.add(MainCamera).add(CameraNode));
+    .spawn()
+    .add(MainScene)
+    .add(SceneNode)
+    .spawn()
+    .add(MainCamera)
+    .add(CameraNode);
 });
 
 // Mock the three.js WebGLRenderer
