@@ -1,0 +1,26 @@
+{
+  "name": "@crafts/plugin-assets",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "lint": "tsc && eslint --cache --max-warnings=0 . && prettier --cache -c ."
+  },
+  "dependencies": {
+    "@crafts/ecs": "workspace:^",
+    "@crafts/game-app": "workspace:^"
+  },
+  "devDependencies": {
+    "@crafts/eslint-config": "workspace:^",
+    "@crafts/tsconfig": "workspace:^",
+    "@vitest/coverage-istanbul": "^0.30.1",
+    "eslint": "^8.39.0",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.4",
+    "vite": "^4.3.1",
+    "vitest": "^0.30.1"
+  }
+}
