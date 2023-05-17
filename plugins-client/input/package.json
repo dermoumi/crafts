@@ -17,7 +17,7 @@
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
-    "@vitest/coverage-istanbul": "^0.31.0",
+    "@vitest/coverage-istanbul": "^0.31.1",
     "eslint": "^8.40.0",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4",

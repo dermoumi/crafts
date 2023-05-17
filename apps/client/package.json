@@ -22,7 +22,7 @@
     "@crafts/plugin-world-entities": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/git-rev": "^0.2.0",
-    "@vitest/coverage-istanbul": "^0.31.0",
+    "@vitest/coverage-istanbul": "^0.31.1",
     "eslint": "^8.40.0",
     "git-rev": "^0.2.1",
     "jsdom": "^21.1.2",
