@@ -77,8 +77,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0(vite@4.3.8)
       vite-plugin-top-level-await:
-        specifier: ^1.3.0
-        version: 1.3.0(@swc/helpers@0.5.0)(vite@4.3.8)
+        specifier: ^1.3.1
+        version: 1.3.1(@swc/helpers@0.5.0)(vite@4.3.8)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1(jsdom@21.1.2)
@@ -4431,8 +4431,8 @@ packages:
       vite: 4.3.8(@types/node@18.16.13)
     dev: true
 
-  /vite-plugin-top-level-await@1.3.0(@swc/helpers@0.5.0)(vite@4.3.8):
-    resolution: {integrity: sha512-owIfsgWudMlQODWJSwp0sQB3AZZu3qsMygeBjZy8CyjEk6OB9AGd8lHqmgwrcEqgvy9N58lYxSBLVk3/4ejEiA==}
+  /vite-plugin-top-level-await@1.3.1(@swc/helpers@0.5.0)(vite@4.3.8):
+    resolution: {integrity: sha512-55M1h4NAwkrpxPNOJIBzKZFihqLUzIgnElLSmPNPMR2Fn9+JHKaNg3sVX1Fq+VgvuBksQYxiD3OnwQAUu7kaPQ==}
     peerDependencies:
       vite: '>=2.8'
     dependencies:
