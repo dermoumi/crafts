@@ -1,10 +1,13 @@
-declare global {
-  namespace Vi {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
-    interface ExpectStatic {
-      numberBetween: (min: number, max: number) => any;
-    }
-  }
+/* eslint-disable @typescript-eslint/no-empty-interface */
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+
+type CustomMatchers = {
+  numberBetween: (min: number, max: number) => any;
+};
+
+declare module "vitest" {
+  interface Assertion extends CustomMatchers {}
+  interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 
 // Add a matcher for numbers between a min and max values
