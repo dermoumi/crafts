@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "husky": "^8.0.3",
-    "nx": "^16.2.1",
+    "nx": "^16.2.2",
     "typescript": "^5.0.4"
   }
 }
