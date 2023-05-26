@@ -71,14 +71,14 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vite-plugin-html:
         specifier: ^3.2.0
-        version: 3.2.0(vite@4.3.8)
+        version: 3.2.0(vite@4.3.9)
       vite-plugin-top-level-await:
         specifier: ^1.3.1
-        version: 1.3.1(@swc/helpers@0.5.0)(vite@4.3.8)
+        version: 1.3.1(@swc/helpers@0.5.0)(vite@4.3.9)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -107,8 +107,8 @@ importers:
         specifier: ^2.8.8
         version: 2.8.8
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vite-node:
         specifier: ^0.31.1
         version: 0.31.1(@types/node@18.16.15)
@@ -137,8 +137,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -171,8 +171,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -236,8 +236,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -275,8 +275,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -327,8 +327,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -361,8 +361,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -395,8 +395,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -438,8 +438,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -472,8 +472,8 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4
       vite:
-        specifier: ^4.3.8
-        version: 4.3.8(@types/node@18.16.15)
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.15)
       vitest:
         specifier: ^0.31.1
         version: 0.31.1(jsdom@22.0.0)
@@ -4334,7 +4334,7 @@ packages:
       mlly: 1.2.0
       pathe: 1.1.0
       picocolors: 1.0.0
-      vite: 4.3.8(@types/node@18.16.14)
+      vite: 4.3.9(@types/node@18.16.14)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -4355,7 +4355,7 @@ packages:
       mlly: 1.2.0
       pathe: 1.1.0
       picocolors: 1.0.0
-      vite: 4.3.8(@types/node@18.16.15)
+      vite: 4.3.9(@types/node@18.16.15)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -4366,7 +4366,7 @@ packages:
       - terser
     dev: true
 
-  /vite-plugin-html@3.2.0(vite@4.3.8):
+  /vite-plugin-html@3.2.0(vite@4.3.9):
     resolution: {integrity: sha512-2VLCeDiHmV/BqqNn5h2V+4280KRgQzCFN47cst3WiNK848klESPQnzuC3okH5XHtgwHH/6s1Ho/YV6yIO0pgoQ==}
     peerDependencies:
       vite: '>=2.0.0'
@@ -4383,10 +4383,10 @@ packages:
       html-minifier-terser: 6.1.0
       node-html-parser: 5.4.2
       pathe: 0.2.0
-      vite: 4.3.8(@types/node@18.16.15)
+      vite: 4.3.9(@types/node@18.16.15)
     dev: true
 
-  /vite-plugin-top-level-await@1.3.1(@swc/helpers@0.5.0)(vite@4.3.8):
+  /vite-plugin-top-level-await@1.3.1(@swc/helpers@0.5.0)(vite@4.3.9):
     resolution: {integrity: sha512-55M1h4NAwkrpxPNOJIBzKZFihqLUzIgnElLSmPNPMR2Fn9+JHKaNg3sVX1Fq+VgvuBksQYxiD3OnwQAUu7kaPQ==}
     peerDependencies:
       vite: '>=2.8'
@@ -4394,14 +4394,14 @@ packages:
       '@rollup/plugin-virtual': 3.0.1
       '@swc/core': 1.3.46(@swc/helpers@0.5.0)
       uuid: 9.0.0
-      vite: 4.3.8(@types/node@18.16.15)
+      vite: 4.3.9(@types/node@18.16.15)
     transitivePeerDependencies:
       - '@swc/helpers'
       - rollup
     dev: true
 
-  /vite@4.3.8(@types/node@18.16.14):
-    resolution: {integrity: sha512-uYB8PwN7hbMrf4j1xzGDk/lqjsZvCDbt/JC5dyfxc19Pg8kRm14LinK/uq+HSLNswZEoKmweGdtpbnxRtrAXiQ==}
+  /vite@4.3.9(@types/node@18.16.14):
+    resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -4433,8 +4433,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vite@4.3.8(@types/node@18.16.15):
-    resolution: {integrity: sha512-uYB8PwN7hbMrf4j1xzGDk/lqjsZvCDbt/JC5dyfxc19Pg8kRm14LinK/uq+HSLNswZEoKmweGdtpbnxRtrAXiQ==}
+  /vite@4.3.9(@types/node@18.16.15):
+    resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -4520,7 +4520,7 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.5.0
-      vite: 4.3.8(@types/node@18.16.14)
+      vite: 4.3.9(@types/node@18.16.14)
       vite-node: 0.31.1(@types/node@18.16.14)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
