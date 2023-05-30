@@ -53,8 +53,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -125,8 +125,8 @@ importers:
         specifier: ^18.16.16
         version: 18.16.16
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -159,8 +159,8 @@ importers:
         specifier: ^18.16.16
         version: 18.16.16
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -224,8 +224,8 @@ importers:
         specifier: workspace:^
         version: link:../tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -263,8 +263,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -315,8 +315,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -349,8 +349,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -383,8 +383,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -426,8 +426,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -460,8 +460,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
-        specifier: ^0.31.1
-        version: 0.31.1(vitest@0.31.1)
+        specifier: ^0.31.2
+        version: 0.31.2(vitest@0.31.1)
       eslint:
         specifier: ^8.41.0
         version: 8.41.0
@@ -1454,8 +1454,8 @@ packages:
       eslint-visitor-keys: 3.4.1
     dev: false
 
-  /@vitest/coverage-istanbul@0.31.1(vitest@0.31.1):
-    resolution: {integrity: sha512-wLVROukTxWflIub4QUT5TenA2zx2ypUjRp636yiMTidN5hvRhnUNEEkRavJMEpYuWYYMN23E7EmAxo/MzRRmIA==}
+  /@vitest/coverage-istanbul@0.31.2(vitest@0.31.1):
+    resolution: {integrity: sha512-BN5UUi2xK1gP9z81ZjPjBJd0k66J/IIIoO5BBQnDf6aR87Fu/7H5//FYjmZX7Zcor2ENjHXNCvEfzblcGur22Q==}
     peerDependencies:
       vitest: '>=0.30.0 <1'
     dependencies:
