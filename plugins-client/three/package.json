@@ -17,7 +17,7 @@
     "@crafts/plugin-variable-update": "workspace:^",
     "@crafts/plugin-world-entities": "workspace:^",
     "@types/three": "^0.152.1",
-    "three": "^0.152.2"
+    "three": "^0.153.0"
   },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
