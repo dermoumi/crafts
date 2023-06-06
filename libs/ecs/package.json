@@ -16,7 +16,7 @@
     "@crafts/eslint-config": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/node": "^18.16.16",
-    "@vitest/coverage-istanbul": "^0.31.4",
+    "@vitest/coverage-istanbul": "^0.32.0",
     "eslint": "^8.42.0",
     "prettier": "^2.8.8",
     "typescript": "^5.1.3",
