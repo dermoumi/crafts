@@ -11,7 +11,7 @@
     "@crafts/plugin-physics": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@types/node": "^18.17.1",
-    "eslint": "^8.45.0",
+    "eslint": "^8.46.0",
     "prettier": "^2.8.8",
     "vite": "^4.4.7",
     "vite-node": "^0.33.0"
