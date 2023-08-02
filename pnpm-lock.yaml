@@ -54,7 +54,7 @@ importers:
         version: 0.2.0
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -80,8 +80,8 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1(@swc/helpers@0.5.0)(vite@4.4.8)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   apps/server:
     devDependencies:
@@ -126,7 +126,7 @@ importers:
         version: 18.17.1
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -140,8 +140,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   libs/ecs:
     dependencies:
@@ -160,7 +160,7 @@ importers:
         version: 18.17.1
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -174,8 +174,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   libs/eslint-config:
     dependencies:
@@ -225,7 +225,7 @@ importers:
         version: link:../tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -239,8 +239,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   libs/tsconfig: {}
 
@@ -264,7 +264,7 @@ importers:
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -278,8 +278,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   plugins-client/three:
     dependencies:
@@ -316,7 +316,7 @@ importers:
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -330,8 +330,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   plugins-client/variable-update:
     dependencies:
@@ -350,7 +350,7 @@ importers:
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -364,8 +364,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   plugins-common/fixed-update:
     dependencies:
@@ -384,7 +384,7 @@ importers:
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -398,8 +398,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   plugins-common/physics:
     dependencies:
@@ -427,7 +427,7 @@ importers:
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -441,8 +441,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
   plugins-common/world-entities:
     dependencies:
@@ -461,7 +461,7 @@ importers:
         version: link:../../libs/tsconfig
       '@vitest/coverage-istanbul':
         specifier: ^0.34.1
-        version: 0.34.1(vitest@0.33.0)
+        version: 0.34.1(vitest@0.34.1)
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -475,8 +475,8 @@ importers:
         specifier: ^4.4.8
         version: 4.4.8(@types/node@18.17.1)
       vitest:
-        specifier: ^0.33.0
-        version: 0.33.0(jsdom@22.1.0)
+        specifier: ^0.34.1
+        version: 0.34.1(jsdom@22.1.0)
 
 packages:
 
@@ -1314,10 +1314,6 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: false
 
-  /@types/node@18.16.19:
-    resolution: {integrity: sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==}
-    dev: true
-
   /@types/node@18.17.1:
     resolution: {integrity: sha512-xlR1jahfizdplZYRU59JlUx9uzF1ARa8jbhM11ccpCJya8kvos5jwdm2ZAgxSCwOl0fq21svP18EVwPBXMQudw==}
     dev: true
@@ -1479,7 +1475,7 @@ packages:
       eslint-visitor-keys: 3.4.2
     dev: false
 
-  /@vitest/coverage-istanbul@0.34.1(vitest@0.33.0):
+  /@vitest/coverage-istanbul@0.34.1(vitest@0.34.1):
     resolution: {integrity: sha512-5GprlyY2t1g6+RrssWcN/w5RnZV3qIOM0eoaSDJw3jXbHpBpMvAfTg791zXo7PIqNYs5ORUqBWXIIU0gyAfZxA==}
     peerDependencies:
       vitest: '>=0.32.0 <1'
@@ -1490,43 +1486,43 @@ packages:
       istanbul-lib-source-maps: 4.0.1
       istanbul-reports: 3.1.5
       test-exclude: 6.0.0
-      vitest: 0.33.0(jsdom@22.1.0)
+      vitest: 0.34.1(jsdom@22.1.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@vitest/expect@0.33.0:
-    resolution: {integrity: sha512-sVNf+Gla3mhTCxNJx+wJLDPp/WcstOe0Ksqz4Vec51MmgMth/ia0MGFEkIZmVGeTL5HtjYR4Wl/ZxBxBXZJTzQ==}
+  /@vitest/expect@0.34.1:
+    resolution: {integrity: sha512-q2CD8+XIsQ+tHwypnoCk8Mnv5e6afLFvinVGCq3/BOT4kQdVQmY6rRfyKkwcg635lbliLPqbunXZr+L1ssUWiQ==}
     dependencies:
-      '@vitest/spy': 0.33.0
-      '@vitest/utils': 0.33.0
+      '@vitest/spy': 0.34.1
+      '@vitest/utils': 0.34.1
       chai: 4.3.7
     dev: true
 
-  /@vitest/runner@0.33.0:
-    resolution: {integrity: sha512-UPfACnmCB6HKRHTlcgCoBh6ppl6fDn+J/xR8dTufWiKt/74Y9bHci5CKB8tESSV82zKYtkBJo9whU3mNvfaisg==}
+  /@vitest/runner@0.34.1:
+    resolution: {integrity: sha512-YfQMpYzDsYB7yqgmlxZ06NI4LurHWfrH7Wy3Pvf/z/vwUSgq1zLAb1lWcItCzQG+NVox+VvzlKQrYEXb47645g==}
     dependencies:
-      '@vitest/utils': 0.33.0
+      '@vitest/utils': 0.34.1
       p-limit: 4.0.0
       pathe: 1.1.1
     dev: true
 
-  /@vitest/snapshot@0.33.0:
-    resolution: {integrity: sha512-tJjrl//qAHbyHajpFvr8Wsk8DIOODEebTu7pgBrP07iOepR5jYkLFiqLq2Ltxv+r0uptUb4izv1J8XBOwKkVYA==}
+  /@vitest/snapshot@0.34.1:
+    resolution: {integrity: sha512-0O9LfLU0114OqdF8lENlrLsnn024Tb1CsS9UwG0YMWY2oGTQfPtkW+B/7ieyv0X9R2Oijhi3caB1xgGgEgclSQ==}
     dependencies:
       magic-string: 0.30.1
       pathe: 1.1.1
       pretty-format: 29.5.0
     dev: true
 
-  /@vitest/spy@0.33.0:
-    resolution: {integrity: sha512-Kv+yZ4hnH1WdiAkPUQTpRxW8kGtH8VRTnus7ZTGovFYM1ZezJpvGtb9nPIjPnptHbsyIAxYZsEpVPYgtpjGnrg==}
+  /@vitest/spy@0.34.1:
+    resolution: {integrity: sha512-UT4WcI3EAPUNO8n6y9QoEqynGGEPmmRxC+cLzneFFXpmacivjHZsNbiKD88KUScv5DCHVDgdBsLD7O7s1enFcQ==}
     dependencies:
       tinyspy: 2.1.1
     dev: true
 
-  /@vitest/utils@0.33.0:
-    resolution: {integrity: sha512-pF1w22ic965sv+EN6uoePkAOTkAPWM03Ri/jXNyMIKBb/XHLDPfhLvf/Fa9g0YECevAIz56oVYXhodLvLQ/awA==}
+  /@vitest/utils@0.34.1:
+    resolution: {integrity: sha512-/ql9dsFi4iuEbiNcjNHQWXBum7aL8pyhxvfnD9gNtbjR9fUKAjxhj4AA3yfLXg6gJpMGGecvtF8Au2G9y3q47Q==}
     dependencies:
       diff-sequences: 29.4.3
       loupe: 2.3.6
@@ -4272,8 +4268,8 @@ packages:
     resolution: {integrity: sha512-kRwSG8Zx4tjF9ZiyH4bhaebu+EDz1BOx9hOigYHlUW4xxI/wKIUQUqo018UlU4ar6ATPBsaMrdbKZ+tmPdohFA==}
     dev: true
 
-  /tinypool@0.6.0:
-    resolution: {integrity: sha512-FdswUUo5SxRizcBc6b1GSuLpLjisa8N8qMyYoP3rl+bym+QauhtJP5bvZY1ytt8krKGmMLYIRl36HBZfeAoqhQ==}
+  /tinypool@0.7.0:
+    resolution: {integrity: sha512-zSYNUlYSMhJ6Zdou4cJwo/p7w5nmAH17GRfU/ui3ctvjXFErXXkruT4MWW6poDeXgCaIBlGLrfU6TbTXxyGMww==}
     engines: {node: '>=14.0.0'}
     dev: true
 
@@ -4487,28 +4483,6 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: false
 
-  /vite-node@0.33.0(@types/node@18.16.19):
-    resolution: {integrity: sha512-19FpHYbwWWxDr73ruNahC+vtEdza52kA90Qb3La98yZ0xULqV8A5JLNPUff0f5zID4984tW7l3DH2przTJUZSw==}
-    engines: {node: '>=v14.18.0'}
-    hasBin: true
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.4
-      mlly: 1.4.0
-      pathe: 1.1.1
-      picocolors: 1.0.0
-      vite: 4.4.8(@types/node@18.16.19)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
   /vite-node@0.34.1(@types/node@18.17.1):
     resolution: {integrity: sha512-odAZAL9xFMuAg8aWd7nSPT+hU8u2r9gU3LRm9QKjxBEF2rRdWpMuqkrkjvyVQEdNFiBctqr2Gg4uJYizm5Le6w==}
     engines: {node: '>=v14.18.0'}
@@ -4565,42 +4539,6 @@ packages:
       - rollup
     dev: true
 
-  /vite@4.4.8(@types/node@18.16.19):
-    resolution: {integrity: sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      lightningcss: ^1.21.0
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      '@types/node': 18.16.19
-      esbuild: 0.18.12
-      postcss: 8.4.26
-      rollup: 3.26.2
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /vite@4.4.8(@types/node@18.17.1):
     resolution: {integrity: sha512-LONawOUUjxQridNWGQlNizfKH89qPigK36XhMI7COMGztz8KNY0JHim7/xDd71CZwGT4HtSRgI7Hy+RlhG0Gvg==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -4637,8 +4575,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest@0.33.0(jsdom@22.1.0):
-    resolution: {integrity: sha512-1CxaugJ50xskkQ0e969R/hW47za4YXDUfWJDxip1hwbnhUjYolpfUn2AMOulqG/Dtd9WYAtkHmM/m3yKVrEejQ==}
+  /vitest@0.34.1(jsdom@22.1.0):
+    resolution: {integrity: sha512-G1PzuBEq9A75XSU88yO5G4vPT20UovbC/2osB2KEuV/FisSIIsw7m5y2xMdB7RsAGHAfg2lPmp2qKr3KWliVlQ==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
     peerDependencies:
@@ -4670,12 +4608,12 @@ packages:
     dependencies:
       '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
-      '@types/node': 18.16.19
-      '@vitest/expect': 0.33.0
-      '@vitest/runner': 0.33.0
-      '@vitest/snapshot': 0.33.0
-      '@vitest/spy': 0.33.0
-      '@vitest/utils': 0.33.0
+      '@types/node': 18.17.1
+      '@vitest/expect': 0.34.1
+      '@vitest/runner': 0.34.1
+      '@vitest/snapshot': 0.34.1
+      '@vitest/spy': 0.34.1
+      '@vitest/utils': 0.34.1
       acorn: 8.9.0
       acorn-walk: 8.2.0
       cac: 6.7.14
@@ -4689,9 +4627,9 @@ packages:
       std-env: 3.3.3
       strip-literal: 1.0.1
       tinybench: 2.5.0
-      tinypool: 0.6.0
-      vite: 4.4.8(@types/node@18.16.19)
-      vite-node: 0.33.0(@types/node@18.16.19)
+      tinypool: 0.7.0
+      vite: 4.4.8(@types/node@18.17.1)
+      vite-node: 0.34.1(@types/node@18.17.1)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less
