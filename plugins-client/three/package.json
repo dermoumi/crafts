@@ -16,7 +16,7 @@
     "@crafts/plugin-fixed-update": "workspace:^",
     "@crafts/plugin-variable-update": "workspace:^",
     "@crafts/plugin-world-entities": "workspace:^",
-    "@types/three": "^0.155.0",
+    "@types/three": "^0.155.1",
     "three": "^0.155.0"
   },
   "devDependencies": {
