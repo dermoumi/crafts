@@ -12,7 +12,7 @@
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
-    "@types/node": "^18.17.11",
+    "@types/node": "^18.17.12",
     "@vitest/coverage-istanbul": "^0.34.3",
     "eslint": "^8.48.0",
     "prettier": "^2.8.8",
