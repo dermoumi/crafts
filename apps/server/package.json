@@ -10,7 +10,7 @@
     "@crafts/game-app": "workspace:^",
     "@crafts/plugin-physics": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
-    "@types/node": "^18.17.13",
+    "@types/node": "^18.17.14",
     "eslint": "^8.48.0",
     "prettier": "^2.8.8",
     "vite": "^4.4.9",
