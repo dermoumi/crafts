@@ -65,7 +65,7 @@ jobs:
 
       - name: Publish code coverage
         if: steps.check_codecov.outputs.publish_codecov == '1'
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
