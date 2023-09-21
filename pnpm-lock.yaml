@@ -110,8 +110,8 @@ importers:
         specifier: ^4.4.9
         version: 4.4.9(@types/node@18.17.18)
       vite-node:
-        specifier: ^0.34.4
-        version: 0.34.4(@types/node@18.17.18)
+        specifier: ^0.34.5
+        version: 0.34.5(@types/node@18.17.18)
 
   libs/default-map:
     devDependencies:
@@ -4455,8 +4455,8 @@ packages:
       - terser
     dev: true
 
-  /vite-node@0.34.4(@types/node@18.17.18):
-    resolution: {integrity: sha512-ho8HtiLc+nsmbwZMw8SlghESEE3KxJNp04F/jPUCLVvaURwt0d+r9LxEqCX5hvrrOQ0GSyxbYr5ZfRYhQ0yVKQ==}
+  /vite-node@0.34.5(@types/node@18.17.18):
+    resolution: {integrity: sha512-RNZ+DwbCvDoI5CbCSQSyRyzDTfFvFauvMs6Yq4ObJROKlIKuat1KgSX/Ako5rlDMfVCyMcpMRMTkJBxd6z8YRA==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
     dependencies:
