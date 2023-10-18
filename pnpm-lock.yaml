@@ -50,8 +50,8 @@ importers:
         specifier: workspace:^
         version: link:../../libs/tsconfig
       '@types/git-rev':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.1
+        version: 0.2.1
       '@vitest/coverage-istanbul':
         specifier: ^0.34.6
         version: 0.34.6(vitest@0.34.6)
@@ -1298,8 +1298,8 @@ packages:
     resolution: {integrity: sha512-mEo1sAde+UCE6b2hxn332f1g1E8WfYRu6p5SvTKr2ZKC1f7gFJXk4h5PyGP9Dt6gCaG8y8XhwnXWC6Iy2cmBng==}
     dev: true
 
-  /@types/git-rev@0.2.0:
-    resolution: {integrity: sha512-BF+uvTxHCxPpf2BlArsIn8eHVTr7oUqq2oEA3F2Os6X9UGohHE6m7jKpHzsEqvQTQVOeBCyFMxjp7YvGk748ow==}
+  /@types/git-rev@0.2.1:
+    resolution: {integrity: sha512-b9yWa06Tf/OvXsoOXHAukerrkjFy8OhbYA4o/ABjly/uZzlSrdGQ+VPo8A2PSOzBgASULyHFikfDVYfeDttJ2Q==}
     dev: true
 
   /@types/json-schema@7.0.11:
