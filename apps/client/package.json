@@ -21,7 +21,7 @@
     "@crafts/plugin-variable-update": "workspace:^",
     "@crafts/plugin-world-entities": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
-    "@types/git-rev": "^0.2.0",
+    "@types/git-rev": "^0.2.1",
     "@vitest/coverage-istanbul": "^0.34.6",
     "eslint": "^8.51.0",
     "git-rev": "^0.2.1",
