@@ -20,7 +20,7 @@
     "@crafts/eslint-config": "workspace:^",
     "@crafts/tsconfig": "workspace:^",
     "@vitest/coverage-istanbul": "^0.34.6",
-    "eslint": "^8.51.0",
+    "eslint": "^8.52.0",
     "prettier": "^2.8.8",
     "typescript": "^5.2.2",
     "vite": "^4.5.0",
