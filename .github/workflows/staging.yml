@@ -44,7 +44,7 @@ jobs:
           key: nx-${{ github.ref }}
 
       - name: Derive HEAD and BASE shas for 'nx affected'
-        uses: nrwl/nx-set-shas@v3
+        uses: nrwl/nx-set-shas@v4
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --strict-peer-dependencies
