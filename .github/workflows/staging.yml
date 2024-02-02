@@ -24,7 +24,7 @@ jobs:
       publish_cf_pages: ${{ steps.check_cf_pages.outputs.publish_cf_pages }}
     steps:
       - name: Checkout git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -95,7 +95,7 @@ jobs:
       url: ${{ steps.publish-client.outputs.url }}
     steps:
       - name: Checkout git repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.4.0
