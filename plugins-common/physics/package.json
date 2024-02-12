@@ -14,7 +14,7 @@
     "@crafts/game-app": "workspace:^",
     "@crafts/plugin-fixed-update": "workspace:^",
     "@crafts/plugin-world-entities": "workspace:^",
-    "@dimforge/rapier3d-compat": "^0.11.2"
+    "@dimforge/rapier3d-compat": "^0.12.0"
   },
   "devDependencies": {
     "@crafts/eslint-config": "workspace:^",
